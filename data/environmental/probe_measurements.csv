@@ -1,0 +1,5 @@
+tank,effort,date,time,temp.C,pH.nbs,sal.psu,initials,notes
+left,lco,5/6/24,13:40,15.8,8.14,29.84,ash,Orion Star A325; calibrated pH with nbs and conductivity with standards today; pH slope =100.9%; avg cell cal conducitivity = 0.487
+middle,B,5/6/24,13:40,14.5,8.16,29.74,ash,
+right,C,5/6/24,13:40,14.5,8.18,29.8,ash,
+outdoor_tray,"D, E",5/6/24,13:40,12.4,7.89,29.02,ash,
