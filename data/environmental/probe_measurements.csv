@@ -1,5 +1,31 @@
-tank,effort,date,time,temp.C,pH.nbs,sal.psu,initials,notes
-left,lco,5/6/24,13:40,15.8,8.14,29.84,ash,Orion Star A325; calibrated pH with nbs and conductivity with standards today; pH slope =100.9%; avg cell cal conducitivity = 0.487
-middle,B,5/6/24,13:40,14.5,8.16,29.74,ash,
-right,C,5/6/24,13:40,14.5,8.18,29.8,ash,
-outdoor_tray,"D, E",5/6/24,13:40,12.4,7.89,29.02,ash,
+tank,date,time,temp.C,pH.nbs,sal.psu,initials,notes
+left,5/6/24,13:40,15.8,8.14,29.84,ash,Orion Star A325; calibrated pH with nbs and conductivity with standards today; pH slope =100.9%; avg cell cal conducitivity = 0.487
+middle,5/6/24,13:40,14.5,8.16,29.74,ash,
+right,5/6/24,13:40,14.5,8.18,29.8,ash,
+outdoor_tray,5/6/24,13:40,12.4,7.89,29.02,ash,
+left,5/16/24,11:30,15.3,8.17,29.99,ash,tank
+left,5/16/24,11:30,15.5,8.11,29.82,ash,silo
+left,5/16/24,11:30,15.5,8.11,29.6,ash,silo
+middle,5/16/24,11:30,14.6,8.12,29.83,ash,tank
+middle,5/16/24,11:30,14.5,8.1,29.87,ash,silo
+middle,5/16/24,11:30,14.5,8.16,29.92,ash,silo
+right,5/16/24,11:30,15,8.16,29.83,ash,tank
+right,5/16/24,11:30,15.2,8.09,29.93,ash,silo
+right,5/16/24,11:30,15,8.18,29.85,ash,silo
+outdoor_tray,5/16/24,11:30,16.6,7.75,29.06,ash,large POGS
+outdoor_tray,5/16/24,11:30,16.6,7.72,29.05,ash,large POGS
+outdoor_tray,5/16/24,11:30,16.9,7.83,29.82,ash,small POGS
+outdoor_tray,5/16/24,11:30,17,7.88,28.88,ash,small POGS
+right,5/22/24,11:30,14.9,8.17,29.85,ash,tank
+right,5/22/24,11:30,15,8.17,29.87,ash,silo
+right,5/22/24,11:30,15,8.18,29.88,ash,silo
+middle,5/22/24,11:30,14.5,8.16,29.86,ash,tank
+middle,5/22/24,11:30,14.5,8.16,29.86,ash,silo
+middle,5/22/24,11:30,14.5,8.16,29.89,ash,silo
+left,5/22/24,11:30,14.5,8.16,29.92,ash,tank
+left,5/22/24,11:30,14.5,8.16,29.9,ash,silo
+left,5/22/24,11:30,14.5,8.16,29.9,ash,silo
+outdoor_tray,5/22/24,11:30,14.5,7.72,28.69,ash,large POGS
+outdoor_tray,5/22/24,11:30,14.5,7.73,28.64,ash,small POGS
+,,,,,,,
+,,,,,,,
