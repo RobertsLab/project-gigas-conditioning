@@ -46,6 +46,7 @@ We are going to outplant oysters at with commercial partners from efforts B, D, 
 ## Goose Point 
 
 - Bags: [Seapa baskets](https://seapausa.com/oyster-baskets/#15L) (12 mm size) - 15 L volume
+	- 15 bags available for our use 
 - Date of outplant: June 24-25
 	- Pick up from Point Whitney on June 24, deliver to Goose Point on June 25 
 - Contact: Kathleen Nisbet 
