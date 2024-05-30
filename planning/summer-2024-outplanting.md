@@ -8,38 +8,38 @@ We are going to outplant oysters at with commercial partners from efforts B, D, 
 
 ## Effort B: 2023 POGS seed daily hardening
 
-| Treatment           | Number of Animals | Approx. Size | Current location | Identifiers                                                              | Number Bags | Animals per bag | Outplant location | Notes                                               |
-|---------------------|-------------------|--------------|------------------|--------------------------------------------------------------------------|-------------|-----------------|-------------------|-----------------------------------------------------|
-| Temperature treated | 500               | 10-25 mm     | Point Whitney    | "POGS daily seed; silos; right tank" &amp; "POGS seed bags   #3 and #4"  | 5           | 100             | Westcott          | Number of bags dependent on equipment from Westcott |
-| Control             | 500               | 10-25 mm     | Point Whitney    | "POGS daily seed; silos; middle tank" &amp; "POGS seed   bags #1 and #2" | 5           | 100             | Westcott          | Number of bags dependent on equipment from Westcott |
+| Treatment           | Number of Animals | Approx. Size | Current location | Identifiers                                                              | Number Bags | Animals per bag | Outplant location | Notes                                  |
+|---------------------|-------------------|--------------|------------------|--------------------------------------------------------------------------|-------------|-----------------|-------------------|----------------------------------------|
+| Temperature treated | 400               | 10-25 mm     | Point Whitney    | "POGS daily seed; silos; right tank" &amp; "POGS seed bags   #3 and #4"  | 4           | 100             | Westcott          | Can increase density if more available |
+| Control             | 400               | 10-25 mm     | Point Whitney    | "POGS daily seed; silos; middle tank" &amp; "POGS seed   bags #1 and #2" | 4           | 100             | Westcott          | Can increase density if more available |
 
 
 ## Effort D: 2023 POGS small seed weekly hardening
 
-| Treatment           | Number of Animals | Approx. Size | Current location | Identifiers    | Number Bags | Animals per bag | Outplant location | Notes                              |
-|---------------------|-------------------|--------------|------------------|----------------|-------------|-----------------|-------------------|------------------------------------|
-| Temperature treated | 700               | 12-20mm      | Point Whitney    | Outdoor trays  | 7           | 100             | Westcott          | Size of Westcott bags needed       |
-| Control             | 700               | 12-20mm      | Point Whitney    | Outdoor trays  | 7           | 100             | Westcott          | Size of Westcott bags needed       |
-| Temperature treated | 700               | 12-20mm      | Point Whitney    | Outdoor trays  | 7           | 100             | Goose Point       | Will need to take &gt;12mm animals |
-| Control             | 700               | 12-20mm      | Point Whitney    | Outdoor trays  | 7           | 100             | Goose Point       | Will need to take &gt;12mm animals |
+| Treatment           | Number of Animals | Approx. Size | Current location | Identifiers    | Number Bags | Animals per bag | Outplant location | Notes                                  |
+|---------------------|-------------------|--------------|------------------|----------------|-------------|-----------------|-------------------|----------------------------------------|
+| Temperature treated | 500               | 12-20mm      | Point Whitney    | Outdoor trays  | 5           | 100             | Westcott          | Can increase density if more available |
+| Control             | 500               | 12-20mm      | Point Whitney    | Outdoor trays  | 5           | 100             | Westcott          | Can increase density if more available |
+| Temperature treated | 700               | 12-20mm      | Point Whitney    | Outdoor trays  | 8           | 100             | Goose Point       | Will need to take &gt;12mm animals     |
+| Control             | 700               | 12-20mm      | Point Whitney    | Outdoor trays  | 7           | 100             | Goose Point       | Will need to take &gt;12mm animals     |
 
 ## Effort E: 2023 POGS large seed weekly hardening
 
-| Treatment                  | Number of Animals | Approx. Size | Current location | Identifiers                  | Number Bags | Animals per bag | Outplant location | Notes |
-|----------------------------|-------------------|--------------|------------------|------------------------------|-------------|-----------------|-------------------|-------|
-| Temperature treated        | 300               | 18-35mm      | Point Whitney    | Outdoor trays ("large POGS") | 6           | 50              | Westcott          |       |
-| Control (temperature tray) | 300               | 18-35mm      | Point Whitney    | Outdoor trays ("large POGS") | 6           | 50              | Westcott          |       |
-| Fresh treated              | 400               | 14-30mm      | Point Whitney    | Outdoor trays ("large POGS") | 8           | 50              | Westcott          |       |
-| Control (fresh tray)       | 650               | 14-30mm      | Point Whitney    | Outdoor trays ("large POGS") | 12          | 50              | Westcott          |       |
+| Treatment                  | Number of Animals | Approx. Size | Current location | Identifiers                  | Number Bags | Animals per bag | Outplant location | Notes                                  |
+|----------------------------|-------------------|--------------|------------------|------------------------------|-------------|-----------------|-------------------|----------------------------------------|
+| Temperature treated        | 300               | 18-35mm      | Point Whitney    | Outdoor trays ("large POGS") | 3           | 100             | Westcott          | Can increase density if more available |
+| Control (temperature tray) | 300               | 18-35mm      | Point Whitney    | Outdoor trays ("large POGS") | 3           | 100             | Westcott          | Can increase density if more available |
+| Fresh treated              | 300               | 14-30mm      | Point Whitney    | Outdoor trays ("large POGS") | 3           | 100             | Westcott          | Can increase density if more available |
+| Control (fresh tray)       | 300               | 14-30mm      | Point Whitney    | Outdoor trays ("large POGS") | 3           | 100             | Westcott          | Can increase density if more available |
 
 # Totals 
 
-| Site        | Effort B Bags | Effort D Bags | Effort E Bags |
-|-------------|---------------|---------------|---------------|
-| Westcott    | 10            | 14            | 32            |
-| Goose Point | 0             | 14            | 0             |
+| Site        | Effort B Bags | Effort D Bags | Effort E Bags | TOTAL |
+|-------------|---------------|---------------|---------------|-------|
+| Westcott    | 8             | 10            | 12            | 30    |
+| Goose Point | 0             | 15            | 0             | 15    |
 
-**Estimated total animals outplanted = 5,450**
+**Estimated total animals outplanted = 4,400**
 
 # Site information 
 
@@ -56,10 +56,10 @@ We are going to outplant oysters at with commercial partners from efforts B, D, 
 
 ## Westcott 
 
-- Bags: *need information here* 
+- Bags: Rack style 1/4" (6mm) bags
 - Date of outplant: June 7
 	- Pick up from Point Whitney week of June 7, organize hand-off in Seattle or other pick up point
-- Contact: *need information here* 
+- Contact: Chas Lawson
 - Tags: *need information here* 
 - Temperature loggers: Deploy n=5-8 with bags in representative areas 
 
