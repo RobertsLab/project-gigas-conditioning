@@ -69,3 +69,7 @@ Animals left over (small size or extras) kept in original trays at Point Whitney
 - 32 bags total on 8 racks (4 bags per rack) 
 - Temperature loggers: Deploy n=5-8 with bags in representative areas 
 
+# Next steps
+
+1. Perform lab survivorship testing from Efforts B, D, and E with leftover/small samples 
+2. Take samples for RNA/DNA/frozen for any assays we might want to run on these groups for mechanistic work 
