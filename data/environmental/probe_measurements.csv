@@ -38,3 +38,10 @@ left,6/4/24,12:00,14.8,8.17,29.74,ash,tank
 outdoor_tray,6/4/24,12:00,15,7.87,28.7,ash,large POGS
 outdoor_tray,6/4/24,12:00,14.8,7.73,28.67,ash,small POGS
 upweller,6/4/24,12:00,15.7,7.83,28.3,ash,common holding tank for all oysters 
+left,6/12/24,15:00,14.2,8.22,29.94,ash,indoor left tank
+left,6/12/24,15:00,14.1,8.23,30,ash,indoor left tank
+outdoor_tray,6/12/24,15:00,14.1,7.71,29.64,ash,right stack
+outdoor_tray,6/12/24,15:00,15.5,7.73,29.55,ash,left stack
+upweller,6/12/24,15:00,18.9,7.83,29.2,ash,effort C
+upweller,6/12/24,15:00,18.8,7.83,29.16,ash,efforts BED
+upweller,6/12/24,15:00,19,7.82,29.05,ash,effort F
