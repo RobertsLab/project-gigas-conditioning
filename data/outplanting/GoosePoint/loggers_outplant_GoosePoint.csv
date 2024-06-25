@@ -1,6 +1,5 @@
-logger,date.launched,time.launched,date.deployed,site,model,interval,notes
-22023394,20240606,09:00,20240624,Goose Point,Hobo Tidbit MX Temp 5000,15 min,
-22023397,20240606,09:00,20240624,Goose Point,Hobo Tidbit MX Temp 5000,15 min,
-22023403,20240606,09:00,20240624,Goose Point,Hobo Tidbit MX Temp 5000,15 min,
-22023400,20240606,09:00,20240624,Goose Point,Hobo Tidbit MX Temp 5000,15 min,
-,,,,,,,
+logger,date.launched,time.launched,date.deployed,site,model,interval,oyster_bag
+22023394,20240606,09:00,20240624,Goose Point,Hobo Tidbit MX Temp 5000,15 min,97
+22023397,20240606,09:00,20240624,Goose Point,Hobo Tidbit MX Temp 5000,15 min,96
+22023403,20240606,09:00,20240624,Goose Point,Hobo Tidbit MX Temp 5000,15 min,94
+22023400,20240606,09:00,20240624,Goose Point,Hobo Tidbit MX Temp 5000,15 min,85
