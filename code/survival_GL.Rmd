@@ -22,7 +22,7 @@ D_survival_06202024 <- read_excel("data/survival/Westcott/D_survival_06202024.xl
 D_survival_06252024 <- read_excel("data/survival/Westcott/D_survival_06252024.xlsx")
 ```
 
-### Combine data
+### Combine data, reup it
 ```{r}
 B_live <- bind_cols(bag_num = B_survival_06202024$bag_num,
                alive_1 = B_survival_06202024$alive_num,
@@ -32,29 +32,31 @@ D_live <- bind_cols(bag_num = D_survival_06202024$bag_num,
                alive_1 = D_survival_06202024$alive_num,
                alive_2 = D_survival_06252024$alive_num)
 
+live <- rbind(B_live, D_live)
+
+live$treatment <- NA
+
+for (i in 1:length(live$treatment)){
+  if (live$bag_num[i] < 6) {
+    live$treatment[i] <- "b_control"
+  }
+  if (live$bag_num[i] >= 6 & live$bag_num[i] < 11){
+    live$treatment[i] <- "b_treated"
+  }
+  if (live$bag_num[i] >= 11 & live$bag_num[i] < 22){
+    live$treatment[i] <- "d_control"
+  }
+  if (live$bag_num[i] >= 22){
+    live$treatment[i] <- "d_treated"
+  }
+}
+
+
+
 ```
 
 ### Stats
 ```{r}
-B_live_control <- subset(B_live, bag_num < 6, select = c(bag_num, alive_1, alive_2))
-B_live_treated <- subset(B_live, bag_num >= 6, select = c(bag_num, alive_1, alive_2))
-
-D_live_control <- subset(D_live, bag_num < 22, select = c(bag_num, alive_1, alive_2))
-D_live_treated <- subset(D_live, bag_num >= 22, select = c(bag_num, alive_1, alive_2))
-
-survival <- matrix(rep(NA), ncol = 2, nrow=4)
-colnames(survival) <- c("1","2")
-rownames(survival) <- c("B_control", "B_treated", "D_control", "D_treated")
-survival[1,1] <- mean(B_live_control$alive_1) 
-survival[1,2] <- mean(B_live_control$alive_2)
-survival[2,1] <- mean(B_live_treated$alive_1)
-survival[2,2] <- mean(B_live_treated$alive_2)
-survival[3,1] <- mean(D_live_control$alive_1)
-survival[3,2] <- mean(D_live_control$alive_2)
-survival[4,1] <- mean(D_live_treated$alive_1)
-survival[4,2] <- mean(D_live_treated$alive_2)
-
-survival <- t(survival)
 
 
 
