@@ -14,12 +14,12 @@ library(ggplot2)
 ### Load Data
 ```{r}
 # B survival
-B_survival_06202024 <- read_excel("data/survival/Westcott/B_survival_06202024.xlsx")
-B_survival_06252024 <- read_excel("data/survival/Westcott/B_survival_06252024.xlsx")
+B_survival_06202024 <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_06202024.xlsx")
+B_survival_06252024 <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_06252024.xlsx")
 
 # D survival
-D_survival_06202024 <- read_excel("data/survival/Westcott/D_survival_06202024.xlsx")
-D_survival_06252024 <- read_excel("data/survival/Westcott/D_survival_06252024.xlsx")
+D_survival_06202024 <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_06202024.xlsx")
+D_survival_06252024 <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_06252024.xlsx")
 ```
 
 ### Combine data, reup it
@@ -51,14 +51,52 @@ for (i in 1:length(live$treatment)){
   }
 }
 
-
+live <- live %>%
+  pivot_longer(cols = c(alive_1, alive_2), names_to = "time_points", values_to = "live_oysters")
 
 ```
 
 ### Stats
 ```{r}
+means_live <- live %>%
+  group_by(treatment, time_points) %>%
+  summarize(mean_live = mean(live_oysters, na.rm = TRUE))
 
-
+ggplot(means_live, aes(x = time_points, y = mean_live, group = treatment, color = treatment)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Time Point",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  ylim(0,105)
 
 ```
 
+### B plots
+```{r}
+B_means <- means_live %>% 
+  filter(treatment %in% c("b_control", "b_treated"))
+
+ggplot(B_means, aes(x = time_points, y = mean_live, group = treatment, color = treatment)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Time Point",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  ylim(0,60)
+
+```
+### D plots
+```{r}
+D_means <- means_live %>% 
+  filter(treatment %in% c("d_control", "d_treated"))
+
+ggplot(D_means, aes(x = time_points, y = mean_live, group = treatment, color = treatment)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Time Point",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  ylim(0,105)
+
+```
