@@ -14,3 +14,11 @@ control,6/19/24,11:30,12.7,7.61,29.3,ash,
 fresh,6/24/24,10:45,16.9,8.39,0.228,ash,
 control,6/24/24,10:45,16.5,8.09,30.12,ash,
 fresh,6/24/24,10:45,15.7,8.51,0.198,ash,
+fresh,6/28/24,12:00,16.8,7.59,0.374,ash,broodstock
+fresh,6/28/24,12:00,14.2,8.07,0.522,ash,seed
+temperature 35C,6/28/24,12:20,33.8,7.64,31.03,ash,right tank
+temperature 35C,6/28/24,12:50,34.1,7.67,30.85,ash,right tank
+temperature 35C,6/28/24,13:20,34.3,7.69,31.41,ash,right tank
+temperature 35C,6/28/24,15:00,35.1,7.75,31.32,ash,right tank
+fresh temperature 25C,6/28/24,01:07,32.7,8.29,0.164,ash,bucket
+fresh temperature 25C,6/28/24,01:20,35,8.24,0.419,ash,bucket
