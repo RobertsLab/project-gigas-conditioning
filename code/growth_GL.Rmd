@@ -1,0 +1,114 @@
+---
+title: "growth_GL"
+output: html_document
+date: "2024-07-09"
+---
+
+### Load libraries
+```{r}
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+
+```
+
+### Load Data
+```{r}
+# B survival
+B_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_07052024.xlsx")
+
+# Heights from bag 2 for 07/05/2024 showing up as NA's for some reason when data imported
+B_growth$length.mm <- as.numeric(B_growth$length.mm)
+B_growth$width.mm <- as.numeric(B_growth$width.mm)
+B_growth$height.mm <- as.numeric(B_growth$height.mm)
+
+# D survival
+D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_07052024.xlsx")
+
+```
+
+### Means length
+```{r}
+means_B_sizes <- B_growth %>%
+  group_by(conditioning, date) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            mean_height = mean(height.mm, na.rm = TRUE), 
+            .groups = 'drop')
+
+means_D_sizes <- D_growth %>%
+  group_by(conditioning, date) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            mean_height = mean(height.mm, na.rm = TRUE), 
+            .groups = 'drop')
+
+
+```
+
+
+```{r}
+
+DL <- ggplot(means_D_sizes, aes(x = date, y = mean_length, color = conditioning)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank())+
+  ylim(0,32)
+
+DW <- ggplot(means_D_sizes, aes(x = date, y = mean_width, color = conditioning)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank())+
+  ylim(0,32)
+
+DH <- ggplot(means_D_sizes, aes(x = date, y = mean_height, color = conditioning)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  ylim(0,32)
+
+grid.arrange(DL,DW,DH)
+
+
+```
+```{r}
+BL <- ggplot(means_B_sizes, aes(x = date, y = mean_length, color = conditioning)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank())+
+  ylim(0,32)
+
+BW <- ggplot(means_B_sizes, aes(x = date, y = mean_width, color = conditioning)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank())+
+  ylim(0,32)
+
+BH <- ggplot(means_B_sizes, aes(x = date, y = mean_height, color = conditioning)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  ylim(0,32)
+
+grid.arrange(BL,BW,BH)
+```
+
