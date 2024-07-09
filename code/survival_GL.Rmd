@@ -40,13 +40,34 @@ means_live$effort <- c("B","B","B","B","B","B","D","D","D","D","D","D")
 ```
 
 ### Stats
-```{r}
 
+
+```{r}
 ggplot(means_live, aes(x = date, y = mean_survival, group = effort, color = conditioning)) +
    geom_point(size=3) +
-  labs(x = "Time Point",
+  labs(x = "Date",
        y = "Mean live oysters per bag") +
   theme_classic()
+```
+```{r}
+
+ggplot(D_survival, aes(x = date, y = alive_num, group = effort, color = conditioning)) +
+   geom_jitter(width = 10, height = 0, size=3) +
+  labs(x = "Date",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  ylim(0,120)
+
+```
+
+```{r}
+
+ggplot(B_survival, aes(x = date, y = alive_num, group = effort, color = conditioning)) +
+   geom_jitter(width = 10, height = 0,size=3) +
+  labs(x = "Date",
+       y = "Mean live oysters per bag") +
+  theme_classic()+
+  ylim(0,55)
 
 ```
 
@@ -58,11 +79,15 @@ ggplot(B_survival, aes(x=date,y=dead, color=conditioning))+
   xlab("Date")+
   ylim(-1,2)
 
+
+```
+```{r}
 ggplot(D_survival, aes(x=date, y=dead, color=conditioning))+
   geom_jitter(width = 0.2, height = 0.2, size = 3) +
   theme_classic()+
   ylab("Dead oysters found")+
   xlab("Date")+
   ylim(-1,2)
+
 ```
 
