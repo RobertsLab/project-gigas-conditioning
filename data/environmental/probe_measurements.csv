@@ -70,3 +70,24 @@ upweller,6/28/24,11:15,19,7.54,28.93,ash,efforts BED
 outdoor_tray,6/28/24,11:15,15.2,7.62,29.2,ash,left stack
 outdoor_tray,6/28/24,11:15,16.7,7.59,29.29,ash,right stack
 dock,6/28/24,11:15,18.9,7.62,29.29,ash,seed
+upweller,7/1/24,11:30,19.9,7.51,28.94,kd,KD ploidy
+dock,7/1/24,11:30,20,7.59,28.79,kd,seed
+upweller,7/3/24,10:30,19.8,7.54,29.17,kd,KD ploidy
+dock,7/3/24,10:40,20,7.62,29.02,kd,seed
+upweller,7/5/24,11:00,21,7.63,29.09,kd,KD ploidy
+upweller,7/5/24,11:00,21.1,7.6,28.93,kd,broodstock
+dock,7/5/24,11:00,22,7.66,28.73,kd,seed
+dock,7/8/24,10:45,22.5,7.69,29.35,kd,seed
+upweller,7/8/24,10:45,22.4,7.65,29.13,kd,KD ploidy
+upweller,7/8/24,10:45,22.8,7.68,29.06,kd,broodstock
+dock,7/8/24,14:30,24.4,7.77,29.27,kd,seed
+upweller,7/8/24,14:30,23.6,7.75,29.28,kd,KD ploidy
+upweller,7/8/24,14:30,23.7,7.92,29.38,kd,broodstock
+upweller,7/10/24,11:00,23.3,7.72,29.19,ash,effort C
+upweller,7/10/24,11:00,23.1,7.68,29.44,ash,effort BD
+upweller,7/10/24,11:00,23,7.68,29.26,ash,LCO
+upweller,7/10/24,11:00,23.2,7.65,29.24,ash,KD ploidy effort E
+upweller,7/10/24,11:00,23.4,7.69,29.56,ash,broodstock
+outdoor_tray,7/10/24,11:00,19.1,7.7,29.61,ash,left stack
+outdoor_tray,7/10/24,11:00,16.3,7.7,29.56,ash,right stack
+dock,7/10/24,11:00,23.5,7.72,29.44,ash,seed
