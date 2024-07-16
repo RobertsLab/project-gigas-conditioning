@@ -23,8 +23,11 @@ B_growth$length.mm <- as.numeric(B_growth$length.mm)
 B_growth$width.mm <- as.numeric(B_growth$width.mm)
 B_growth$height.mm <- as.numeric(B_growth$height.mm)
 
+B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
+
 # D survival
 D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_07052024.xlsx")
+D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 ```
 
@@ -35,6 +38,9 @@ means_B_sizes <- B_growth %>%
   summarise(mean_length = mean(length.mm, na.rm = TRUE),
             mean_width = mean(width.mm, na.rm = TRUE),
             mean_height = mean(height.mm, na.rm = TRUE), 
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            stderr_height = sd(height.mm, na.rm = TRUE)/sqrt(length(height.mm)),
             .groups = 'drop')
 
 means_D_sizes <- D_growth %>%
@@ -42,6 +48,9 @@ means_D_sizes <- D_growth %>%
   summarise(mean_length = mean(length.mm, na.rm = TRUE),
             mean_width = mean(width.mm, na.rm = TRUE),
             mean_height = mean(height.mm, na.rm = TRUE), 
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            stderr_height = sd(height.mm, na.rm = TRUE)/sqrt(length(height.mm)),
             .groups = 'drop')
 
 
@@ -51,42 +60,58 @@ means_D_sizes <- D_growth %>%
 ```{r}
 
 DL <- ggplot(means_D_sizes, aes(x = date, y = mean_length, color = conditioning)) +
-   geom_point(size=3) +
+   geom_point() +
   labs(x = "Date",
-       y = "Mean live oysters per bag") +
+       y = "Mean length (mm)") +
   theme_classic()+
+  scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
+  geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
+                 position=position_dodge(0.05))+
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
   ylim(0,32)
 
 DW <- ggplot(means_D_sizes, aes(x = date, y = mean_width, color = conditioning)) +
-   geom_point(size=3) +
+   geom_point() +
   labs(x = "Date",
-       y = "Mean live oysters per bag") +
+       y = "Mean width (mm)") +
   theme_classic()+
+  scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
+  labs(color = "Conditioning")+
+  geom_errorbar(aes(ymin=mean_width-stderr_width, ymax = mean_width+stderr_width), width=.2,
+                 position=position_dodge(0.05))+
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
   ylim(0,32)
 
 DH <- ggplot(means_D_sizes, aes(x = date, y = mean_height, color = conditioning)) +
-   geom_point(size=3) +
+   geom_point() +
   labs(x = "Date",
-       y = "Mean live oysters per bag") +
+       y = "Mean height (mm)") +
   theme_classic()+
+  geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
+                 position=position_dodge(0.05))+
+  scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
   ylim(0,32)
 
 grid.arrange(DL,DW,DH)
 
 
 ```
+
+
+
 ```{r}
 BL <- ggplot(means_B_sizes, aes(x = date, y = mean_length, color = conditioning)) +
    geom_point(size=3) +
   labs(x = "Date",
-       y = "Mean live oysters per bag") +
+       y = "Mean length (mm)") +
+  scale_color_manual(labels = c("Control", "Daily"), values = c("blue","red"))+
   theme_classic()+
+  geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
+                 position=position_dodge(0.05))+
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
@@ -94,8 +119,12 @@ BL <- ggplot(means_B_sizes, aes(x = date, y = mean_length, color = conditioning)
 
 BW <- ggplot(means_B_sizes, aes(x = date, y = mean_width, color = conditioning)) +
    geom_point(size=3) +
+  scale_color_manual(labels = c("Control", "Daily"), values = c("blue","red"))+
+  labs(color = "Conditioning")+
   labs(x = "Date",
-       y = "Mean live oysters per bag") +
+       y = "Mean width (mm)") +
+  geom_errorbar(aes(ymin=mean_width-stderr_width, ymax = mean_width+stderr_width), width=.2,
+                 position=position_dodge(0.05))+
   theme_classic()+
   theme(
     axis.title.x = element_blank(),       
@@ -104,8 +133,11 @@ BW <- ggplot(means_B_sizes, aes(x = date, y = mean_width, color = conditioning))
 
 BH <- ggplot(means_B_sizes, aes(x = date, y = mean_height, color = conditioning)) +
    geom_point(size=3) +
+  scale_color_manual(labels = c("Control", "Daily"), values = c("blue","red"))+
   labs(x = "Date",
-       y = "Mean live oysters per bag") +
+       y = "Mean height (mm)") +
+  geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
+                 position=position_dodge(0.05))+
   theme_classic()+
   ylim(0,32)
 

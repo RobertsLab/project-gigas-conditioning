@@ -27,15 +27,20 @@ D_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/co
 ```{r}
 means_B_live <- B_survival %>%
   group_by(conditioning, date) %>%
-  summarise(mean_survival = mean(alive_num), .groups = 'drop')
+  summarise(mean_survival = mean(alive_num),
+            std_error = sd(alive_num)/sqrt(length(alive_num)),
+            .groups = 'drop')
 
 means_D_live <- D_survival %>%
   group_by(conditioning, date) %>%
-  summarise(mean_survival = mean(alive_num), .groups = 'drop')
+  summarise(mean_survival = mean(alive_num),
+            std_error = sd(alive_num)/sqrt(length(alive_num)),
+            .groups = 'drop')
 
 means_live <- rbind(means_B_live, means_D_live)
 
 means_live$effort <- c("B","B","B","B","B","B","D","D","D","D","D","D")
+means_live$conditioning <- c("d_control","d_control","d_control","daily","daily","daily","w_control","w_control","w_control","weekly","weekly","weekly")
 
 ```
 
@@ -47,6 +52,10 @@ ggplot(means_live, aes(x = date, y = mean_survival, group = effort, color = cond
    geom_point(size=3) +
   labs(x = "Date",
        y = "Mean live oysters per bag") +
+  scale_color_manual(labels = c("Daily Control", "Daily", "Weekly Control", "Weekly"), values = c("blue", "red", "green", "purple"))+
+  labs(color = "Conditioning")+
+  geom_errorbar(aes(ymin=mean_survival-std_error, ymax=mean_survival+std_error), width=.2,
+                 position=position_dodge(0.05))+
   theme_classic()
 ```
 ```{r}
@@ -55,6 +64,8 @@ ggplot(D_survival, aes(x = date, y = alive_num, group = effort, color = conditio
    geom_jitter(width = 10, height = 0, size=3) +
   labs(x = "Date",
        y = "Mean live oysters per bag") +
+  scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
+  labs(color = "Conditioning")+
   theme_classic()+
   ylim(0,120)
 
@@ -66,6 +77,8 @@ ggplot(B_survival, aes(x = date, y = alive_num, group = effort, color = conditio
    geom_jitter(width = 10, height = 0,size=3) +
   labs(x = "Date",
        y = "Mean live oysters per bag") +
+  scale_color_manual(labels = c("Control", "Daily"), values = c("blue","red"))+
+  labs(color = "Conditioning")+
   theme_classic()+
   ylim(0,55)
 
@@ -109,18 +122,22 @@ D_survival <- D_survival %>%
 
 ```{r}
 ggplot(B_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
-  geom_jitter(width = 0.2, height = 0.2, size = 3) +
+  geom_jitter(width = 0.2, height = 0.1, size = 3) +
   theme_classic()+
   ylab("Dead oysters found")+
   xlab("Date")+
+  labs(color = "Conditioning")+
+  scale_color_manual(labels = c("Control", "Daily"),values = c("blue", "red"))
   ylim(-1,2)
 ```
 ```{r}
 ggplot(D_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
-  geom_jitter() +
+  geom_jitter(width = 0.2, height = 0.2, size = 3) +
   theme_classic()+
   ylab("Dead oysters found")+
   xlab("Date")+
+  labs(color= "Conditioning")+
+  scale_color_manual(labels = c("Control", "Weekly"),values = c("green", "purple"))+
   ylim(-1,2.5)
 ```
 ```
