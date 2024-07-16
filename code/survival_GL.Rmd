@@ -90,4 +90,39 @@ ggplot(D_survival, aes(x=date, y=dead, color=conditioning))+
   ylim(-1,2)
 
 ```
+### Cumulative survival
+```{r}
+B_survival <- B_survival %>%
+  group_by(conditioning, bag_num) %>%
+  arrange(date)%>%
+  mutate(cumulative_deaths = cumsum(dead)) %>%
+  ungroup()
+
+D_survival <- D_survival %>%
+  group_by(conditioning, bag_num) %>%
+  arrange(date)%>%
+  mutate(cumulative_deaths = cumsum(dead)) %>%
+  ungroup()
+
+```
+
+
+```{r}
+ggplot(B_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
+  geom_jitter(width = 0.2, height = 0.2, size = 3) +
+  theme_classic()+
+  ylab("Dead oysters found")+
+  xlab("Date")+
+  ylim(-1,2)
+```
+```{r}
+ggplot(D_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
+  geom_jitter() +
+  theme_classic()+
+  ylab("Dead oysters found")+
+  xlab("Date")+
+  ylim(-1,2.5)
+```
+```
+
 
