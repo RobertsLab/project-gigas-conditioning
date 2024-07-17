@@ -120,16 +120,17 @@ D_survival <- D_survival %>%
 
 ```{r}
 ggplot(B_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
-  geom_jitter(width = 0.2, height = 0.1, size = 3) +
+  geom_jitter(height = 0.3) +
   theme_classic()+
   ylab("Dead oysters found")+
   xlab("Date")+
   labs(color = "Conditioning")+
-  scale_color_manual(labels = c("Control", "Daily"),values = c("blue", "red"))
+  scale_color_manual(labels = c("Control", "Daily"),values = c("blue", "red"))+
+  ylim(-0.5,6)
 ```
 ```{r}
 ggplot(D_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
-  geom_jitter(height = 0.3, width=0, size = 3) +
+  geom_jitter(height = 0.2) +
   theme_classic()+
   ylab("Dead oysters found")+
   xlab("Date")+
