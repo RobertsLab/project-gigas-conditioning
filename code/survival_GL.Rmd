@@ -137,7 +137,7 @@ ggplot(D_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
   labs(color= "Conditioning")+
   scale_color_manual(labels = c("Control", "Weekly"),values = c("green", "purple"))
 ```
-
+### Means cumulative death
 ```{r}
 means_B_cumdead <- B_survival %>%
   group_by(conditioning, date) %>%
@@ -157,7 +157,7 @@ means_cumdead$effort <- c("B","B","B","B","B","B","B","B","D","D","D","D","D","D
 means_cumdead$conditioning <- c("d_control","d_control","d_control","d_control", "daily","daily","daily","daily","w_control","w_control","w_control","w_control","weekly","weekly","weekly","weekly")
 ```
 
-
+### Means Cumulative death graphed
 ```{r}
 ggplot(means_cumdead, aes(x = date, y = mean_cumdead, group = effort, color = conditioning)) +
    geom_point(size=3) +
@@ -168,6 +168,87 @@ ggplot(means_cumdead, aes(x = date, y = mean_cumdead, group = effort, color = co
   geom_errorbar(aes(ymin=mean_cumdead-std_error, ymax=mean_cumdead+std_error), width=.2,
                  position=position_dodge(0.05))+
   theme_classic()
+```
+### Calculating proportion survival 
+```{r}
+initial_counts <- B_survival %>%
+  group_by(conditioning, bag_num) %>%
+  summarize(initial_count = first(alive_num)) %>%
+  ungroup()
+
+# Join the initial counts back to the original dataframe
+B_survival <- B_survival %>%
+  left_join(initial_counts, by = c("conditioning", "bag_num"))
+
+# Calculate the proportion of organisms remaining alive at each timepoint
+B_survival <- B_survival %>%
+  mutate(proportion_remaining = alive_num / initial_count)
+```
+
+```{r}
+initial_counts <- D_survival %>%
+  group_by(conditioning, bag_num) %>%
+  summarize(initial_count = first(alive_num)) %>%
+  ungroup()
+
+# Join the initial counts back to the original dataframe
+D_survival <- D_survival %>%
+  left_join(initial_counts, by = c("conditioning", "bag_num"))
+
+# Calculate the proportion of organisms remaining alive at each timepoint
+D_survival <- D_survival %>%
+  mutate(proportion_remaining = alive_num / initial_count)
+```
+
+### Mean proportion survival
+
+```{r}
+means_B_prop <- B_survival %>%
+  group_by(conditioning, date) %>%
+  summarise(mean_prop = mean(proportion_remaining),
+            std_error = sd(proportion_remaining)/sqrt(length(proportion_remaining)),
+            .groups = 'drop')
+
+means_D_prop <- D_survival %>%
+  group_by(conditioning, date) %>%
+  summarise(mean_prop = mean(proportion_remaining),
+            std_error = sd(proportion_remaining)/sqrt(length(proportion_remaining)),
+            .groups = 'drop')
+
+means_prop <- rbind(means_B_prop, means_D_prop)
+
+means_prop$effort <- c("B","B","B","B","B","B","B","B","D","D","D","D","D","D","D","D")
+means_prop$conditioning <- c("d_control","d_control","d_control","d_control", "daily","daily","daily","daily","w_control","w_control","w_control","w_control","weekly","weekly","weekly","weekly")
+```
+
+```{r}
+ggplot(means_prop, aes(x = date, y = mean_prop, group = effort, color = conditioning)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Mean cumulative dead oysters per bag") +
+  scale_color_manual(labels = c("Daily Control", "Daily", "Weekly Control", "Weekly"), values = c("blue", "red", "green", "purple"))+
+  labs(color = "Conditioning")+
+  geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme_classic()
+```
+```{r}
+ggplot(D_survival, aes(x=date, y=proportion_remaining, color=conditioning))+
+  geom_point() +
+  theme_classic()+
+  ylab("Proportion of oysters remaining")+
+  xlab("Date")+
+  labs(color= "Conditioning")+
+  scale_color_manual(labels = c("Control", "Weekly"),values = c("green", "purple"))
+```
+```{r}
+ggplot(B_survival, aes(x=date, y=proportion_remaining, color=conditioning))+
+  geom_point() +
+  theme_classic()+
+  ylab("Proportion of oysters remaining")+
+  xlab("Date")+
+  labs(color = "Conditioning")+
+  scale_color_manual(labels = c("Control", "Daily"),values = c("blue", "red"))
 ```
 
 
