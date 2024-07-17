@@ -225,7 +225,7 @@ means_prop$conditioning <- c("d_control","d_control","d_control","d_control", "d
 ggplot(means_prop, aes(x = date, y = mean_prop, group = effort, color = conditioning)) +
    geom_point(size=3) +
   labs(x = "Date",
-       y = "Mean cumulative dead oysters per bag") +
+       y = "Mean proportion of oysters remaining per bag") +
   scale_color_manual(labels = c("Daily Control", "Daily", "Weekly Control", "Weekly"), values = c("blue", "red", "green", "purple"))+
   labs(color = "Conditioning")+
   geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
