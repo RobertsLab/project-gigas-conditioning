@@ -15,11 +15,11 @@ library(ggplot2)
 ### Load Data
 ```{r}
 # B survival
-B_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_07172024.xlsx")
+B_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_07242024.xlsx")
 
 
 # D survival
-D_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_07172024.xlsx")
+D_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_07242024.xlsx")
 
 ```
 
@@ -39,8 +39,8 @@ means_D_live <- D_survival %>%
 
 means_live <- rbind(means_B_live, means_D_live)
 
-means_live$effort <- c("B","B","B","B","B","B","B","B","D","D","D","D","D","D","D","D")
-means_live$conditioning <- c("d_control","d_control","d_control","d_control", "daily","daily","daily","daily","w_control","w_control","w_control","w_control","weekly","weekly","weekly","weekly")
+means_live$effort <- c("B","B","B","B","B","B","B","B","B","B","D","D","D","D","D","D","D","D","D","D")
+means_live$conditioning <- c("d_control","d_control","d_control","d_control","d_control", "daily","daily","daily","daily","daily","w_control","w_control","w_control","w_control","w_control","weekly","weekly","weekly","weekly","weekly")
 
 ```
 
@@ -122,7 +122,7 @@ D_survival <- D_survival %>%
 ggplot(B_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
   geom_jitter(height = 0.3) +
   theme_classic()+
-  ylab("Dead oysters found")+
+  ylab("Cumulative dead oysters found")+
   xlab("Date")+
   labs(color = "Conditioning")+
   scale_color_manual(labels = c("Control", "Daily"),values = c("blue", "red"))+
@@ -132,7 +132,7 @@ ggplot(B_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
 ggplot(D_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
   geom_jitter(height = 0.2) +
   theme_classic()+
-  ylab("Dead oysters found")+
+  ylab("Cumulative dead oysters found")+
   xlab("Date")+
   labs(color= "Conditioning")+
   scale_color_manual(labels = c("Control", "Weekly"),values = c("green", "purple"))
@@ -153,8 +153,8 @@ means_D_cumdead <- D_survival %>%
 
 means_cumdead <- rbind(means_B_cumdead, means_D_cumdead)
 
-means_cumdead$effort <- c("B","B","B","B","B","B","B","B","D","D","D","D","D","D","D","D")
-means_cumdead$conditioning <- c("d_control","d_control","d_control","d_control", "daily","daily","daily","daily","w_control","w_control","w_control","w_control","weekly","weekly","weekly","weekly")
+means_cumdead$effort <- c("B","B","B","B","B","B","B","B","B","B","D","D","D","D","D","D","D","D","D","D")
+means_cumdead$conditioning <- c("d_control","d_control","d_control","d_control","d_control", "daily","daily","daily","daily","daily","w_control","w_control","w_control","w_control","w_control","weekly","weekly","weekly","weekly","weekly")
 ```
 
 ### Means Cumulative death graphed
@@ -217,8 +217,8 @@ means_D_prop <- D_survival %>%
 
 means_prop <- rbind(means_B_prop, means_D_prop)
 
-means_prop$effort <- c("B","B","B","B","B","B","B","B","D","D","D","D","D","D","D","D")
-means_prop$conditioning <- c("d_control","d_control","d_control","d_control", "daily","daily","daily","daily","w_control","w_control","w_control","w_control","weekly","weekly","weekly","weekly")
+means_prop$effort <- c("B","B","B","B","B","B","B","B","B","B","D","D","D","D","D","D","D","D","D","D")
+means_prop$conditioning <- c("d_control","d_control","d_control","d_control","d_control", "daily","daily","daily","daily","daily","w_control","w_control","w_control","w_control","w_control","weekly","weekly","weekly","weekly","weekly")
 ```
 
 ```{r}
@@ -234,7 +234,7 @@ ggplot(means_prop, aes(x = date, y = mean_prop, group = effort, color = conditio
 ```
 ```{r}
 ggplot(D_survival, aes(x=date, y=proportion_remaining, color=conditioning))+
-  geom_point() +
+  geom_jitter() +
   theme_classic()+
   ylab("Proportion of oysters remaining")+
   xlab("Date")+
@@ -243,7 +243,7 @@ ggplot(D_survival, aes(x=date, y=proportion_remaining, color=conditioning))+
 ```
 ```{r}
 ggplot(B_survival, aes(x=date, y=proportion_remaining, color=conditioning))+
-  geom_point() +
+  geom_jitter() +
   theme_classic()+
   ylab("Proportion of oysters remaining")+
   xlab("Date")+
