@@ -63,7 +63,7 @@ ggplot(means_live, aes(x = date, y = mean_survival, group = effort, color = cond
 ggplot(D_survival, aes(x = date, y = alive_num, group = effort, color = conditioning)) +
    geom_jitter(width = 10, height = 0, size=3) +
   labs(x = "Date",
-       y = "Mean live oysters per bag") +
+       y = "Live oysters per bag") +
   scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
   labs(color = "Conditioning")+
   theme_classic()+
@@ -76,7 +76,7 @@ ggplot(D_survival, aes(x = date, y = alive_num, group = effort, color = conditio
 ggplot(B_survival, aes(x = date, y = alive_num, group = effort, color = conditioning)) +
    geom_jitter(width = 10, height = 0,size=3) +
   labs(x = "Date",
-       y = "Mean live oysters per bag") +
+       y = "Live oysters per bag") +
   scale_color_manual(labels = c("Control", "Daily"), values = c("blue","red"))+
   labs(color = "Conditioning")+
   theme_classic()+
