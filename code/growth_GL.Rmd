@@ -31,7 +31,7 @@ D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 ```
 
-### Means length
+### Means with NT's included
 ```{r}
 means_B_sizes <- B_growth %>%
   group_by(conditioning, date) %>%
@@ -56,7 +56,7 @@ means_D_sizes <- D_growth %>%
 
 ```
 
-
+### Graphs with NT's included
 ```{r}
 
 DL <- ggplot(means_D_sizes, aes(x = date, y = mean_length, color = conditioning)) +
@@ -142,5 +142,129 @@ BH <- ggplot(means_B_sizes, aes(x = date, y = mean_height, color = conditioning)
   ylim(0,32)
 
 grid.arrange(BL,BW,BH)
+```
+
+### Means with NT's excluded
+
+```{r}
+B_noNT <- B_growth[B_growth$tag_num != "NT", ]
+D_noNT <- D_growth[D_growth$tag_num != "NT", ]
+```
+
+
+```{r}
+means_B_sizes_noNT <- B_noNT %>%
+  group_by(conditioning, date) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            mean_height = mean(height.mm, na.rm = TRUE), 
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            stderr_height = sd(height.mm, na.rm = TRUE)/sqrt(length(height.mm)),
+            .groups = 'drop')
+
+means_D_sizes_noNT <- D_noNT %>%
+  group_by(conditioning, date) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            mean_height = mean(height.mm, na.rm = TRUE), 
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            stderr_height = sd(height.mm, na.rm = TRUE)/sqrt(length(height.mm)),
+            .groups = 'drop')
+```
+
+### Graphs with NT's excluded
+```{r}
+
+DL2 <- ggplot(means_D_sizes_noNT, aes(x = date, y = mean_length, color = conditioning)) +
+   geom_point() +
+  labs(x = "Date",
+       y = "Mean length (mm)") +
+  labs(color = "Conditioning")+
+  theme_classic()+
+  scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
+  geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank())+
+  ylim(0,40)
+
+DW2 <- ggplot(means_D_sizes_noNT, aes(x = date, y = mean_width, color = conditioning)) +
+   geom_point() +
+  labs(x = "Date",
+       y = "Mean width (mm)") +
+  theme_classic()+
+  scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
+  labs(color = "Conditioning")+
+  geom_errorbar(aes(ymin=mean_width-stderr_width, ymax = mean_width+stderr_width), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank())+
+  ylim(0,40)
+
+DH2 <- ggplot(means_D_sizes_noNT, aes(x = date, y = mean_height, color = conditioning)) +
+   geom_point() +
+  labs(x = "Date",
+       y = "Mean height (mm)") +
+  labs(color = "Conditioning")+
+  theme_classic()+
+  geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
+                 position=position_dodge(0.05))+
+  scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
+  ylim(0,40)
+
+grid.arrange(DL2,DW2,DH2)
+
+```
+
+
+
+
+
+
+```{r}
+BL2 <- ggplot(means_B_sizes_noNT, aes(x = date, y = mean_length, color = conditioning)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Mean length (mm)") +
+  scale_color_manual(labels = c("Control", "Daily"), values = c("blue","red"))+
+  theme_classic()+
+  geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
+                 position=position_dodge(0.05))+
+  labs(color = "Conditioning")+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank())+
+  ylim(0,32)
+
+BW2 <- ggplot(means_B_sizes_noNT, aes(x = date, y = mean_width, color = conditioning)) +
+   geom_point(size=3) +
+  scale_color_manual(labels = c("Control", "Daily"), values = c("blue","red"))+
+  labs(color = "Conditioning")+
+  labs(x = "Date",
+       y = "Mean width (mm)") +
+  geom_errorbar(aes(ymin=mean_width-stderr_width, ymax = mean_width+stderr_width), width=.2,
+                 position=position_dodge(0.05))+
+  theme_classic()+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank())+
+  ylim(0,32)
+
+BH2 <- ggplot(means_B_sizes_noNT, aes(x = date, y = mean_height, color = conditioning)) +
+   geom_point(size=3) +
+  scale_color_manual(labels = c("Control", "Daily"), values = c("blue","red"))+
+  labs(x = "Date",
+       y = "Mean height (mm)") +
+  labs(color = "Conditioning")+
+  geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
+                 position=position_dodge(0.05))+
+  theme_classic()+
+  ylim(0,32)
+
+grid.arrange(BL2,BW2,BH2)
 ```
 
