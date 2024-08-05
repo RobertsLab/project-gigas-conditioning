@@ -16,7 +16,7 @@ library(gridExtra)
 ### Load Data
 ```{r}
 # B survival
-B_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_07052024.xlsx")
+B_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_08022024.xlsx")
 
 # Heights from bag 2 for 07/05/2024 showing up as NA's for some reason when data imported
 B_growth$length.mm <- as.numeric(B_growth$length.mm)
@@ -26,7 +26,7 @@ B_growth$height.mm <- as.numeric(B_growth$height.mm)
 B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 # D survival
-D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_07052024.xlsx")
+D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_08022024.xlsx")
 D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 ```
@@ -70,7 +70,7 @@ DL <- ggplot(means_D_sizes, aes(x = date, y = mean_length, color = conditioning)
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
-  ylim(0,32)
+  ylim(0,40)
 
 DW <- ggplot(means_D_sizes, aes(x = date, y = mean_width, color = conditioning)) +
    geom_point() +
@@ -84,7 +84,7 @@ DW <- ggplot(means_D_sizes, aes(x = date, y = mean_width, color = conditioning))
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
-  ylim(0,32)
+  ylim(0,40)
 
 DH <- ggplot(means_D_sizes, aes(x = date, y = mean_height, color = conditioning)) +
    geom_point() +
@@ -94,7 +94,7 @@ DH <- ggplot(means_D_sizes, aes(x = date, y = mean_height, color = conditioning)
   geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
                  position=position_dodge(0.05))+
   scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
-  ylim(0,32)
+  ylim(0,40)
 
 grid.arrange(DL,DW,DH)
 
