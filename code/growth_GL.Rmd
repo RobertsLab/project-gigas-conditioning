@@ -31,6 +31,20 @@ D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 ```
 
+```{r}
+ggplot(B_growth, aes(x=length.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()
+```
+```{r}
+ggplot(D_growth, aes(x=length.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()
+```
+
+
+
+
 ### Means with NT's included
 ```{r}
 means_B_sizes <- B_growth %>%
