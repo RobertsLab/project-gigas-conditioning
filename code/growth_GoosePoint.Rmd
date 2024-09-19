@@ -1,0 +1,194 @@
+---
+title: Goose Point oyster size analysis
+author: "AS Huffmyer"
+date: '2024'
+output:
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+  pdf_document:
+    keep_tex: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+# Set up 
+
+Set up workspace, set options, and load required packages.    
+```{r}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+Load libraries. 
+```{r}
+if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse') 
+if ("ggplot2" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggplot2') 
+
+library("ggplot2")
+library("tidyverse")
+```
+
+# Load data 
+
+Read in data files. 
+```{r}
+data<-read_csv(file="data/outplanting/GoosePoint/growth_GoosePoint.csv")
+```
+
+Set data attributes. 
+```{r}
+data$field_cattle_tag<-factor(data$field_cattle_tag)
+```
+
+Set value to 0 for dead or stuck if NA. 
+```{r}
+data$dead[is.na(data$dead)] <- 0
+data$stuck[is.na(data$stuck)] <- 0
+```
+
+Add in treatment information 
+```{r}
+metadata<-read_csv(file="data/outplanting/GoosePoint/bag_list_GoosePoint.csv")
+metadata$field_cattle_tag<-factor(metadata$field_cattle_tag)
+
+data$treatment<-metadata$treatment[match(data$field_cattle_tag, metadata$field_cattle_tag)]
+```
+
+# Plot data 
+
+Plot a histogram of each data column to identify any outliers. 
+```{r}
+hist(data$length.mm)
+hist(data$width.mm)
+hist(data$depth.mm)
+```
+
+No obvious outliers. 
+
+Plot a box plot of length, width, and height as a function of bag number, colored by treatment. 
+
+```{r}
+plot1<-data%>%
+  ggplot(aes(x=field_cattle_tag, y=length.mm, fill = treatment)) +
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Bag") + 
+  theme_classic(); plot1
+```
+
+Plot width. 
+```{r}
+plot2<-data%>%
+  ggplot(aes(x=field_cattle_tag, y=width.mm, fill = treatment)) +
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Bag") + 
+  theme_classic(); plot2
+```
+
+Plot depth 
+```{r}
+plot3<-data%>%
+  ggplot(aes(x=field_cattle_tag, y=depth.mm, fill = treatment)) +
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Bag") + 
+  theme_classic(); plot3
+```
+
+# Generate a metric of volume 
+
+Calculate oyster volume as an ellipsoid. 
+
+```{r}
+data$volume <- (4/3) * pi * (data$length.mm/2) * (data$width.mm/2) * (data$depth.mm/2)
+```
+
+Look at a histogram. 
+
+```{r}
+hist(data$volume)
+```
+
+Now plot volume. 
+
+```{r}
+plot4<-data%>%
+  ggplot(aes(x=field_cattle_tag, y=volume, fill = treatment)) +
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Bag") + 
+  theme_classic(); plot4
+```
+
+Plot summarized by treatment 
+
+```{r}
+plot5<-data%>%
+  ggplot(aes(x=treatment, y=volume, fill = treatment)) +
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Treatment") + 
+  theme_classic() + 
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot5
+```
+
+Plot summarized by mean and standard error for each bag. 
+
+```{r}
+plot6<-data%>%
+  group_by(field_cattle_tag, treatment)%>%
+  summarise(mean=mean(volume, na.rm=TRUE), se=sd(volume, na.rm=TRUE)/sqrt(length(volume)))%>%
+  
+  ggplot(aes(x=field_cattle_tag, y=mean, fill = treatment)) +
+  geom_point(pch = 21) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0)+
+  xlab("Bag") + 
+  ylab("Volume")+
+  ylim(5000, 15000)+
+  theme_classic() + 
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot6
+```
+
+```{r}
+plot7<-data%>%
+  group_by(treatment)%>%
+  summarise(mean=mean(volume, na.rm=TRUE), se=sd(volume, na.rm=TRUE)/sqrt(length(volume)))%>%
+  
+  ggplot(aes(x=treatment, y=mean, fill = treatment)) +
+  geom_point(pch = 21) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0)+
+  xlab("Treatment") + 
+  ylab("Volume")+
+  ylim(5000, 15000)+
+  theme_classic() + 
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot7
+```
+
+Try a violin plot for treatment. 
+```{r}
+plot8<-data%>%
+  ggplot(aes(x=treatment, y=volume, fill = treatment)) +
+  geom_violin()+
+  xlab("Treatment") + 
+  ylab("Volume")+
+  #ylim(5000, 15000)+
+  theme_classic() + 
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot8
+```
+
+Try a violin plot for bag 
+```{r}
+plot9<-data%>%
+  ggplot(aes(x=field_cattle_tag, y=volume, fill = treatment)) +
+  geom_violin()+
+  xlab("Bag") + 
+  ylab("Volume")+
+  #ylim(5000, 15000)+
+  theme_classic() + 
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot9
+```
+
+
