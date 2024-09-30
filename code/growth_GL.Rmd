@@ -16,7 +16,7 @@ library(gridExtra)
 ### Load Data
 ```{r}
 # B survival
-B_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_08022024.xlsx")
+B_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_09132024.xlsx")
 
 # Heights from bag 2 for 07/05/2024 showing up as NA's for some reason when data imported
 B_growth$length.mm <- as.numeric(B_growth$length.mm)
@@ -26,7 +26,7 @@ B_growth$height.mm <- as.numeric(B_growth$height.mm)
 B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 # D survival
-D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_08022024.xlsx")
+D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_09132024.xlsx")
 D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 ```
@@ -84,7 +84,7 @@ DL <- ggplot(means_D_sizes, aes(x = date, y = mean_length, color = conditioning)
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
-  ylim(0,40)
+  ylim(0,50)
 
 DW <- ggplot(means_D_sizes, aes(x = date, y = mean_width, color = conditioning)) +
    geom_point() +
@@ -98,7 +98,7 @@ DW <- ggplot(means_D_sizes, aes(x = date, y = mean_width, color = conditioning))
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
-  ylim(0,40)
+  ylim(0,50)
 
 DH <- ggplot(means_D_sizes, aes(x = date, y = mean_height, color = conditioning)) +
    geom_point() +
@@ -108,7 +108,7 @@ DH <- ggplot(means_D_sizes, aes(x = date, y = mean_height, color = conditioning)
   geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
                  position=position_dodge(0.05))+
   scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
-  ylim(0,40)
+  ylim(0,50)
 
 grid.arrange(DL,DW,DH)
 
@@ -129,7 +129,7 @@ BL <- ggplot(means_B_sizes, aes(x = date, y = mean_length, color = conditioning)
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
-  ylim(0,32)
+  ylim(0,50)
 
 BW <- ggplot(means_B_sizes, aes(x = date, y = mean_width, color = conditioning)) +
    geom_point(size=3) +
@@ -143,7 +143,7 @@ BW <- ggplot(means_B_sizes, aes(x = date, y = mean_width, color = conditioning))
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
-  ylim(0,32)
+  ylim(0,50)
 
 BH <- ggplot(means_B_sizes, aes(x = date, y = mean_height, color = conditioning)) +
    geom_point(size=3) +
@@ -153,7 +153,7 @@ BH <- ggplot(means_B_sizes, aes(x = date, y = mean_height, color = conditioning)
   geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
                  position=position_dodge(0.05))+
   theme_classic()+
-  ylim(0,32)
+  ylim(0,50)
 
 grid.arrange(BL,BW,BH)
 ```
@@ -203,7 +203,7 @@ DL2 <- ggplot(means_D_sizes_noNT, aes(x = date, y = mean_length, color = conditi
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
-  ylim(0,40)
+  ylim(0,50)
 
 DW2 <- ggplot(means_D_sizes_noNT, aes(x = date, y = mean_width, color = conditioning)) +
    geom_point() +
@@ -217,7 +217,7 @@ DW2 <- ggplot(means_D_sizes_noNT, aes(x = date, y = mean_width, color = conditio
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
-  ylim(0,40)
+  ylim(0,50)
 
 DH2 <- ggplot(means_D_sizes_noNT, aes(x = date, y = mean_height, color = conditioning)) +
    geom_point() +
@@ -228,7 +228,7 @@ DH2 <- ggplot(means_D_sizes_noNT, aes(x = date, y = mean_height, color = conditi
   geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
                  position=position_dodge(0.05))+
   scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
-  ylim(0,40)
+  ylim(0,20)
 
 grid.arrange(DL2,DW2,DH2)
 
@@ -252,7 +252,7 @@ BL2 <- ggplot(means_B_sizes_noNT, aes(x = date, y = mean_length, color = conditi
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
-  ylim(0,32)
+  ylim(0,45)
 
 BW2 <- ggplot(means_B_sizes_noNT, aes(x = date, y = mean_width, color = conditioning)) +
    geom_point(size=3) +
@@ -266,7 +266,7 @@ BW2 <- ggplot(means_B_sizes_noNT, aes(x = date, y = mean_width, color = conditio
   theme(
     axis.title.x = element_blank(),       
     axis.text.x = element_blank())+
-  ylim(0,32)
+  ylim(0,45)
 
 BH2 <- ggplot(means_B_sizes_noNT, aes(x = date, y = mean_height, color = conditioning)) +
    geom_point(size=3) +
@@ -277,7 +277,7 @@ BH2 <- ggplot(means_B_sizes_noNT, aes(x = date, y = mean_height, color = conditi
   geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
                  position=position_dodge(0.05))+
   theme_classic()+
-  ylim(0,32)
+  ylim(0,20)
 
 grid.arrange(BL2,BW2,BH2)
 ```
