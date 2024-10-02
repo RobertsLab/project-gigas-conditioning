@@ -1,0 +1,219 @@
+---
+title: "Viewing logger files"
+author: "Ariana S Huffmyer"
+date: "2024"
+output: 
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+This script reads and plots environmental data from Hobo loggers. 
+
+# Set Up    
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(readxl)
+library(purrr)
+library(lubridate)
+library(ggplot2)
+library(seacarb)
+library(broom)
+library(cowplot)
+```
+
+# Point Whitney 
+
+## Read in files 
+
+Read in Hobo Tidbit files  
+```{r}
+tidbit.files <- list.files(path="data/environmental/loggers/point_whitney/for-analysis", pattern="*.csv", full.names=TRUE)
+
+#will need to change to HST time 
+tidbits <- setNames(tidbit.files, tidbit.files) %>%
+    map_dfr(read_csv, .id = "logger") %>%
+    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temp   (°C)`)%>%
+    select(!`#`)%>%
+    select(logger, DateTime, temp.C)%>%
+    mutate(logger=sub(".*/", "", logger))%>% #remove the path name
+    mutate(logger=sub("_.*", "", logger))%>% #keep only the serial number 
+    filter(!temp.C=="NA")
+
+#format date for trays logger, formatted differently 
+trays<-tidbits%>%
+  filter(logger=="22023395")
+
+other<-tidbits%>%
+  filter(!logger=="22023395")
+
+trays$DateTime<-as.POSIXct(trays$DateTime, format="%m/%d/%y %H:%M")
+other$DateTime<-as.POSIXct(other$DateTime, format="%m/%d/%Y %H:%M:%S")
+
+tidbits<-rbind(trays,other)
+```
+
+List the logger serial numbers in this dataframe.  
+```{r}
+levels(as.factor(tidbits$logger))
+```
+
+There are 4 loggers as expected.  
+
+Add in group information. 
+
+```{r}
+tidbits <- tidbits %>%
+  mutate(group = case_when(
+    logger == "22023395" ~ "trays",
+    logger == "22023398" ~ "outdoor",
+    logger == "22023406" ~ "broodstock",
+    logger == "22023410" ~ "LCO",
+    TRUE ~ "other"  # Default for other values
+  ))
+
+levels(as.factor(tidbits$group))
+```
+
+Group information is now added.  
+
+## Plot data 
+
+All groups 
+```{r}
+temp_plot<-tidbits%>%
+  
+  ggplot(aes(x=DateTime, y=temp.C, colour=group, fill=group))+
+  geom_point(alpha=0.7)+
+  ylab("Temperature (°C)")+
+  xlab("Date Time")+
+  ylim(8,32)+
+  theme_classic(); temp_plot
+
+ggsave(temp_plot, filename="figures/environmental/point-whitney-loggers.png", width=6, height=4)
+```
+
+On August 8th trays were moved to a different stack, which is why the temperature shifted to be lower.  
+
+Overall, all groups in outdoor trays (efforts B/E/D, LCO, and broodstock) experienced very similar temperatures. Trays with 2024 seed were cooler. Summer temps peaked in late July around 26-27°C. 
+
+# Westcott 
+
+Read in Hobo Tidbit files  
+```{r}
+westcott.files <- list.files(path="data/environmental/loggers/westcottloggers_20240913/", pattern="*.xlsx", full.names=TRUE)
+
+#will need to change to HST time 
+westcott <- setNames(westcott.files, westcott.files) %>%
+    map_dfr(read_xlsx, .id = "logger") %>%
+    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temperature (°C)`)%>%
+    select(!`#`)%>%
+    select(logger, DateTime, temp.C)%>%
+    mutate(logger=sub(".*/", "", logger))%>% #remove the path name
+    mutate(logger=sub("_.*", "", logger))%>% #keep only the serial number 
+    filter(!temp.C=="NA")
+
+westcott$DateTime<-as.POSIXct(westcott$DateTime, format="%m/%d/%Y %H:%M:%S")
+```
+
+List the logger serial numbers in this dataframe.  
+```{r}
+levels(as.factor(westcott$logger))
+```
+
+There are 5 loggers as expected.  
+
+Add in group information. 
+
+```{r}
+westcott <- westcott %>%
+  mutate(group = c("Westcott"))
+
+levels(as.factor(westcott$group))
+```
+
+Group information is now added.  
+
+## Plot data 
+
+All loggers 
+```{r}
+westcott_plot<-westcott%>%
+  
+  ggplot(aes(x=DateTime, y=temp.C, colour=logger, fill=logger))+
+  geom_point(alpha=0.7)+
+  ylab("Temperature (°C)")+
+  xlab("Date Time")+
+  ylim(0,50)+
+  theme_classic(); westcott_plot
+
+ggsave(westcott_plot, filename="figures/environmental/westcott-loggers.png", width=10, height=6)
+```
+
+Overall, loggers at Westcott show huge swings in temperature with maximum temperatures above 40 and low temperatures at approximately 10C. 
+
+# Goose Point 
+
+Read in Hobo Tidbit files  
+```{r}
+goose.files <- list.files(path="data/environmental/loggers/goose_point/", pattern="*.csv", full.names=TRUE)
+
+#will need to change to HST time 
+goose <- setNames(goose.files, goose.files) %>%
+    map_dfr(read_csv, .id = "logger") %>%
+    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temp   (°C)`)%>%
+    select(!`#`)%>%
+    select(logger, DateTime, temp.C)%>%
+    mutate(logger=sub(".*/", "", logger))%>% #remove the path name
+    mutate(logger=sub("_.*", "", logger))%>% #keep only the serial number 
+    filter(!temp.C=="NA")
+
+goose$DateTime<-as.POSIXct(goose$DateTime, format="%m/%d/%Y %H:%M:%S")
+```
+
+List the logger serial numbers in this dataframe.  
+```{r}
+levels(as.factor(goose$logger))
+```
+
+There are 4 loggers as expected.  
+
+Add in group information. 
+
+```{r}
+goose <- goose %>%
+  mutate(group = c("Goose Point"))
+
+levels(as.factor(goose$group))
+```
+
+Group information is now added.  
+
+## Plot data 
+
+All loggers 
+```{r}
+goose_plot<-goose%>%
+  
+  ggplot(aes(x=DateTime, y=temp.C, colour=logger, fill=logger))+
+  geom_point(alpha=0.7)+
+  ylab("Temperature (°C)")+
+  xlab("Date Time")+
+  ylim(0,50)+
+  theme_classic(); goose_plot
+
+ggsave(goose_plot, filename="figures/environmental/goose-loggers.png", width=10, height=6)
+```
+
+Overall, loggers at Goose Point are much more stable than Westcott with maximum temperatures reaching 30C and minimum closer to 11-12C. 
+
