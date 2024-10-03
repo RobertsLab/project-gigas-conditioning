@@ -282,3 +282,8 @@ BH2 <- ggplot(means_B_sizes_noNT, aes(x = date, y = mean_height, color = conditi
 grid.arrange(BL2,BW2,BH2)
 ```
 
+
+
+
+
+

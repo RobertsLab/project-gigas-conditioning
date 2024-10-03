@@ -1,0 +1,176 @@
+---
+title: "Morph_relationships"
+output: html_document
+date: "2024-10-03"
+---
+
+### Load libraries
+```{r}
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+
+```
+
+### Load Data
+```{r}
+# B survival
+B_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_09132024.xlsx")
+
+# Heights from bag 2 for 07/05/2024 showing up as NA's for some reason when data imported
+B_growth$length.mm <- as.numeric(B_growth$length.mm)
+B_growth$width.mm <- as.numeric(B_growth$width.mm)
+B_growth$height.mm <- as.numeric(B_growth$height.mm)
+
+B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
+
+# D survival
+D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_09132024.xlsx")
+D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
+```
+## Histograms
+
+### B
+```{r}
+hist(B_growth$length.mm)
+
+B_growth$log_length <- log(B_growth$length.mm)
+hist(B_growth$log_length)
+
+```
+
+```{r}
+hist(B_growth$height.mm)
+B_growth$log_height <- log(B_growth$height.mm)
+hist(B_growth$log_height)
+```
+```{r}
+hist(B_growth$width.mm)
+B_growth$log_width <- log(B_growth$width.mm)
+hist(B_growth$log_width)
+```
+### D
+
+```{r}
+hist(D_growth$length.mm)
+D_growth$log_length <- log(D_growth$length.mm)
+hist(_growth$log_length)
+```
+
+```{r}
+hist(D_growth$height.mm)
+```
+
+```{r}
+hist(D_growth$width.mm)
+```
+
+
+
+
+## B comparisons
+
+```{r}
+ggplot(B_growth, aes(x=length.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()
+```
+```{r}
+ggplot(B_growth, aes(x=length.mm, y= width.mm))+
+  geom_point()+
+  theme_classic()
+```
+```{r}
+ggplot(B_growth, aes(x=height.mm, y= width.mm))+
+  geom_point()+
+  theme_classic()
+```
+
+## D comparisons
+
+```{r}
+ggplot(D_growth, aes(x=length.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()
+```
+
+```{r}
+ggplot(D_growth, aes(x=length.mm, y= width.mm))+
+  geom_point()+
+  theme_classic()
+
+# Removing an outlier, I think it was an incorrect measurement
+D_growth <- D_growth[D_growth$width.mm != 82, ]
+```
+
+```{r}
+ggplot(D_growth, aes(x=width.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()
+```
+
+## D size correlations
+### LM for correlation
+```{r}
+growth <- rbind(B_growth,D_growth)
+growth$date_numeric <-  as.numeric(as.Date(growth$date))
+
+
+# Linear model with date as a continuous variable
+model <- lm(length.mm ~ width.mm + height.mm + date_numeric + effort/conditioning, data = growth)
+summary(model)
+
+
+```
+
+```{r}
+plot(model$fitted.values, model$residuals, 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red") 
+
+
+qqnorm(model$residuals)
+qqline(model$residuals, col = "red") 
+
+plot(model, which = 3)
+```
+
+```{r}
+cooksd <- cooks.distance(model)
+
+# Identify points with high Cook's distance (e.g., greater than 4/n where n is the number of observations)
+outliers_cooks <- which(cooksd > 4 / nrow(D_growth))
+print(D_growth[outliers_cooks, ]) 
+```
+
+```{r}
+D_growth_PCA <- subset(D_growth, select = c(length.mm, width.mm, height.mm))
+
+pca_result <- prcomp(D_growth_PCA, scale. = TRUE)
+
+biplot(pca_result)
+
+
+pca_data <- as.data.frame(pca_result$x)
+
+# Create a scatter plot of the first two principal components
+library(ggplot2)
+ggplot(pca_data, aes(x = PC1, y = PC2)) +
+  geom_point() +
+  labs(title = "PCA: Length, Width, and Height", x = "PC1", y = "PC2") +
+  theme_minimal()+
+  stat_ellipse()
+
+pca_result$sdev^2 / sum(pca_result$sdev^2)
+
+# Loadings (contribution of each variable to the principal components)
+pca_result$rotation
+
+# Scree plot
+scree_values <- pca_result$sdev^2
+plot(scree_values, type = "b", xlab = "Principal Component", ylab = "Eigenvalue", main = "Scree Plot")
+
+```
