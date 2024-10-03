@@ -50,7 +50,7 @@ data<-data%>%
 
 Create data frames with control and high temperature subsets. 
 ```{r}
-#control<-data%>%filter(temperature=="18C")
+control<-data%>%filter(temperature=="18C")
 stress<-data%>%filter(temperature=="46C")
 ```
 
@@ -60,13 +60,13 @@ stress<-data%>%filter(temperature=="46C")
 ## Control temperature 18C
 
 ```{r}
-s1 <- survfit(Surv(time, status) ~ hardening, data = control)
+s1 <- survfit(Surv(time, status) ~ treatment, data = control)
 str(s1)
 ```
 
 Plot the survival function
 ```{r}
-survfit2(Surv(time, status) ~ hardening+temperature, data = control) %>% 
+survfit2(Surv(time, status) ~ treatment+temperature, data = control) %>% 
   ggsurvfit() +
   labs(
     x = "Hours",
@@ -76,48 +76,21 @@ survfit2(Surv(time, status) ~ hardening+temperature, data = control) %>%
 
 Estimate survival at 24 hours. 
 ```{r}
-summary(survfit(Surv(time, status) ~ hardening, data = control), times = 24)
+summary(survfit(Surv(time, status) ~ treatment, data = control), times = 24)
 ```
-
-Estimated survival is ~87% in control temperature. 
 
 Use a log rank model to determine statistical differences in curves. 
 ```{r}
-survdiff(Surv(time, status) ~ hardening, data = control)
-
-# Call:
-# survdiff(formula = Surv(time, status) ~ hardening, data = control)
-# 
-#                                     N Observed Expected (O-E)^2/E (O-E)^2/V
-# hardening=control                 360       18     19.1   0.06234   0.11188
-# hardening=fresh-water             240       12     12.7   0.04156   0.06630
-# hardening=fresh-water-temperature 240       16     12.7   0.84156   1.34252
-# hardening=immune                  240       13     12.7   0.00584   0.00932
-# hardening=temperature             240       11     12.7   0.23442   0.37396
-# 
-#  Chisq= 1.5  on 4 degrees of freedom, p= 0.8 
+survdiff(Surv(time, status) ~ treatment, data = control)
 ```
-There is no difference in survival at 18C at p=0.8. 
 
 Analyze again with a Cox proportional hazards model. 
 ```{r}
-coxph(Surv(time, status) ~ hardening, data = control)
+coxph(Surv(time, status) ~ treatment, data = control)
 
-# coxph(formula = Surv(time, status) ~ hardening, data = control)
-# 
-#                                      coef exp(coef) se(coef)      z     p
-# hardeningfresh-water              0.02005   1.02025  0.37269  0.054 0.957
-# hardeningfresh-water-temperature  0.36099   1.43475  0.34368  1.050 0.294
-# hardeningimmune                   0.07687   1.07991  0.36398  0.211 0.833
-# hardeningtemperature             -0.06777   0.93447  0.38271 -0.177 0.859
-# 
-# Likelihood ratio test=1.57  on 4 df, p=0.8147
-# n= 1320, number of events= 70  
-
-coxph(Surv(time, status) ~ hardening, data = control) %>% 
+coxph(Surv(time, status) ~ treatment, data = control) %>% 
   tbl_regression(exp = TRUE) 
 ```
-Control is the reference level. No differences in survival at 18C. 
 
 # Generate Kaplan Meier survival curves 
 
@@ -174,6 +147,7 @@ plot1<-survfit2(Surv(time, status) ~ treatment, data = control) %>%
   )+
   ylim(0,1)+
   my_theme+
+  geom_text(x=10, y=0.2, label="Cox PH p>0.05")+
   #geom_text(x=10, y=0.2, label="Cox PH p=0.8")+
   theme(legend.position="none")
 ```
@@ -189,9 +163,9 @@ plot2<-survfit2(Surv(time, status) ~ treatment, data = stress) %>%
   )+
   ylim(0,1)+
   my_theme+
-  geom_text(x=10, y=0.2, label="Cox PH p=0.025")+
-  geom_text(x=10, y=0.15, label="Temperature vs control p=0.002")+
-  geom_text(x=10, y=0.10, label="All others vs control p>0.05")+
+  geom_text(x=10, y=0.2, label="Cox PH p>0.05")+
+  #geom_text(x=10, y=0.15, label="Temperature vs control p=0.002")+
+  #geom_text(x=10, y=0.10, label="All others vs control p>0.05")+
   theme(legend.position="right")
 ```
 
