@@ -1,0 +1,179 @@
+---
+title: 10K seed resazurin survival analysis
+author: "AS Huffmyer"
+date: '2024'
+output:
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+  pdf_document:
+    keep_tex: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+
+# Set up 
+
+Set up workspace, set options, and load required packages.    
+```{r}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+Load libraries. 
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(survival)
+library(readxl)
+library(ggsurvfit)
+library(gtsummary)
+library(cardx)
+library(cowplot)
+```
+
+# Read data 
+
+Read in data. 
+```{r}
+data<-read_excel("data/survival/lab_survival/lab_survival.xlsx")
+```
+
+Turn into long format. 
+```{r}
+data<-data%>%
+  pivot_longer(names_to="time", values_to="status", cols=`0`:`24`)%>%
+  mutate(time=as.numeric(time))
+```
+
+Create data frames with control and high temperature subsets. 
+```{r}
+control<-data%>%filter(temperature=="18C")
+stress<-data%>%filter(temperature=="46C")
+```
+
+
+# Generate Kaplan Meier survival curves 
+
+## Control temperature 18C
+
+```{r}
+s1 <- survfit(Surv(time, status) ~ treatment, data = control)
+str(s1)
+```
+
+Plot the survival function
+```{r}
+survfit2(Surv(time, status) ~ treatment+temperature, data = control) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability"
+  )
+```
+
+Estimate survival at 24 hours. 
+```{r}
+summary(survfit(Surv(time, status) ~ treatment, data = control), times = 24)
+```
+
+Use a log rank model to determine statistical differences in curves. 
+```{r}
+survdiff(Surv(time, status) ~ treatment, data = control)
+```
+
+Analyze again with a Cox proportional hazards model. 
+```{r}
+coxph(Surv(time, status) ~ treatment, data = control)
+
+coxph(Surv(time, status) ~ treatment, data = control) %>% 
+  tbl_regression(exp = TRUE) 
+```
+
+# Generate Kaplan Meier survival curves 
+
+## Stress temperature 42C
+
+```{r}
+s2 <- survfit(Surv(time, status) ~ treatment, data = stress)
+str(s2)
+```
+
+Plot the survival function
+```{r}
+survfit2(Surv(time, status) ~ treatment+temperature, data = stress) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability"
+  )
+```
+
+Estimate survival at 24 hours. 
+```{r}
+summary(survfit(Surv(time, status) ~ treatment, data = stress), times = 24)
+```
+
+Use a log rank model to determine statistical differences in curves. 
+```{r}
+survdiff(Surv(time, status) ~ treatment, data = stress)
+```
+
+Analyze again with a Cox proportional hazards model. 
+```{r}
+coxph(Surv(time, status) ~ treatment, data = stress)
+
+coxph(Surv(time, status) ~ treatment, data = stress) %>% 
+  tbl_regression(exp = TRUE) 
+```
+
+# Generate plots 
+ 
+Set theme. 
+```{r}
+my_theme<-theme_classic()
+```
+
+Control
+```{r}
+plot1<-survfit2(Surv(time, status) ~ treatment, data = control) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability",
+    title="18°C"
+  )+
+  ylim(0,1)+
+  my_theme+
+  geom_text(x=10, y=0.2, label="Cox PH p>0.05")+
+  #geom_text(x=10, y=0.2, label="Cox PH p=0.8")+
+  theme(legend.position="none")
+```
+
+Stress
+```{r}
+plot2<-survfit2(Surv(time, status) ~ treatment, data = stress) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability",
+    title = "46°C"
+  )+
+  ylim(0,1)+
+  my_theme+
+  geom_text(x=10, y=0.2, label="Cox PH p>0.05")+
+  #geom_text(x=10, y=0.15, label="Temperature vs control p=0.002")+
+  #geom_text(x=10, y=0.10, label="All others vs control p>0.05")+
+  theme(legend.position="right")
+```
+
+Assemble plot
+```{r}
+plots<-plot_grid(plot1, plot2, rel_widths=c(0.65,1), ncol=2)
+
+ggsave(plots, filename="figures/survival/KMcurves.png", width=10, height=4)
+```
+
+
