@@ -172,13 +172,20 @@ ggplot(D_growth, aes(x=width.mm, y= height.mm))+
 ## D size correlations
 ### LM for correlation
 ```{r}
+library(nlme)
 growth <- rbind(B_growth,D_growth)
-growth$date_numeric <-  as.numeric(as.Date(growth$date))
+growth_noNT <- growth[growth$tag_num != "NT", ]
+growth_noNT$date_numeric <-  as.numeric(as.Date(growth_noNT$date))
 
 
 # Linear model with date as a continuous variable
-model <- lm(length.mm ~ width.mm + height.mm + date_numeric + effort/conditioning, data = growth)
-summary(model)
+# model <- lm(length.mm ~ width.mm + height.mm + date_numeric + effort/conditioning, data = growth_noNT)
+# summary(model)
+
+# lme model with nested random effects structure
+model <- lme(cbind(length.mm, width.mm, height.mm) ~ effort * conditioning * date_numeric, 
+             random = ~ 1 | conditioning/tag_num, 
+             data = growth_noNT)
 
 
 ```
