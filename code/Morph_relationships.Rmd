@@ -18,52 +18,87 @@ library(gridExtra)
 # B survival
 B_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_09132024.xlsx")
 
-# Heights from bag 2 for 07/05/2024 showing up as NA's for some reason when data imported
+# Heights from bag 2 for 07/05/2024 showing up as NAs for some reason when data imported
 B_growth$length.mm <- as.numeric(B_growth$length.mm)
 B_growth$width.mm <- as.numeric(B_growth$width.mm)
 B_growth$height.mm <- as.numeric(B_growth$height.mm)
+B_growth$date <- as.Date(B_growth$date)
 
 B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 # D survival
 D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_09132024.xlsx")
 D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
+D_growth$date <- as.Date(D_growth$date)
 ```
 ## Histograms
 
 ### B
 ```{r}
-hist(B_growth$length.mm)
+B_growth %>%
+  filter(date == "2024-09-13") %>%
+  ggplot(aes(x = length.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Length (mm)", y = "Count") +
+  theme_classic()
 
-B_growth$log_length <- log(B_growth$length.mm)
-hist(B_growth$log_length)
+# B_growth$log_length <- log(B_growth$length.mm)
+# hist(B_growth$log_length)
 
 ```
 
 ```{r}
-hist(B_growth$height.mm)
-B_growth$log_height <- log(B_growth$height.mm)
-hist(B_growth$log_height)
+B_growth %>%
+  filter(date == "2024-09-13") %>%
+ggplot(aes(x = height.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Height (mm)", y = "Count") +
+  theme_classic()
+# B_growth$log_height <- log(B_growth$height.mm)
+# hist(B_growth$log_height)
 ```
 ```{r}
-hist(B_growth$width.mm)
-B_growth$log_width <- log(B_growth$width.mm)
-hist(B_growth$log_width)
+B_growth %>%
+  filter(date == "2024-09-13") %>%
+ggplot(aes(x = width.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Width (mm)", y = "Count") +
+  theme_classic()
+# B_growth$log_width <- log(B_growth$width.mm)
+# hist(B_growth$log_width)
 ```
 ### D
 
 ```{r}
-hist(D_growth$length.mm)
-D_growth$log_length <- log(D_growth$length.mm)
-hist(_growth$log_length)
+D_growth %>%
+  filter(date == "2024-09-13") %>%
+ggplot(aes(x = length.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Length (mm)", y = "Count") +
+  theme_classic()
+# D_growth$log_length <- log(D_growth$length.mm)
+# hist(_growth$log_length)
 ```
 
 ```{r}
-hist(D_growth$height.mm)
+D_growth %>%
+  filter(date == "2024-09-13") %>%
+ggplot(aes(x = height.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Height (mm)", y = "Count") +
+  theme_classic()
 ```
 
 ```{r}
-hist(D_growth$width.mm)
+
+
+D_growth %>%
+  filter(date == "2024-09-13") %>%
+ggplot(aes(x = width.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Width (mm)", y = "Count") +
+  theme_classic()
+
 ```
 
 
@@ -74,17 +109,29 @@ hist(D_growth$width.mm)
 ```{r}
 ggplot(B_growth, aes(x=length.mm, y= height.mm))+
   geom_point()+
-  theme_classic()
+  theme_classic()+
+  labs(x = "Length", y = "Height")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
 ```
 ```{r}
 ggplot(B_growth, aes(x=length.mm, y= width.mm))+
   geom_point()+
-  theme_classic()
+  theme_classic()+
+  labs(x = "Length", y = "Width")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
 ```
 ```{r}
 ggplot(B_growth, aes(x=height.mm, y= width.mm))+
   geom_point()+
-  theme_classic()
+  theme_classic()+
+  labs(x = "Height", y = "Width")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
 ```
 
 ## D comparisons
@@ -92,13 +139,21 @@ ggplot(B_growth, aes(x=height.mm, y= width.mm))+
 ```{r}
 ggplot(D_growth, aes(x=length.mm, y= height.mm))+
   geom_point()+
-  theme_classic()
+  theme_classic()+
+  labs(x = "Length", y = "Height")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
 ```
 
 ```{r}
 ggplot(D_growth, aes(x=length.mm, y= width.mm))+
   geom_point()+
-  theme_classic()
+  theme_classic()+
+  labs(x = "Length", y = "Width")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
 
 # Removing an outlier, I think it was an incorrect measurement
 D_growth <- D_growth[D_growth$width.mm != 82, ]
@@ -107,7 +162,11 @@ D_growth <- D_growth[D_growth$width.mm != 82, ]
 ```{r}
 ggplot(D_growth, aes(x=width.mm, y= height.mm))+
   geom_point()+
-  theme_classic()
+  theme_classic()+
+  labs(x = "Width", y = "Height")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
 ```
 
 ## D size correlations
@@ -135,7 +194,6 @@ abline(h = 0, col = "red")
 qqnorm(model$residuals)
 qqline(model$residuals, col = "red") 
 
-plot(model, which = 3)
 ```
 
 ```{r}
@@ -161,8 +219,7 @@ library(ggplot2)
 ggplot(pca_data, aes(x = PC1, y = PC2)) +
   geom_point() +
   labs(title = "PCA: Length, Width, and Height", x = "PC1", y = "PC2") +
-  theme_minimal()+
-  stat_ellipse()
+  theme_minimal()
 
 pca_result$sdev^2 / sum(pca_result$sdev^2)
 
