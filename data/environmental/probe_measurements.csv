@@ -91,3 +91,26 @@ upweller,7/10/24,11:00,23.4,7.69,29.56,ash,broodstock
 outdoor_tray,7/10/24,11:00,19.1,7.7,29.61,ash,left stack
 outdoor_tray,7/10/24,11:00,16.3,7.7,29.56,ash,right stack
 dock,7/10/24,11:00,23.5,7.72,29.44,ash,seed
+outdoor_tray,10/10/24,08:45,12,7.7,30.64,ash,top
+outdoor_tray,10/10/24,08:45,12,7.66,30.62,ash,middle
+outdoor_tray,10/10/24,08:45,11.9,7.65,30.63,ash,bottom
+upweller,10/10/24,08:45,13.4,7.91,30.45,ash,broodstock
+upweller,10/10/24,08:45,13.2,7.91,30.62,ash,LCO and efforts
+dock,10/10/24,08:45,13.5,7.86,30.56,ash,seed
+5K_1,10/7/24,12:00,25.6,8.25,NA,carrie,PolyIC-larvae
+5K_2,10/7/24,12:00,25.9,8.27,NA,carrie,PolyIC-larvae
+5K_1,10/8/24,09:00,22.9,8.28,NA,carrie,PolyIC-larvae
+5K_2,10/8/24,09:00,23.6,8.2,NA,carrie,PolyIC-larvae
+5K_1,10/8/24,16:00,26.7,NA,NA,carrie,PolyIC-larvae
+5K_2,10/8/24,16:00,27.2,NA,NA,carrie,PolyIC-larvae
+5K_1,10/9/24,16:00,27.4,8.29,NA,carrie,PolyIC-larvae
+5K_2,10/9/24,16:00,28.2,8.32,NA,carrie,PolyIC-larvae
+5K_1,10/9/24,09:00,23.6,8.4,NA,ash,PolyIC-larvae
+5K_2,10/9/24,09:00,25.4,8.42,NA,ash,PolyIC-larvae
+5K_1,10/10/24,08:30,23.2,8.07,30.9,ash,PolyIC-larvae
+5K_2,10/10/24,08:30,23.2,8.06,30.97,ash,PolyIC-larvae
+1K_5,10/10/24,10:30,30.5,7.85,30.89,ash,PolyIC-larvae
+1K_6,10/10/24,10:30,30.7,7.84,30.92,ash,PolyIC-larvae
+1K_7,10/10/24,10:30,29.9,7.81,30.99,ash,PolyIC-larvae
+1K_8,10/10/24,10:30,29.9,7.81,31,ash,PolyIC-larvae
+1K_9,10/10/24,10:30,29.5,7.85,30.84,ash,PolyIC-larvae
