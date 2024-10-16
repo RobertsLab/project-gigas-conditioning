@@ -107,6 +107,47 @@ On August 8th trays were moved to a different stack, which is why the temperatur
 
 Overall, all groups in outdoor trays (efforts B/E/D, LCO, and broodstock) experienced very similar temperatures. Trays with 2024 seed were cooler. Summer temps peaked in late July around 26-27°C. 
 
+3-holer 
+```{r}
+temp_plot<-tidbits%>%
+  filter(group %in% c("broodstock", "LCO", "outdoor"))%>%
+  filter(temp.C>15)%>%
+  
+  ggplot(aes(x=DateTime, y=temp.C))+
+  geom_point(alpha=0.7, colour="gray")+
+  geom_smooth(colour="black")+
+  ylab("Temperature (°C)")+
+  xlab("Date")+
+  ggtitle("3-holer tanks")+
+  ylim(8,32)+
+  theme_classic(); temp_plot
+
+ggsave(temp_plot, filename="figures/environmental/3-holer-tanks-PW.png", width=6, height=4)
+```
+
+Seed trays 
+```{r}
+temp_plot<-tidbits%>%
+  filter(group %in% c("trays"))%>%
+  #filter(temp.C>15)%>%
+  
+  ggplot(aes(x=DateTime, y=temp.C))+
+  geom_point(alpha=0.7, colour="gray")+
+  geom_smooth(colour="black")+
+  ylab("Temperature (°C)")+
+  xlab("Date")+
+  ggtitle("Seed trays")+
+  geom_vline(xintercept=as.POSIXct("2024-08-05 15:45:00"), linetype="dashed", colour="black")+
+  geom_text(x=as.POSIXct("2024-07-01 15:45:00"), y=22, label="left stack")+
+  geom_text(x=as.POSIXct("2024-09-01 15:45:00"), y=22, label="right stack")+
+  ylim(8,25)+
+  theme_classic(); temp_plot
+
+ggsave(temp_plot, filename="figures/environmental/seed-trays-PW.png", width=6, height=4)
+```
+
+
+
 # Westcott 
 
 Read in Hobo Tidbit files  
@@ -216,4 +257,3 @@ ggsave(goose_plot, filename="figures/environmental/goose-loggers.png", width=10,
 ```
 
 Overall, loggers at Goose Point are much more stable than Westcott with maximum temperatures reaching 30C and minimum closer to 11-12C. 
-
