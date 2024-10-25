@@ -428,7 +428,7 @@ plot2<-survfit2(Surv(time, status) ~ treatment, data = stress_e) %>%
   )+
   ylim(0,1)+
   my_theme+
-  geom_text(x=10, y=0.2, label="Cox PH p>0.05")+
+  geom_text(x=10, y=0.2, label="Cox PH p=0.001")+
   #geom_text(x=10, y=0.15, label="Temperature vs control p=0.002")+
   #geom_text(x=10, y=0.10, label="All others vs control p>0.05")+
   theme(legend.position="right")
