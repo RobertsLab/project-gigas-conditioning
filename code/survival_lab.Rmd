@@ -512,19 +512,19 @@ survfit2(Surv(time, status) ~ code+temperature, data = stress) %>%
 
 Estimate survival at 24 hours. 
 ```{r}
-summary(survfit(Surv(time, status) ~ treatment, data = stress_b), times = 24)
+summary(survfit(Surv(time, status) ~ code, data = stress), times = 24)
 ```
 
 Use a log rank model to determine statistical differences in curves. 
 ```{r}
-survdiff(Surv(time, status) ~ treatment, data = stress_b)
+survdiff(Surv(time, status) ~ code, data = stress)
 ```
 
 Analyze again with a Cox proportional hazards model. 
 ```{r}
-coxph(Surv(time, status) ~ treatment, data = stress_b)
+coxph(Surv(time, status) ~ code, data = stress)
 
-coxph(Surv(time, status) ~ treatment, data = stress_b) %>% 
+coxph(Surv(time, status) ~ code, data = stress) %>% 
   tbl_regression(exp = TRUE) 
 ```
 
@@ -537,12 +537,12 @@ my_theme<-theme_classic()
 
 Control
 ```{r}
-plot1<-survfit2(Surv(time, status) ~ treatment, data = control_b) %>% 
+plot1<-survfit2(Surv(time, status) ~ code, data = control) %>% 
   ggsurvfit() +
   labs(
     x = "Hours",
     y = "Survival probability",
-    title="Effort B (Daily Temp) 18°C"
+    title="All Efforts 18°C"
   )+
   ylim(0,1)+
   my_theme+
@@ -553,16 +553,16 @@ plot1<-survfit2(Surv(time, status) ~ treatment, data = control_b) %>%
 
 Stress
 ```{r}
-plot2<-survfit2(Surv(time, status) ~ treatment, data = stress_b) %>% 
+plot2<-survfit2(Surv(time, status) ~ code, data = stress) %>% 
   ggsurvfit() +
   labs(
     x = "Hours",
     y = "Survival probability",
-    title = "Effort B (Daily Temp) 46°C"
+    title = "All Efforts 46°C"
   )+
   ylim(0,1)+
   my_theme+
-  geom_text(x=10, y=0.2, label="Cox PH p>0.05")+
+  geom_text(x=10, y=0.1, label="Cox PH p<0.001")+
   #geom_text(x=10, y=0.15, label="Temperature vs control p=0.002")+
   #geom_text(x=10, y=0.10, label="All others vs control p>0.05")+
   theme(legend.position="right")
@@ -572,7 +572,7 @@ Assemble plot
 ```{r}
 plots<-plot_grid(plot1, plot2, rel_widths=c(0.65,1), ncol=2)
 
-ggsave(plots, filename="figures/survival/KMcurves_EffortB.png", width=10, height=4)
+ggsave(plots, filename="figures/survival/KMcurves_EffortsALL.png", width=10, height=4)
 ```
 
 
