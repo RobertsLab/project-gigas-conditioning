@@ -443,3 +443,143 @@ ggsave(plots, filename="figures/survival/KMcurves_EffortE.png", width=10, height
 
 
 
+
+# Compare all efforts at 46°C 
+
+```{r}
+control<-data%>%filter(temperature=="18C")
+stress<-data%>%filter(temperature=="46C")
+
+control$code<-paste(control$effort, control$treatment)
+stress$code<-paste(stress$effort, stress$treatment)
+```
+
+## Generate Kaplan Meier survival curves 
+
+### Control temperature 18C
+
+```{r}
+s1 <- survfit(Surv(time, status) ~ code, data = control)
+str(s1)
+```
+
+Plot the survival function
+```{r}
+survfit2(Surv(time, status) ~ code+temperature, data = control) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability"
+  )
+```
+
+Estimate survival at 24 hours. 
+```{r}
+summary(survfit(Surv(time, status) ~ code, data = control), times = 24)
+```
+
+Use a log rank model to determine statistical differences in curves. 
+```{r}
+survdiff(Surv(time, status) ~ code, data = control)
+```
+
+Analyze again with a Cox proportional hazards model. 
+```{r}
+coxph(Surv(time, status) ~ code, data = control)
+
+coxph(Surv(time, status) ~ code, data = control) %>% 
+  tbl_regression(exp = TRUE) 
+```
+
+## Generate Kaplan Meier survival curves 
+
+### Stress temperature 42C
+
+```{r}
+s2 <- survfit(Surv(time, status) ~ code, data = stress)
+str(s2)
+```
+
+Plot the survival function
+```{r}
+survfit2(Surv(time, status) ~ code+temperature, data = stress) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability"
+  )
+```
+
+Estimate survival at 24 hours. 
+```{r}
+summary(survfit(Surv(time, status) ~ treatment, data = stress_b), times = 24)
+```
+
+Use a log rank model to determine statistical differences in curves. 
+```{r}
+survdiff(Surv(time, status) ~ treatment, data = stress_b)
+```
+
+Analyze again with a Cox proportional hazards model. 
+```{r}
+coxph(Surv(time, status) ~ treatment, data = stress_b)
+
+coxph(Surv(time, status) ~ treatment, data = stress_b) %>% 
+  tbl_regression(exp = TRUE) 
+```
+
+## Generate plots 
+ 
+Set theme. 
+```{r}
+my_theme<-theme_classic()
+```
+
+Control
+```{r}
+plot1<-survfit2(Surv(time, status) ~ treatment, data = control_b) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability",
+    title="Effort B (Daily Temp) 18°C"
+  )+
+  ylim(0,1)+
+  my_theme+
+  geom_text(x=10, y=0.2, label="Cox PH p>0.05")+
+  #geom_text(x=10, y=0.2, label="Cox PH p=0.8")+
+  theme(legend.position="none")
+```
+
+Stress
+```{r}
+plot2<-survfit2(Surv(time, status) ~ treatment, data = stress_b) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability",
+    title = "Effort B (Daily Temp) 46°C"
+  )+
+  ylim(0,1)+
+  my_theme+
+  geom_text(x=10, y=0.2, label="Cox PH p>0.05")+
+  #geom_text(x=10, y=0.15, label="Temperature vs control p=0.002")+
+  #geom_text(x=10, y=0.10, label="All others vs control p>0.05")+
+  theme(legend.position="right")
+```
+
+Assemble plot
+```{r}
+plots<-plot_grid(plot1, plot2, rel_widths=c(0.65,1), ncol=2)
+
+ggsave(plots, filename="figures/survival/KMcurves_EffortB.png", width=10, height=4)
+```
+
+
+
+
+
+
+
+```
+
