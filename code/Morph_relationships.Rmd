@@ -11,6 +11,9 @@ library(tidyverse)
 library(ggplot2)
 library(gridExtra)
 library(lmtest)
+library(car)
+install.packages("lmerTest")
+library(lmerTest)
 ```
 
 ### Load Data
@@ -177,6 +180,7 @@ library(lme4)
 growth <- rbind(B_growth,D_growth)
 growth_noNT <- growth[growth$tag_num != "NT", ]
 growth_noNT$date_numeric <-  as.numeric(as.Date(growth_noNT$date))
+growth$date_numeric <- as.numeric(as.Date(growth$date))
 
 
 # Linear model with date as a continuous variable
@@ -257,27 +261,34 @@ plot(scree_values, type = "b", xlab = "Principal Component", ylab = "Eigenvalue"
 ## Predicting height and width from length
 
 ```{r}
-model2 <- lm(log10(height.mm)~length.mm, growth)
+model2 <- lm(log(height.mm)~length.mm+date_numeric, growth)
 summary(model2)
 plot(fitted(model2), residuals(model2), 
      xlab = "Fitted Values", 
      ylab = "Residuals", 
      main = "Residuals vs Fitted")
 abline(h = 0, col = "red") 
+library(car)
 
+qqPlot(model2)
 
-qqnorm(residuals(model2))
-qqline(residuals(model2), col = "red") 
+hist(residuals(model2))
+
 
 bptest(model2)
+
+# weighted model does not provide a better fit than first model (standard error increased, not much change in R squared)
+# wt <- 1 / lm(abs(model2$residuals) ~ model2$fitted.values)$fitted.values^2
+# wls_model2 <- lm( log(height.mm)~ length.mm+date_numeric, growth, weights=wt)
+# summary(wls_model2)
+# bptest(wls_model2)
 
 ```
 
 ```{r}
 ## Successful model!
-model3 <- lm(sqrt(width.mm)~length.mm, growth)
+model3 <- lm(sqrt(width.mm)~length.mm+date_numeric, growth)
 summary(model3)
-sum3 <- summary(model3)
 
 plot(fitted(model3), residuals(model3), 
      xlab = "Fitted Values", 
@@ -285,16 +296,85 @@ plot(fitted(model3), residuals(model3),
      main = "Residuals vs Fitted")
 abline(h = 0, col = "red") 
 
+qqPlot(model3)
 
-qqnorm(residuals(model3))
-qqline(residuals(model3), col = "red") 
+hist(residuals(model3))
 
-bp <- bptest(model3)
-# p = 0.09
+bptest(model3)
+# p = 0.03978
+
+#made data more heteroskedastic somehow
+# wt <- 1 / lm(abs(model3$residuals) ~ model3$fitted.values)$fitted.values^2
+# wls_model3 <- lm(sqrt(width.mm)~ length.mm+date_numeric, growth, weights=wt)
+# summary(wls_model3)
+
 ```
+### Tried to see if subsetting improved anything
+```{r}
+day1 <- subset(growth, date_numeric == 19884)
+
+ggplot(day1, aes(x=length.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length", y = "Width")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+
+model4 <- lm(sqrt(width.mm)~length.mm, day1)
+summary(model4)
+
+plot(fitted(model4), residuals(model4), 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red") 
+
+qqPlot(model4)
+
+hist(residuals(model4))
+
+bptest(model4)
+
+## Subsetting made it pass the bp test, fit not as good though
+model5 <- lm(log(height.mm)~length.mm, day1)
+summary(model5)
+
+plot(fitted(model5), residuals(model5), 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red") 
+
+qqPlot(model5)
+
+hist(residuals(model5))
+
+bptest(model5)
+
+```
+
 
 ```{r}
+growth$volume <- (4/3) * pi * (growth$length.mm/2) * (growth$width.mm/2) * (growth$height.mm/2)
+
+growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
+growth$conditioning <- gsub("daily", "treated", growth$conditioning)
 
 ```
+
+
+### Modeling looking for effect of effort and conditioning on volume (measurement date and bag number as random effects)
+```{r}
+model <- lmer(log(volume) ~  effort/conditioning + (1 | date_numeric/bag_num), data = growth)
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+plot(fitted(model), residuals(model))
+abline(h = 0, col = "red") 
+
+```
+
 
 
