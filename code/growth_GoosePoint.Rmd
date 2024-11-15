@@ -28,6 +28,10 @@ if ("ggplot2" %in% rownames(installed.packages()) == 'FALSE') install.packages('
 
 library("ggplot2")
 library("tidyverse")
+library("lme4")
+library("lmerTest")
+library("emmeans")
+library("car")
 ```
 
 # Load data 
@@ -147,7 +151,7 @@ plot6<-data%>%
   geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0)+
   xlab("Bag") + 
   ylab("Volume")+
-  ylim(5000, 15000)+
+  ylim(2000, 15000)+
   theme_classic() + 
   theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot6
 ```
@@ -190,5 +194,27 @@ plot9<-data%>%
   theme_classic() + 
   theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot9
 ```
+
+# Run linear mixed models models 
+
+```{r}
+model<-lmer(sqrt(volume) ~ treatment + (1|field_cattle_tag:treatment), data=data)
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+hist(residuals(model))
+```
+
+No significant effect of treatment on volume. Square root transformed to meet assumptions of normality.  
+
+```{r}
+model2<-aov(sqrt(volume) ~ treatment*field_cattle_tag, data=data)
+summary(model2)
+
+qqPlot(residuals(model2))
+```
+
+Field cattle tag is significant, so we need to use the linear mixed model to account for tag.  
 
 
