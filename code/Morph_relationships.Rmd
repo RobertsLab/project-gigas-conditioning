@@ -10,7 +10,7 @@ library(readxl)
 library(tidyverse)
 library(ggplot2)
 library(gridExtra)
-
+library(lmtest)
 ```
 
 ### Load Data
@@ -183,26 +183,38 @@ growth_noNT$date_numeric <-  as.numeric(as.Date(growth_noNT$date))
 # model <- lm(length.mm ~ width.mm + height.mm + date_numeric + effort/conditioning, data = growth_noNT)
 # summary(model)
 
-library(car)
-vif(lm(length.mm ~ effort/conditioning + date_numeric, data = growth_noNT))
 
 
 # lme model with nested random effects structure
 model <- lmer(length.mm ~ width.mm + height.mm + effort/conditioning + date_numeric + (1 | bag_num/tag_num), data = growth_noNT)
 
 summary(model)
+library(car)
+vif(lm(length.mm ~ effort/conditioning + date_numeric, data = growth_noNT))
+
+```
+
+
+```{r}
+ggplot(growth, aes(x=length.mm, y= width.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length", y = "Width")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
 ```
 
 ```{r}
-plot(model$fitted.values, model$residuals, 
+plot(fitted(model), residuals(model), 
      xlab = "Fitted Values", 
      ylab = "Residuals", 
      main = "Residuals vs Fitted")
 abline(h = 0, col = "red") 
 
 
-qqnorm(model$residuals)
-qqline(model$residuals, col = "red") 
+qqnorm(residuals(model))
+qqline(residuals(model), col = "red") 
 
 ```
 
@@ -241,3 +253,48 @@ scree_values <- pca_result$sdev^2
 plot(scree_values, type = "b", xlab = "Principal Component", ylab = "Eigenvalue", main = "Scree Plot")
 
 ```
+
+## Predicting height and width from length
+
+```{r}
+model2 <- lm(log10(height.mm)~length.mm, growth)
+summary(model2)
+plot(fitted(model2), residuals(model2), 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red") 
+
+
+qqnorm(residuals(model2))
+qqline(residuals(model2), col = "red") 
+
+bptest(model2)
+
+```
+
+```{r}
+## Successful model!
+model3 <- lm(sqrt(width.mm)~length.mm, growth)
+summary(model3)
+sum3 <- summary(model3)
+
+plot(fitted(model3), residuals(model3), 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red") 
+
+
+qqnorm(residuals(model3))
+qqline(residuals(model3), col = "red") 
+
+bp <- bptest(model3)
+# p = 0.09
+```
+
+```{r}
+
+```
+
+
