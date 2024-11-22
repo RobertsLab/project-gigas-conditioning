@@ -210,6 +210,37 @@ ggplot(growth, aes(x=length.mm, y= width.mm))+
 ```
 
 ```{r}
+ggplot(growth, aes(x=length.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length", y = "Height")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+
+```{r}
+ggplot(growth, aes(x=length.mm, y= log(height.mm)))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length", y = "Height")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+```{r}
+ggplot(growth, aes(x=length.mm, y= sqrt(width.mm)))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length", y = "Width")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+```{r}
 plot(fitted(model), residuals(model), 
      xlab = "Fitted Values", 
      ylab = "Residuals", 
