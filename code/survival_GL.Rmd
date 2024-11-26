@@ -225,12 +225,16 @@ means_prop$conditioning <- c("d_control","d_control","d_control","d_control","d_
 ggplot(means_prop, aes(x = date, y = mean_prop, group = effort, color = conditioning)) +
    geom_point(size=3) +
   labs(x = "Date",
-       y = "Mean proportion of oysters remaining per bag") +
+       y = "Proportion survival (Oysters left / Starting # oysters)") +
   scale_color_manual(labels = c("Daily Control", "Daily", "Weekly Control", "Weekly"), values = c("blue", "red", "green", "purple"))+
   labs(color = "Conditioning")+
   geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
                  position=position_dodge(0.05))+
-  theme_classic()
+  theme_classic()+
+  theme(axis.text = element_text(size = 18, color= "black"),
+        axis.title = element_text(size = 20, color= "black"),
+        legend.text = element_text(size = 18, color= "black"),
+        legend.title = element_text(size = 20, color= "black"))
 ```
 ```{r}
 ggplot(D_survival, aes(x=date, y=proportion_remaining, color=conditioning))+
@@ -251,5 +255,42 @@ ggplot(B_survival, aes(x=date, y=proportion_remaining, color=conditioning))+
   scale_color_manual(labels = c("Control", "Daily"),values = c("blue", "red"))
 ```
 
+```{r}
+library(car)
+survival <- rbind(B_survival, D_survival)
+survival$conditioning <- gsub("daily", "treated", survival$conditioning)
+survival$conditioning <- gsub("weekly", "treated", survival$conditioning)
 
+modelsurv <- lmer(proportion_remaining ~  effort/conditioning + (1|bag_num),  data = survival)
+summary(modelsurv)
+qqPlot(residuals(modelsurv))
+
+```
+
+```{r}
+means_prop <- survival %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_prop = mean(proportion_remaining),
+            std_error = sd(proportion_remaining)/sqrt(length(proportion_remaining)),
+            .groups = 'drop')
+
+```
+
+```{r}
+ggplot(means_prop, aes(x = date, y = mean_prop, color = effort)) +
+   geom_point(size=3) +
+  geom_line(aes(linetype = conditioning))+
+  labs(x = "Date",
+       y = "Proportion survival (Oysters left / Starting # oysters)") +
+    scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme_classic()+
+  theme(axis.text = element_text(size = 18, color= "black"),
+        axis.title = element_text(size = 20, color= "black"),
+        legend.text = element_text(size = 18, color= "black"),
+        legend.title = element_text(size = 20, color= "black"))
+```
 

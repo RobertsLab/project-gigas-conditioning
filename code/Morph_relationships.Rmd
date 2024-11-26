@@ -203,7 +203,7 @@ vif(lm(length.mm ~ effort/conditioning + date_numeric, data = growth_noNT))
 ggplot(growth, aes(x=length.mm, y= width.mm))+
   geom_point()+
   theme_classic()+
-  labs(x = "Length", y = "Width")+
+  labs(x = "Length (mm)", y = "Width (mm)")+
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))
@@ -213,7 +213,7 @@ ggplot(growth, aes(x=length.mm, y= width.mm))+
 ggplot(growth, aes(x=length.mm, y= height.mm))+
   geom_point()+
   theme_classic()+
-  labs(x = "Length", y = "Height")+
+  labs(x = "Length (mm)", y = "Height (mm)")+
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))
@@ -224,7 +224,7 @@ ggplot(growth, aes(x=length.mm, y= height.mm))+
 ggplot(growth, aes(x=length.mm, y= log(height.mm)))+
   geom_point()+
   theme_classic()+
-  labs(x = "Length", y = "Height")+
+  labs(x = "Length (mm)", y = "Log of height (mm)")+
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))
@@ -234,7 +234,7 @@ ggplot(growth, aes(x=length.mm, y= log(height.mm)))+
 ggplot(growth, aes(x=length.mm, y= sqrt(width.mm)))+
   geom_point()+
   theme_classic()+
-  labs(x = "Length", y = "Width")+
+  labs(x = "Length (mm)", y = "Square root of width (mm)")+
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))
@@ -397,7 +397,9 @@ growth$conditioning <- gsub("daily", "treated", growth$conditioning)
 
 ### Modeling looking for effect of effort and conditioning on volume (measurement date and bag number as random effects)
 ```{r}
-model <- lmer(log(volume) ~  effort/conditioning + (1 | date_numeric/bag_num), data = growth)
+growth$tag_num <- as.factor(growth$tag_num)
+growth$bag_num <- as.factor(growth$bag_num)
+model <- lmer(log(volume) ~  effort/conditioning * date_numeric + (1 | bag_num/tag_num), data = growth)
 summary(model)
 anova(model)
 
@@ -405,7 +407,82 @@ qqPlot(residuals(model))
 plot(fitted(model), residuals(model))
 abline(h = 0, col = "red") 
 
+
+```
+
+```{r}
+means_sizes <- growth %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            mean_height = mean(height.mm, na.rm = TRUE), 
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            stderr_height = sd(height.mm, na.rm = TRUE)/sqrt(length(height.mm)),
+            .groups = 'drop')
 ```
 
 
+```{r}
+length <- ggplot(means_sizes, aes(x = date, y = mean_length, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean length (mm)") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))+
+  ylim(0,50)
+
+width <- ggplot(means_sizes, aes(x = date, y = mean_width, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean width (mm)") +
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  geom_errorbar(aes(ymin=mean_width-stderr_width, ymax = mean_width+stderr_width), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))+
+  ylim(0,50)
+
+height <- ggplot(means_sizes, aes(x = date, y = mean_height, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean height (mm)") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
+                 position=position_dodge(0.05))+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  theme(axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))+
+  ylim(0,20)
+
+grid.arrange(length,width,height)
+```
 
