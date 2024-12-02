@@ -257,6 +257,7 @@ ggplot(B_survival, aes(x=date, y=proportion_remaining, color=conditioning))+
 
 ```{r}
 library(car)
+library(lme4)
 survival <- rbind(B_survival, D_survival)
 survival$conditioning <- gsub("daily", "treated", survival$conditioning)
 survival$conditioning <- gsub("weekly", "treated", survival$conditioning)

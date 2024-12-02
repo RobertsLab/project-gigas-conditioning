@@ -14,6 +14,8 @@ library(lmtest)
 library(car)
 install.packages("lmerTest")
 library(lmerTest)
+install.packages("modelr")
+library(modelr)
 ```
 
 ### Load Data
@@ -387,7 +389,7 @@ bptest(model5)
 
 
 ```{r}
-growth$volume <- (4/3) * pi * (growth$length.mm/2) * (growth$width.mm/2) * (growth$height.mm/2)
+growth$volume <- (4/3) * pi * (growth$length.mm/2) * (growth$width.mm/2) * (growth$height.mm/2) * (1/2)
 
 growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
 growth$conditioning <- gsub("daily", "treated", growth$conditioning)
@@ -484,5 +486,65 @@ height <- ggplot(means_sizes, aes(x = date, y = mean_height, color = effort)) +
   ylim(0,20)
 
 grid.arrange(length,width,height)
+```
+```{r}
+ggplot(growth, aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  geom_smooth(method = "", se=FALSE, color="black", formula = y ~ x^2)
+
+
+
+  
+```
+```{r}
+# Non Linear model predicting log volume from length 
+model <- nls(log(volume) ~ a*length.mm^b, data = growth, start = list(a = 6.8, b = 1.1))
+summary(model)
+modelr::rsquare(model, growth)
+plot(model)
+
+# Extracting coefficients 
+coef_est <- coef(model)
+cov_matrix <- vcov(model)
+
+# Calculate standard errors for predictions
+growth$predicted <- predict(model)
+se_pred <- numeric(length(growth$predicted))
+for (i in 1:length(growth$predicted)) {
+  x_val <- growth$length.mm[i]
+  # Jacobian for the prediction
+  jacobian <- c(x_val^coef_est["b"], coef_est["a"] * log(x_val) * x_val^coef_est["b"])
+  se_pred[i] <- sqrt(t(jacobian) %*% cov_matrix %*% jacobian)
+}
+
+# Calculate the confidence intervals
+alpha <- 0.05  # significance level for 95% CI
+z_value <- qnorm(1 - alpha / 2)  # Z value for the normal distribution
+
+# Compute confidence intervals
+growth$lower_ci <- growth$predicted - z_value * se_pred
+growth$upper_ci <- growth$predicted + z_value * se_pred
+
+# Graph Length to log volume with model line
+ggplot(growth, aes(x = length.mm, y = log(volume))) +
+  geom_point(color = "blue", size = 2) +  
+  geom_line(aes(y = predicted), color = "red", size = 1) + 
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci),alpha = 0.2, fill = "purple")+
+  labs(x = "length",
+       y = "volume") +
+  theme_classic()
+
+# Graph actual log volume versus predicted log volume 
+ggplot(growth, aes(x = log(volume), y = predicted)) +
+  geom_point(color = "blue", size = 2) +
+  labs(x = "Log volume",
+       y = "Predicted log volume") +
+  theme_classic()
+
 ```
 
