@@ -18,6 +18,7 @@ install.packages("modelr")
 library(modelr)
 ```
 
+
 ### Load Data
 ```{r}
 # B survival
@@ -183,6 +184,10 @@ growth <- rbind(B_growth,D_growth)
 growth_noNT <- growth[growth$tag_num != "NT", ]
 growth_noNT$date_numeric <-  as.numeric(as.Date(growth_noNT$date))
 growth$date_numeric <- as.numeric(as.Date(growth$date))
+
+growth %>%
+  ifelse(bag_num == c(1:5, 11:21), conditioning == "control", conditioning == "treated")
+growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
 
 
 # Linear model with date as a continuous variable
@@ -487,20 +492,158 @@ height <- ggplot(means_sizes, aes(x = date, y = mean_height, color = effort)) +
 
 grid.arrange(length,width,height)
 ```
+## Graphing volume
 ```{r}
-ggplot(growth, aes(x=length.mm, y= volume))+
+
+ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+
+  
+```
+
+#### Effort B volume
+```{r}
+growth %>%
+  filter(effort == "B") %>%
+  ggplot(aes(x=length.mm, y= volume, color = date))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+growth %>%
+  filter(effort == "B", date == "2024-06-10") %>%
+  ggplot(aes(x=length.mm, y= volume))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Volume")+
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  geom_smooth(method = "", se=FALSE, color="black", formula = y ~ x^2)
-
-
-
-  
+  ylim(0,8200)+
+  xlim(0,65)
 ```
+```{r}
+growth %>%
+  filter(effort == "B", date == "2024-07-05") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,8200)+
+  xlim(0,65)
+```
+
+```{r}
+growth %>%
+  filter(effort == "B", date == "2024-08-02") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,8200)+
+  xlim(0,65)
+```
+```{r}
+growth %>%
+  filter(effort == "B", date == "2024-09-13") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,8200)+
+  xlim(0,65)
+```
+
+
+#### Effort D volume
+```{r}
+growth %>%
+  filter(effort == "D") %>%
+  ggplot(aes(x=length.mm, y= volume, color = date))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,15100)+
+  xlim(0,65)
+```
+
+```{r}
+growth %>%
+  filter(effort == "D", date == "2024-06-10") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,15100)+
+  xlim(0,65)
+```
+
+
+```{r}
+growth %>%
+  filter(effort == "D", date == "2024-07-05") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,15100)+
+  xlim(0,65)
+```
+```{r}
+growth %>%
+  filter(effort == "D", date == "2024-08-02") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,15100)+
+  xlim(0,65)
+```
+```{r}
+growth %>%
+  filter(effort == "D", date == "2024-09-13") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,15100)+
+  xlim(0,65)
+```
+
+### Non linear model for log volume
 ```{r}
 # Non Linear model predicting log volume from length 
 model <- nls(log(volume) ~ a*length.mm^b, data = growth, start = list(a = 6.8, b = 1.1))
@@ -544,7 +687,29 @@ ggplot(growth, aes(x = log(volume), y = predicted)) +
   geom_point(color = "blue", size = 2) +
   labs(x = "Log volume",
        y = "Predicted log volume") +
+  geom_smooth(method='lm', color = "red")+
   theme_classic()
 
+```
+
+
+
+
+```{r}
+means_vols <- growth %>%
+  group_by(effort, conditioning, date, bag_num) %>%
+  summarise(mean_vol = mean(volume),
+            std_error = sd(volume)/sqrt(length(volume)),
+            .groups = 'drop')
+
+
+means_vols <- means_vols %>%
+  group_by(bag_num) %>%
+  mutate(initial_vol = first(mean_vol)) %>%
+  ungroup()
+
+
+means_vols <- means_vols %>%
+  mutate(perc_change_vol = (mean_vol-initial_vol)/initial_vol ) 
 ```
 
