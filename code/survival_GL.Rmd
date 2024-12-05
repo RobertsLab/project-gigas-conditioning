@@ -186,9 +186,11 @@ B_survival <- B_survival %>%
 ```
 
 ```{r}
+
+
 initial_counts <- D_survival %>%
   group_by(conditioning, bag_num) %>%
-  summarize(initial_count = first(alive_num)) %>%
+  summarize(initial_count = nth(alive_num, 2)) %>%
   ungroup()
 
 # Join the initial counts back to the original dataframe
@@ -265,6 +267,8 @@ survival$conditioning <- gsub("weekly", "treated", survival$conditioning)
 modelsurv <- lmer(proportion_remaining ~  effort/conditioning + (1|bag_num),  data = survival)
 summary(modelsurv)
 qqPlot(residuals(modelsurv))
+
+
 
 ```
 

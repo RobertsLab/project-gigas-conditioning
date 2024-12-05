@@ -16,6 +16,10 @@ install.packages("lmerTest")
 library(lmerTest)
 install.packages("modelr")
 library(modelr)
+install.packages("glmmTMB")
+library(glmmTMB)#follows lme4 syntax
+install.packages("DHARMa")
+library(DHARMa)
 ```
 
 
@@ -185,8 +189,8 @@ growth_noNT <- growth[growth$tag_num != "NT", ]
 growth_noNT$date_numeric <-  as.numeric(as.Date(growth_noNT$date))
 growth$date_numeric <- as.numeric(as.Date(growth$date))
 
-growth %>%
-  ifelse(bag_num == c(1:5, 11:21), conditioning == "control", conditioning == "treated")
+growth <- growth %>%
+  mutate(conditioning = ifelse(bag_num %in% c(1:5, 11:21), "control", "treated"))
 growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
 
 
@@ -518,6 +522,7 @@ growth %>%
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))
 ```
+
 ```{r}
 growth %>%
   filter(effort == "B", date == "2024-06-10") %>%
@@ -531,6 +536,7 @@ growth %>%
   ylim(0,8200)+
   xlim(0,65)
 ```
+
 ```{r}
 growth %>%
   filter(effort == "B", date == "2024-07-05") %>%
@@ -558,6 +564,7 @@ growth %>%
   ylim(0,8200)+
   xlim(0,65)
 ```
+
 ```{r}
 growth %>%
   filter(effort == "B", date == "2024-09-13") %>%
@@ -591,7 +598,7 @@ growth %>%
 ```{r}
 growth %>%
   filter(effort == "D", date == "2024-06-10") %>%
-  ggplot(aes(x=length.mm, y= volume))+
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Volume")+
@@ -606,7 +613,7 @@ growth %>%
 ```{r}
 growth %>%
   filter(effort == "D", date == "2024-07-05") %>%
-  ggplot(aes(x=length.mm, y= volume))+
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Volume")+
@@ -619,7 +626,7 @@ growth %>%
 ```{r}
 growth %>%
   filter(effort == "D", date == "2024-08-02") %>%
-  ggplot(aes(x=length.mm, y= volume))+
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Volume")+
@@ -632,7 +639,7 @@ growth %>%
 ```{r}
 growth %>%
   filter(effort == "D", date == "2024-09-13") %>%
-  ggplot(aes(x=length.mm, y= volume))+
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Volume")+
@@ -694,7 +701,7 @@ ggplot(growth, aes(x = log(volume), y = predicted)) +
 
 
 
-
+### Looking at percent change in volume 
 ```{r}
 means_vols <- growth %>%
   group_by(effort, conditioning, date, bag_num) %>%
@@ -710,6 +717,151 @@ means_vols <- means_vols %>%
 
 
 means_vols <- means_vols %>%
-  mutate(perc_change_vol = (mean_vol-initial_vol)/initial_vol ) 
+  mutate(perc_change_vol = 100*(mean_vol-initial_vol)/initial_vol ) 
+```
+
+```{r}
+means_perc_vols <- means_vols %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_perc_vol = mean(perc_change_vol),
+            std_error = sd(perc_change_vol)/sqrt(length(perc_change_vol)),
+            .groups = 'drop')
+
+means_perc_vols$date <- as.POSIXct(means_perc_vols$date)
+
+ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Percent change in volume") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_perc_vol-std_error, ymax = mean_perc_vol+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+
+
+
+```
+```{r}
+means_vols %>%
+  filter(effort == "D") %>%
+  ggplot(aes(x=date, y= perc_change_vol, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Date", y = "Percent change volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+means_vols %>%
+  filter(effort == "B") %>%
+  ggplot(aes(x=date, y= perc_change_vol, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Date", y = "Percent change volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+means_vols %>%
+  filter(effort == "B") %>%
+  ggplot(aes(x=date, y= mean_vol, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Date", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+means_vols %>%
+  filter(effort == "D") %>%
+  ggplot(aes(x=date, y= mean_vol, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Date", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+```{r}
+ggplot(means_perc_vols, aes(x = date, y = log(mean_perc_vol), color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Percent change in volume") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+```
+
+### Percent change in volume model
+```{r}
+means_vols$date <- as.POSIXct(means_vols$date)
+means_vols$bag_num <- as.factor(means_vols$bag_num)
+model <- lmer(log(perc_change_vol) ~  effort/conditioning *date + (1|bag_num), data = means_vols)
+summary(model)
+```
+
+```{r}
+plot(means_vols$date, log(means_vols$perc_change_vol))
+```
+
+```{r}
+means_vols$days <- as.numeric(means_vols$date - min(means_vols$date))
+means_vols <- subset(means_vols, date != "2024-06-10")
+model.m<-glmmTMB(sqrt(perc_change_vol) ~  effort/conditioning *days+ (1|bag_num),data = means_vols, family = gaussian()) #glmmTMB
+summary(model.m)
+car::Anova(model.m, type = "III")
+
+model.b<- lmer(sqrt(perc_change_vol) ~  effort/conditioning *days + (1|bag_num), data = means_vols)
+summary(model.b)
+qqnorm(resid(model.b))
+qqline(resid(model.b))
+
+testDispersion(model.m)
+tst_simres <- simulateResiduals(fittedModel = model.m) #DHARMa
+plot(tst_simres)
+
+
+```
+
+```{r}
+hist(means_vols$perc_change_vol)
+hist(log(means_vols$perc_change_vol))
+hist(sqrt(means_vols$perc_change_vol))
+```
+
+
+```{r}
+install.packages("emmeans")
+library(emmeans)
+emm_interaction <- emmeans(model.m, ~ effort * conditioning | days)
+emm_interaction
+
+# Pairwise comparisons for interaction
+pairs(emm_interaction, by = "days")  # Compare effort * conditioning combinations within days
+
+
 ```
 
