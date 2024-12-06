@@ -358,6 +358,7 @@ survival$days <- survival$days + 13
 survival <- subset(survival, date > "2024-07-17")
 
 survival$prop_remaining_adjusted <- log(1.05-survival$proportion_remaining) + 4.7
+hist(1.05-survival$proportion_remaining)
 hist(survival$proportion_remaining)
 hist(survival$prop_remaining_adjusted)
 boxplot(survival$prop_remaining_adjusted)
