@@ -9,6 +9,8 @@ date: "2024-06-26"
 library(readxl)
 library(tidyverse)
 library(ggplot2)
+library(DHARMa)
+library(glmmTMB)
 
 ```
 
@@ -298,4 +300,82 @@ ggplot(means_prop, aes(x = date, y = mean_prop, color = effort)) +
         legend.text = element_text(size = 18, color= "black"),
         legend.title = element_text(size = 20, color= "black"))
 ```
+
+### Redoing prop survival based on second measurement
+```{r}
+initial_counts <- survival %>%
+  group_by(effort, conditioning, bag_num) %>%
+  summarize(initial_count = nth(alive_num, 4)) %>%
+  ungroup()
+
+# Join the initial counts back to the original dataframe
+survival <- survival  %>%
+  left_join(initial_counts, by = c("effort", "conditioning", "bag_num"))
+
+# Calculate the proportion of organisms remaining alive at each timepoint
+survival <- survival %>%
+  mutate(proportion_remaining = alive_num/initial_count)
+```
+
+### Mean proportion survival
+
+```{r}
+
+means_prop <- survival %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_prop = mean(proportion_remaining),
+            std_error = sd(proportion_remaining)/sqrt(length(proportion_remaining)),
+            .groups = 'drop')
+```
+
+```{r}
+means_prop %>%
+  filter(date > "2024-07-08")%>%
+  ggplot(aes(x = date, y = mean_prop, color = effort)) +
+   geom_point(size=3) +
+  geom_line(aes(linetype = conditioning))+
+  labs(x = "Date",
+       y = "Proportion survival (Oysters left / Starting # oysters)") +
+    scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme_classic()+
+  theme(axis.text = element_text(size = 18, color= "black"),
+        axis.title = element_text(size = 20, color= "black"),
+        legend.text = element_text(size = 18, color= "black"),
+        legend.title = element_text(size = 20, color= "black"))+
+  ylim(0, 1.03)
+```
+
+```{r}
+
+survival$date <- as.POSIXct(survival$date)
+survival$days <- as.numeric(survival$date - min(survival$date))
+survival$days <- survival$days/86400
+survival$days <- survival$days + 13
+survival <- subset(survival, date > "2024-07-17")
+
+survival$prop_remaining_adjusted <- log(1.05-survival$proportion_remaining) + 4.7
+hist(survival$proportion_remaining)
+hist(survival$prop_remaining_adjusted)
+boxplot(survival$prop_remaining_adjusted)
+survival2 <- subset(survival, bag_num != 22)
+hist(survival2$proportion_remaining)
+hist(survival2$prop_remaining_adjusted)
+boxplot(survival2$prop_remaining_adjusted)
+
+model.s<-glmmTMB(prop_remaining_adjusted~  effort/conditioning*days + (1|bag_num),  data = survival, family = gaussian()) #glmmTMB
+summary(model.s)
+testDispersion(model.s)
+tst_simres <- simulateResiduals(fittedModel = model.s) #DHARMa
+plot(tst_simres)
+
+
+car::Anova(model.s, type = "III")
+
+```
+
+
 

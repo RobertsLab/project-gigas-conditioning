@@ -724,7 +724,7 @@ means_vols <- means_vols %>%
 means_perc_vols <- means_vols %>%
   group_by(effort, conditioning, date) %>%
   summarise(mean_perc_vol = mean(perc_change_vol),
-            std_error = sd(perc_change_vol)/sqrt(length(perc_change_vol)),
+            std_error = sd(perc_change_vol),
             .groups = 'drop')
 
 means_perc_vols$date <- as.POSIXct(means_perc_vols$date)
@@ -852,7 +852,7 @@ hist(log(means_vols$perc_change_vol))
 hist(sqrt(means_vols$perc_change_vol))
 ```
 
-
+#### Pairwise comparisons for percent change volume model
 ```{r}
 install.packages("emmeans")
 library(emmeans)
