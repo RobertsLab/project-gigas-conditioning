@@ -864,4 +864,114 @@ pairs(emm_interaction, by = "days")  # Compare effort * conditioning combination
 
 
 ```
+### Percent change in length, width, height
+```{r}
+means_sizes <- growth %>%
+  group_by(effort, conditioning, date, bag_num) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            mean_height = mean(height.mm, na.rm = TRUE), 
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            stderr_height = sd(height.mm, na.rm = TRUE)/sqrt(length(height.mm)),
+            .groups = 'drop')
+
+means_sizes <- means_sizes %>%
+  group_by(bag_num) %>%
+  mutate(initial_length = first(mean_length)) %>%
+  mutate(initial_width = first(mean_width)) %>%
+  mutate(initial_height = first(mean_height)) %>%
+  ungroup()
+
+
+means_sizes <- means_sizes %>%
+  mutate(perc_change_length = 100*(mean_length-initial_length)/initial_length ) %>%
+  mutate(perc_change_width = 100*(mean_width-initial_width)/initial_width ) %>%
+  mutate(perc_change_height = 100*(mean_height-initial_height)/initial_height ) 
+```
+
+```{r}
+means_sizes %>%
+  filter(effort == "D") %>%
+  ggplot(aes(x=date, y= perc_change_length, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Date", y = "Percent change length")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+means_perc_dimension <- means_sizes %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_perc_length = mean(perc_change_length),
+            std_error_length = sd(perc_change_length)/sqrt(length(perc_change_length)),
+            mean_perc_width = mean(perc_change_width),
+            std_error_width = sd(perc_change_width)/sqrt(length(perc_change_width)),
+            mean_perc_height = mean(perc_change_height),
+            std_error_height = sd(perc_change_height)/sqrt(length(perc_change_height)),
+            .groups = 'drop')
+
+means_perc_dimension$date <- as.POSIXct(means_perc_dimension$date)
+```
+
+```{r}
+length <- ggplot(means_perc_dimension, aes(x = date, y = mean_perc_length, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Percent change length") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_perc_length-std_error_length, ymax = mean_perc_length+std_error_length), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+
+width <- ggplot(means_perc_dimension, aes(x = date, y = mean_perc_width, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Percent change width") +
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  geom_errorbar(aes(ymin=mean_perc_width-std_error_width, ymax = mean_perc_width+std_error_width), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+
+height <- ggplot(means_perc_dimension, aes(x = date, y = mean_perc_height, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Percent change height") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  geom_errorbar(aes(ymin=mean_perc_height-std_error_height, ymax = mean_perc_height+std_error_height), width=.2,
+                 position=position_dodge(0.05))+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  theme(axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+
+grid.arrange(length,width,height)
+```
 
