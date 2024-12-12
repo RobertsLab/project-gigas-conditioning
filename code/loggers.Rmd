@@ -218,6 +218,10 @@ goose <- setNames(goose.files, goose.files) %>%
     mutate(logger=sub("_.*", "", logger))%>% #keep only the serial number 
     filter(!temp.C=="NA")
 
+#export data 
+goose%>%
+  write_csv("output/environmental/goose-point-temperature-data.csv")
+
 goose$DateTime<-as.POSIXct(goose$DateTime, format="%m/%d/%y %H:%M")
 ```
 
@@ -267,12 +271,6 @@ goose_plot<-goose%>%
   theme_classic(); goose_plot
 
 ggsave(goose_plot, filename="figures/environmental/goose-loggers.png", width=10, height=6)
-
-#export data 
-goose%>%
-  select(!day)%>%
-  select(!group)%>%
-  write_csv("output/environmental/goose-point-temperature-data.csv")
 ```
 
 Plot amount of daily variability over a 24 hour cycle. 
