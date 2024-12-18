@@ -152,12 +152,12 @@ ggsave(temp_plot, filename="figures/environmental/seed-trays-PW.png", width=6, h
 
 Read in Hobo Tidbit files  
 ```{r}
-westcott.files <- list.files(path="data/environmental/loggers/westcottloggers_20240913/", pattern="*.xlsx", full.names=TRUE)
+westcott.files <- list.files(path="data/environmental/loggers/westcott/westcottloggers_20241217/", pattern="*.xlsx", full.names=TRUE)
 
 #will need to change to HST time 
 westcott <- setNames(westcott.files, westcott.files) %>%
     map_dfr(read_xlsx, .id = "logger") %>%
-    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temperature (°C)`)%>%
+    rename(DateTime=`Date-Time (PST/PDT)`, temp.C=`Temperature (°C)`)%>%
     select(!`#`)%>%
     select(logger, DateTime, temp.C)%>%
     mutate(logger=sub(".*/", "", logger))%>% #remove the path name
@@ -191,8 +191,9 @@ All loggers
 ```{r}
 westcott_plot<-westcott%>%
   
-  ggplot(aes(x=DateTime, y=temp.C, colour=logger, fill=logger))+
-  geom_point(alpha=0.7)+
+  ggplot(aes(x=DateTime, y=temp.C))+
+  geom_point(alpha=0.7, colour="darkgray", fill="darkgray")+
+  geom_smooth(colour="black", se=FALSE)+
   ylab("Temperature (°C)")+
   xlab("Date Time")+
   ylim(0,50)+
@@ -207,19 +208,22 @@ Overall, loggers at Westcott show huge swings in temperature with maximum temper
 
 Read in Hobo Tidbit files  
 ```{r}
-goose.files <- list.files(path="data/environmental/loggers/goose_point/", pattern="*.csv", full.names=TRUE)
+goose.files <- list.files(path="data/environmental/loggers/goose_point", pattern="*.csv", full.names=TRUE)
 
-#will need to change to HST time 
 goose <- setNames(goose.files, goose.files) %>%
     map_dfr(read_csv, .id = "logger") %>%
-    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temp   (°C)`)%>%
+    rename(DateTime=`Date-Time (PST/PDT)`, temp.C=`Temp (°C)`)%>%
     select(!`#`)%>%
     select(logger, DateTime, temp.C)%>%
     mutate(logger=sub(".*/", "", logger))%>% #remove the path name
     mutate(logger=sub("_.*", "", logger))%>% #keep only the serial number 
     filter(!temp.C=="NA")
 
-goose$DateTime<-as.POSIXct(goose$DateTime, format="%m/%d/%Y %H:%M:%S")
+#export data 
+goose%>%
+  write_csv("output/environmental/goose-point-temperature-data.csv")
+
+goose$DateTime<-as.POSIXct(goose$DateTime, format="%m/%d/%y %H:%M")
 ```
 
 List the logger serial numbers in this dataframe.  
@@ -240,20 +244,61 @@ levels(as.factor(goose$group))
 
 Group information is now added.  
 
+Remove temperature data from read out days (6/24, 9/9, 12/11)
+
+```{r}
+# Dates to filter out
+dates_to_filter <- as.Date(c("2024-06-19", "2024-06-20", "2024-06-21", "2024-06-22", "2024-06-23", "2024-06-24", "2024-06-25", "2024-09-09", "2024-09-10", "2024-12-11"))
+
+# Filter out rows with specified dates
+goose <- goose %>%
+  mutate(day=as.Date(DateTime))%>%
+  filter(!day %in% dates_to_filter)
+
+```
+
 ## Plot data 
 
 All loggers 
 ```{r}
 goose_plot<-goose%>%
   
-  ggplot(aes(x=DateTime, y=temp.C, colour=logger, fill=logger))+
-  geom_point(alpha=0.7)+
+  ggplot(aes(x=DateTime, y=temp.C))+
+  geom_point(alpha=0.7, colour="darkgray")+
+  geom_smooth(colour="black", se=FALSE)+
   ylab("Temperature (°C)")+
-  xlab("Date Time")+
-  ylim(0,50)+
+  xlab("Date")+
+  ylim(0,40)+
   theme_classic(); goose_plot
 
 ggsave(goose_plot, filename="figures/environmental/goose-loggers.png", width=10, height=6)
 ```
 
-Overall, loggers at Goose Point are much more stable than Westcott with maximum temperatures reaching 30C and minimum closer to 11-12C. 
+Plot amount of daily variability over a 24 hour cycle. 
+
+```{r}
+#calculate min and max of each day and plot this difference over time 
+daily_goose<-goose%>%
+  group_by(logger, day, group)%>%
+  summarise(min=min(temp.C), max=max(temp.C))%>%
+  mutate(diff=max-min)
+```
+
+Plot daily range over time. 
+
+```{r}
+goose_plot2<-daily_goose%>%
+  
+  ggplot(aes(x=day, y=diff))+
+  geom_point(alpha=0.7, colour="darkgray")+
+  geom_smooth(colour="black", se=FALSE)+
+  ylab("Daily Temperature Range (°C)")+
+  xlab("Date")+
+  ylim(0,20)+
+  theme_classic(); goose_plot2
+
+ggsave(goose_plot2, filename="figures/environmental/goose-loggers_daily-range.png", width=8, height=6)
+```
+
+
+
