@@ -26,7 +26,7 @@ library(DHARMa)
 ### Load Data
 ```{r}
 # B survival
-B_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_09132024.xlsx")
+B_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_12172024.xlsx")
 
 # Heights from bag 2 for 07/05/2024 showing up as NAs for some reason when data imported
 B_growth$length.mm <- as.numeric(B_growth$length.mm)
@@ -37,7 +37,7 @@ B_growth$date <- as.Date(B_growth$date)
 B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 # D survival
-D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_09132024.xlsx")
+D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx")
 D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 D_growth$date <- as.Date(D_growth$date)
 ```
@@ -59,7 +59,7 @@ B_growth %>%
 
 ```{r}
 B_growth %>%
-  filter(date == "2024-09-13") %>%
+  filter(date == "2024-12-17") %>%
 ggplot(aes(x = height.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Height (mm)", y = "Count") +
@@ -69,7 +69,7 @@ ggplot(aes(x = height.mm)) +
 ```
 ```{r}
 B_growth %>%
-  filter(date == "2024-09-13") %>%
+  filter(date == "2024-12-17") %>%
 ggplot(aes(x = width.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Width (mm)", y = "Count") +
@@ -81,7 +81,7 @@ ggplot(aes(x = width.mm)) +
 
 ```{r}
 D_growth %>%
-  filter(date == "2024-09-13") %>%
+  filter(date == "2024-12-17") %>%
 ggplot(aes(x = length.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Length (mm)", y = "Count") +
@@ -92,7 +92,7 @@ ggplot(aes(x = length.mm)) +
 
 ```{r}
 D_growth %>%
-  filter(date == "2024-09-13") %>%
+  filter(date == "2024-12-17") %>%
 ggplot(aes(x = height.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Height (mm)", y = "Count") +
@@ -453,7 +453,7 @@ length <- ggplot(means_sizes, aes(x = date, y = mean_length, color = effort)) +
     axis.text.y = element_text(size=18, color = "black"),
     legend.text = element_text(size = 18, color = "black"),
     legend.title = element_text(size = 20, color = "black"))+
-  ylim(0,50)
+  ylim(0,80)
 
 width <- ggplot(means_sizes, aes(x = date, y = mean_width, color = effort)) +
    geom_point() +
@@ -473,7 +473,7 @@ width <- ggplot(means_sizes, aes(x = date, y = mean_width, color = effort)) +
     axis.text.y = element_text(size=18, color = "black"),
     legend.text = element_text(size = 18, color = "black"),
     legend.title = element_text(size = 20, color = "black"))+
-  ylim(0,50)
+  ylim(0,80)
 
 height <- ggplot(means_sizes, aes(x = date, y = mean_height, color = effort)) +
    geom_point() +
@@ -492,14 +492,14 @@ height <- ggplot(means_sizes, aes(x = date, y = mean_height, color = effort)) +
     axis.text.y = element_text(size=18, color = "black"),
     legend.text = element_text(size = 18, color = "black"),
     legend.title = element_text(size = 20, color = "black"))+
-  ylim(0,20)
+  ylim(0,40)
 
 grid.arrange(length,width,height)
 ```
 ## Graphing volume
 ```{r}
 
-ggplot(aes(x=length.mm, y= volume))+
+ggplot(growth, aes(x=length.mm, y= volume))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Volume")+
@@ -578,7 +578,18 @@ growth %>%
   ylim(0,8200)+
   xlim(0,65)
 ```
-
+```{r}
+growth %>%
+  filter(effort == "B", date == "2024-12-17") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  xlim(0,90)
+```
 
 #### Effort D volume
 ```{r}
@@ -590,9 +601,7 @@ growth %>%
   labs(x = "Length (mm)", y = "Volume")+
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
-        axis.text = element_text(size = 20))+
-  ylim(0,15100)+
-  xlim(0,65)
+        axis.text = element_text(size = 20))
 ```
 
 ```{r}
@@ -648,6 +657,18 @@ growth %>%
         axis.text = element_text(size = 20))+
   ylim(0,15100)+
   xlim(0,65)
+```
+```{r}
+growth %>%
+  filter(effort == "D", date == "2024-12-17") %>%
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  xlim(0,90)
 ```
 
 ### Non linear model for log volume
@@ -724,7 +745,7 @@ means_vols <- means_vols %>%
 means_perc_vols <- means_vols %>%
   group_by(effort, conditioning, date) %>%
   summarise(mean_perc_vol = mean(perc_change_vol),
-            std_error = sd(perc_change_vol),
+            std_error = sd(perc_change_vol)/sqrt(length(perc_change_vol)),
             .groups = 'drop')
 
 means_perc_vols$date <- as.POSIXct(means_perc_vols$date)
@@ -819,6 +840,7 @@ ggplot(means_perc_vols, aes(x = date, y = log(mean_perc_vol), color = effort)) +
 ```{r}
 means_vols$date <- as.POSIXct(means_vols$date)
 means_vols$bag_num <- as.factor(means_vols$bag_num)
+means_vols
 model <- lmer(log(perc_change_vol) ~  effort/conditioning *date + (1|bag_num), data = means_vols)
 summary(model)
 ```
@@ -829,8 +851,9 @@ plot(means_vols$date, log(means_vols$perc_change_vol))
 
 ```{r}
 means_vols$days <- as.numeric(means_vols$date - min(means_vols$date))
-means_vols <- subset(means_vols, date != "2024-06-10")
-model.m<-glmmTMB(sqrt(perc_change_vol) ~  effort/conditioning *days+ (1|bag_num),data = means_vols, family = gaussian()) #glmmTMB
+means_vols$days <- means_vols$days/(60*60*24)
+means_vols <- subset(means_vols, days != 0)
+model.m<-glmmTMB(log(perc_change_vol) ~  effort/conditioning *days+ (1|bag_num),data = means_vols, family = gaussian()) #glmmTMB
 summary(model.m)
 car::Anova(model.m, type = "III")
 
@@ -841,6 +864,10 @@ qqline(resid(model.b))
 
 testDispersion(model.m)
 tst_simres <- simulateResiduals(fittedModel = model.m) #DHARMa
+plot(tst_simres)
+
+testDispersion(model.b)
+tst_simres <- simulateResiduals(fittedModel = model.b) #DHARMa
 plot(tst_simres)
 
 
@@ -856,11 +883,11 @@ hist(sqrt(means_vols$perc_change_vol))
 ```{r}
 install.packages("emmeans")
 library(emmeans)
-emm_interaction <- emmeans(model.m, ~ effort * conditioning | days)
+emm_interaction <- emmeans(model.b, ~ effort * conditioning | days)
 emm_interaction
 
 # Pairwise comparisons for interaction
-pairs(emm_interaction, by = "days")  # Compare effort * conditioning combinations within days
+pairs(emm_interaction, by = "days", adjust= "tukey")  # Compare effort * conditioning combinations within days
 
 
 ```
