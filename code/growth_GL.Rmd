@@ -70,11 +70,6 @@ means_D_sizes <- D_growth %>%
 
 ```
 
-```{r}
-
-```
-
-
 
 ### Graphs with NT's included
 ```{r}
