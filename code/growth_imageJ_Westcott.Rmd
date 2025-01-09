@@ -1,0 +1,56 @@
+---
+title: "growth_imageJ_Westcott"
+output: html_document
+date: "2025-01-08"
+---
+
+### Load libraries
+```{r}
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+
+
+```
+
+```{r}
+growth_IJ <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
+```
+
+
+```{r}
+means_sizes <- growth_IJ %>%
+  group_by(effort, conditioning, date, metric) %>%
+  summarise(mean_length = mean(measure.mm, na.rm = TRUE),
+            stderr_length = sd(measure.mm, na.rm = TRUE)/sqrt(length(measure.mm)),
+            .groups = 'drop')
+```
+
+```{r}
+growth_IJ <- growth_IJ %>%
+  pivot_wider(names_from = metric, values_from = measure.mm)
+
+```
+
+```{r}
+
+
+growth_IJ$pred_log_vol <- 2.2170013*growth_IJ$length^0.3521082 
+growth_IJ$pred_vol <- exp(growth_IJ$pred_log_vol)
+
+ggplot(growth_IJ, aes(x = length, y = pred_vol)) +
+  geom_point(color = "blue", size = 2) +  
+  labs(x = "length",
+       y = "volume") +
+  theme_classic()
+
+
+```
+```{r}
+plot(growth$length.mm, growth$volume) 
+  
+# overlay line plot  
+points(growth_IJ$length, growth_IJ$pred_vol, col = "green")
+```
+
