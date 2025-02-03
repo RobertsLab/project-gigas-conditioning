@@ -183,3 +183,11 @@ PolyIC-tank1,12/4/24,14:30,7.4,7.77,24.19,ash,PolyIC-larvae-control
 PolyIC-tank2,12/4/24,14:30,7.4,7.73,24.21,ash,PolyIC-larvae-control
 PolyIC-tank4,12/4/24,14:30,7.4,7.74,24.22,ash,PolyIC-larvae-treated
 PolyIC-tank5,12/4/24,14:30,7.4,7.73,24.21,ash,PolyIC-larvae-treated
+outdoor_tray,1/7/25,13:00,9,7.68,27.15,ash,tray 25 - top
+outdoor_tray,1/7/25,13:00,8.8,7.7,26.33,ash,tray 27
+outdoor_tray,1/7/25,13:00,8.8,7.7,26.22,ash,tray 32
+outdoor_tray,1/7/25,13:00,8.8,7.7,26.2,ash,tray 31
+outdoor_tray,1/7/25,13:00,8.7,7.71,26.2,ash,tray 40
+outdoor_tray,1/7/25,13:00,8.7,7.71,26.2,ash,tray 33 - bottom 
+upweller,1/7/25,13:00,7.7,7.79,22.78,ash,"broodstock, all others "
+dock,1/7/25,13:00,7.7,1.8,23.36,ash,seed
