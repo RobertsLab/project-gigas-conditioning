@@ -725,7 +725,7 @@ ggplot(growth, aes(x = log(volume), y = predicted)) +
 ### Looking at percent change in volume 
 ```{r}
 means_vols <- growth %>%
-  group_by(effort, conditioning, date, bag_num) %>%
+  group_by(effort, conditioning, date) %>%
   summarise(mean_vol = mean(volume),
             std_error = sd(volume)/sqrt(length(volume)),
             .groups = 'drop')
@@ -740,6 +740,29 @@ means_vols <- means_vols %>%
 means_vols <- means_vols %>%
   mutate(perc_change_vol = 100*(mean_vol-initial_vol)/initial_vol ) 
 ```
+
+```{r}
+ggplot(means_vols, aes(x = date, y = mean_vol, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean volume ") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_vol-std_error, ymax = mean_vol+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+```
+
+
 
 ```{r}
 means_perc_vols <- means_vols %>%

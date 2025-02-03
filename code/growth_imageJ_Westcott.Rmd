@@ -53,4 +53,19 @@ plot(growth$length.mm, growth$volume)
 # overlay line plot  
 points(growth_IJ$length, growth_IJ$pred_vol, col = "green")
 ```
+```{r}
+# prediction equation for each bag, predict width and height from that (from our training data) 
+# graph percent change in length with imageJ
+# For monday: percent decrease in growth with priming 
+# primed -treated over (primed*100)
+# percent decrease in growth with priming (percentage) 
+# ask Chas if we can keep stuff out there (touch base March, measure April) 
+# compare goose point and westcott data
+# think about how I want this to fit in the dissertation
+# experimental design google doc, what I would want to sample for, when I would want to sample, etc. 
+  # brainstorming document 
+# 
+
+
+```
 
