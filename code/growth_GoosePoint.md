@@ -34,7 +34,8 @@ library("cowplot")
 Read in data files.
 
 ``` r
-data<-read_csv(file="data/outplanting/GoosePoint/growth_GoosePoint.csv")
+data<-read_csv(file="data/outplanting/GoosePoint/growth_GoosePoint.csv")%>%
+  mutate(date=as.factor(date))
 ```
 
 Set data attributes.
@@ -437,7 +438,7 @@ summary(model)
     ## sqrt(Predicted_Volume_Poly) ~ treatment * date + (1 | field_cattle_tag:treatment)
     ##    Data: data
     ## 
-    ## REML criterion at convergence: 22944.5
+    ## REML criterion at convergence: 22899.3
     ## 
     ## Scaled residuals: 
     ##     Min      1Q  Median      3Q     Max 
@@ -450,48 +451,46 @@ summary(model)
     ## Number of obs: 2794, groups:  field_cattle_tag:treatment, 14
     ## 
     ## Fixed effects:
-    ##                                            Estimate Std. Error         df
-    ## (Intercept)                              -4.240e+06  6.560e+04  1.013e+01
-    ## treatmentWeekly Fresh Water Treated      -5.359e+05  1.071e+05  9.727e+01
-    ## treatmentWeekly Temperature Control       1.467e+06  1.068e+05  5.741e+01
-    ## treatmentWeekly Temperature Treated       7.190e+05  1.066e+05  1.195e+02
-    ## date                                      2.095e-01  3.241e-03  1.013e+01
-    ## treatmentWeekly Fresh Water Treated:date  2.648e-02  5.291e-03  9.727e+01
-    ## treatmentWeekly Temperature Control:date -7.250e-02  5.276e-03  5.741e+01
-    ## treatmentWeekly Temperature Treated:date -3.552e-02  5.265e-03  1.195e+02
-    ##                                          t value Pr(>|t|)    
-    ## (Intercept)                              -64.629 1.37e-14 ***
-    ## treatmentWeekly Fresh Water Treated       -5.004 2.49e-06 ***
-    ## treatmentWeekly Temperature Control       13.742  < 2e-16 ***
-    ## treatmentWeekly Temperature Treated        6.747 5.73e-10 ***
-    ## date                                      64.630 1.37e-14 ***
-    ## treatmentWeekly Fresh Water Treated:date   5.004 2.49e-06 ***
-    ## treatmentWeekly Temperature Control:date -13.742  < 2e-16 ***
-    ## treatmentWeekly Temperature Treated:date  -6.747 5.73e-10 ***
+    ##                                                   Estimate Std. Error        df
+    ## (Intercept)                                        39.1516     2.0884   11.1062
+    ## treatmentWeekly Fresh Water Treated                -1.3997     3.4108   11.1119
+    ## treatmentWeekly Temperature Control                27.5782     3.4076   11.0701
+    ## treatmentWeekly Temperature Treated                14.5517     3.4083   11.0792
+    ## date20240909                                       59.6973     0.9237 2776.0551
+    ## treatmentWeekly Fresh Water Treated:date20240909    7.5442     1.5078 2776.0422
+    ## treatmentWeekly Temperature Control:date20240909  -20.6633     1.5036 2776.0237
+    ## treatmentWeekly Temperature Treated:date20240909  -10.1257     1.5006 2776.0428
+    ##                                                  t value Pr(>|t|)    
+    ## (Intercept)                                       18.747 9.31e-10 ***
+    ## treatmentWeekly Fresh Water Treated               -0.410   0.6893    
+    ## treatmentWeekly Temperature Control                8.093 5.62e-06 ***
+    ## treatmentWeekly Temperature Treated                4.270   0.0013 ** 
+    ## date20240909                                      64.630  < 2e-16 ***
+    ## treatmentWeekly Fresh Water Treated:date20240909   5.003 5.98e-07 ***
+    ## treatmentWeekly Temperature Control:date20240909 -13.743  < 2e-16 ***
+    ## treatmentWeekly Temperature Treated:date20240909  -6.748 1.82e-11 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Correlation of Fixed Effects:
-    ##             (Intr) trWFWT trtWTC trtWTT date   tWFWT: trWTC:
-    ## trtmntWkFWT -0.613                                          
-    ## trtmntWklTC -0.614  0.376                                   
-    ## trtmntWklTT -0.616  0.377  0.378                            
-    ## date        -1.000  0.613  0.614  0.616                     
-    ## trtmntWFWT:  0.613 -1.000 -0.376 -0.377 -0.613              
-    ## trtmntWTCn:  0.614 -0.376 -1.000 -0.378 -0.614  0.376       
-    ## trtmntWTTr:  0.616 -0.377 -0.378 -1.000 -0.616  0.377  0.378
-    ## fit warnings:
-    ## Some predictor variables are on very different scales: consider rescaling
+    ##             (Intr) trWFWT trtWTC trtWTT d20240 tWFWT: tWTC:2
+    ## trtmntWkFWT -0.612                                          
+    ## trtmntWklTC -0.613  0.375                                   
+    ## trtmntWklTT -0.613  0.375  0.376                            
+    ## dat20240909 -0.225  0.138  0.138  0.138                     
+    ## tWFWT:20240  0.138 -0.226 -0.085 -0.085 -0.613              
+    ## tWTC:202409  0.138 -0.085 -0.222 -0.085 -0.614  0.376       
+    ## tWTT:202409  0.139 -0.085 -0.085 -0.224 -0.616  0.377  0.378
 
 ``` r
 anova(model)
 ```
 
     ## Type III Analysis of Variance Table with Satterthwaite's method
-    ##                 Sum Sq Mean Sq NumDF  DenDF F value    Pr(>F)    
-    ## date           1934252 1934252     1 639.98 9146.13 < 2.2e-16 ***
-    ## treatment:date   70459   23486     3  69.75  111.06 < 2.2e-16 ***
-    ## treatment                                                        
+    ##                 Sum Sq Mean Sq NumDF DenDF  F value    Pr(>F)    
+    ## treatment         6486    2162     3    10   10.223  0.002168 ** 
+    ## date           1934239 1934239     1  2776 9146.071 < 2.2e-16 ***
+    ## treatment:date   70461   23487     3  2776  111.059 < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -527,61 +526,59 @@ summary(growth_model)
     ## Predicted_Volume_Poly ~ date * treatment + (1 | treatment:field_cattle_tag)
     ##    Data: data
     ## 
-    ## REML criterion at convergence: 51403
+    ## REML criterion at convergence: 51357.8
     ## 
     ## Scaled residuals: 
     ##     Min      1Q  Median      3Q     Max 
-    ## -4.7148 -0.5818 -0.1071  0.4788  5.3313 
+    ## -4.7147 -0.5818 -0.1071  0.4788  5.3313 
     ## 
     ## Random effects:
     ##  Groups                     Name        Variance Std.Dev.
-    ##  treatment:field_cattle_tag (Intercept)  499374   706.7  
-    ##  Residual                               5775814  2403.3  
+    ##  treatment:field_cattle_tag (Intercept)  499493   706.7  
+    ##  Residual                               5775809  2403.3  
     ## Number of obs: 2794, groups:  treatment:field_cattle_tag, 14
     ## 
     ## Fixed effects:
-    ##                                            Estimate Std. Error         df
-    ## (Intercept)                              -5.889e+08  1.084e+07  3.770e+00
-    ## date                                      2.910e+01  5.356e-01  3.770e+00
-    ## treatmentWeekly Fresh Water Treated      -9.817e+07  1.770e+07  1.806e+01
-    ## treatmentWeekly Temperature Control       1.122e+08  1.765e+07  3.966e+01
-    ## treatmentWeekly Temperature Treated       4.264e+07  1.761e+07  2.769e+01
-    ## date:treatmentWeekly Fresh Water Treated  4.850e+00  8.743e-01  1.806e+01
-    ## date:treatmentWeekly Temperature Control -5.542e+00  8.719e-01  3.966e+01
-    ## date:treatmentWeekly Temperature Treated -2.107e+00  8.702e-01  2.769e+01
-    ##                                          t value Pr(>|t|)    
-    ## (Intercept)                              -54.325 1.35e-06 ***
-    ## date                                      54.326 1.35e-06 ***
-    ## treatmentWeekly Fresh Water Treated       -5.548 2.85e-05 ***
-    ## treatmentWeekly Temperature Control        6.356 1.55e-07 ***
-    ## treatmentWeekly Temperature Treated        2.421   0.0223 *  
-    ## date:treatmentWeekly Fresh Water Treated   5.548 2.85e-05 ***
-    ## date:treatmentWeekly Temperature Control  -6.356 1.55e-07 ***
-    ## date:treatmentWeekly Temperature Treated  -2.421   0.0223 *  
+    ##                                                  Estimate Std. Error       df
+    ## (Intercept)                                       1716.37     334.31    11.18
+    ## date20240909                                      8292.66     152.65  2776.06
+    ## treatmentWeekly Fresh Water Treated               -126.04     545.99    11.19
+    ## treatmentWeekly Temperature Control               2983.75     545.45    11.14
+    ## treatmentWeekly Temperature Treated               1472.10     545.56    11.15
+    ## date20240909:treatmentWeekly Fresh Water Treated  1382.27     249.18  2776.04
+    ## date20240909:treatmentWeekly Temperature Control -1579.39     248.48  2776.02
+    ## date20240909:treatmentWeekly Temperature Treated  -600.51     247.99  2776.04
+    ##                                                  t value Pr(>|t|)    
+    ## (Intercept)                                        5.134 0.000310 ***
+    ## date20240909                                      54.326  < 2e-16 ***
+    ## treatmentWeekly Fresh Water Treated               -0.231 0.821608    
+    ## treatmentWeekly Temperature Control                5.470 0.000186 ***
+    ## treatmentWeekly Temperature Treated                2.698 0.020493 *  
+    ## date20240909:treatmentWeekly Fresh Water Treated   5.547 3.18e-08 ***
+    ## date20240909:treatmentWeekly Temperature Control  -6.356 2.41e-10 ***
+    ## date20240909:treatmentWeekly Temperature Treated  -2.421 0.015522 *  
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Correlation of Fixed Effects:
-    ##             (Intr) date   trWFWT trtWTC trtWTT d:WFWT dt:WTC
-    ## date        -1.000                                          
-    ## trtmntWkFWT -0.613  0.613                                   
-    ## trtmntWklTC -0.614  0.614  0.376                            
-    ## trtmntWklTT -0.616  0.616  0.377  0.378                     
-    ## dt:trtmWFWT  0.613 -0.613 -1.000 -0.376 -0.377              
-    ## dt:trtmnWTC  0.614 -0.614 -0.376 -1.000 -0.378  0.376       
-    ## dt:trtmnWTT  0.616 -0.616 -0.377 -0.378 -1.000  0.377  0.378
-    ## fit warnings:
-    ## Some predictor variables are on very different scales: consider rescaling
+    ##             (Intr) d20240 trWFWT trtWTC trtWTT d20FWT d202TC
+    ## dat20240909 -0.232                                          
+    ## trtmntWkFWT -0.612  0.142                                   
+    ## trtmntWklTC -0.613  0.142  0.375                            
+    ## trtmntWklTT -0.613  0.142  0.375  0.376                     
+    ## d2024090FWT  0.142 -0.613 -0.233 -0.087 -0.087              
+    ## d20240909TC  0.143 -0.614 -0.087 -0.230 -0.088  0.376       
+    ## d20240909TT  0.143 -0.616 -0.088 -0.088 -0.231  0.377  0.378
 
 ``` r
 anova(growth_model)
 ```
 
     ## Type III Analysis of Variance Table with Satterthwaite's method
-    ##                    Sum Sq    Mean Sq NumDF   DenDF  F value    Pr(>F)    
-    ## date           4.3632e+10 4.3632e+10     1 126.748 7554.313 < 2.2e-16 ***
-    ## date:treatment 6.9239e+08 2.3080e+08     3  23.003   39.959 2.748e-09 ***
-    ## treatment                                                                
+    ##                    Sum Sq    Mean Sq NumDF DenDF   F value  Pr(>F)    
+    ## date           4.3632e+10 4.3632e+10     1  2776 7554.2251 < 2e-16 ***
+    ## treatment      1.0477e+08 3.4923e+07     3    10    6.0465 0.01286 *  
+    ## date:treatment 6.9240e+08 2.3080e+08     3  2776   39.9600 < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -642,7 +639,7 @@ summary(growth_model_FW)
     ## Predicted_Volume_Poly ~ date * treatment + (1 | treatment:field_cattle_tag)
     ##    Data: fresh_data
     ## 
-    ## REML criterion at convergence: 29022.3
+    ## REML criterion at convergence: 28999.7
     ## 
     ## Scaled residuals: 
     ##     Min      1Q  Median      3Q     Max 
@@ -650,41 +647,39 @@ summary(growth_model_FW)
     ## 
     ## Random effects:
     ##  Groups                     Name        Variance Std.Dev.
-    ##  treatment:field_cattle_tag (Intercept)  524565   724.3  
-    ##  Residual                               5092882  2256.7  
+    ##  treatment:field_cattle_tag (Intercept)  524230   724    
+    ##  Residual                               5092894  2257    
     ## Number of obs: 1588, groups:  treatment:field_cattle_tag, 8
     ## 
     ## Fixed effects:
-    ##                                            Estimate Std. Error         df
-    ## (Intercept)                              -5.889e+08  1.018e+07  1.716e+02
-    ## date                                      2.910e+01  5.029e-01  1.716e+02
-    ## treatmentWeekly Fresh Water Treated      -9.819e+07  1.662e+07  8.944e+02
-    ## date:treatmentWeekly Fresh Water Treated  4.851e+00  8.210e-01  8.944e+02
-    ##                                          t value Pr(>|t|)    
-    ## (Intercept)                              -57.852  < 2e-16 ***
-    ## date                                      57.853  < 2e-16 ***
-    ## treatmentWeekly Fresh Water Treated       -5.908 4.91e-09 ***
-    ## date:treatmentWeekly Fresh Water Treated   5.908 4.90e-09 ***
+    ##                                                  Estimate Std. Error       df
+    ## (Intercept)                                      1716.367    339.567    6.596
+    ## date20240909                                     8292.646    143.339 1578.028
+    ## treatmentWeekly Fresh Water Treated              -125.996    554.574    6.599
+    ## date20240909:treatmentWeekly Fresh Water Treated 1382.227    233.985 1578.021
+    ##                                                  t value Pr(>|t|)    
+    ## (Intercept)                                        5.055  0.00176 ** 
+    ## date20240909                                      57.853  < 2e-16 ***
+    ## treatmentWeekly Fresh Water Treated               -0.227  0.82715    
+    ## date20240909:treatmentWeekly Fresh Water Treated   5.907 4.25e-09 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Correlation of Fixed Effects:
-    ##             (Intr) date   trWFWT
-    ## date        -1.000              
-    ## trtmntWkFWT -0.613  0.613       
-    ## dt:trtmWFWT  0.613 -0.613 -1.000
-    ## fit warnings:
-    ## Some predictor variables are on very different scales: consider rescaling
+    ##             (Intr) d20240 trWFWT
+    ## dat20240909 -0.215              
+    ## trtmntWkFWT -0.612  0.132       
+    ## d2024090FWT  0.132 -0.613 -0.216
 
 ``` r
 anova(growth_model_FW)
 ```
 
     ## Type III Analysis of Variance Table with Satterthwaite's method
-    ##                    Sum Sq    Mean Sq NumDF  DenDF F value    Pr(>F)    
-    ## date           3.0031e+10 3.0031e+10     1 730.77 5896.61 < 2.2e-16 ***
-    ## date:treatment 1.7779e+08 1.7779e+08     1 894.39   34.91 4.904e-09 ***
-    ## treatment                                                              
+    ##                    Sum Sq    Mean Sq NumDF DenDF   F value    Pr(>F)    
+    ## date           3.0031e+10 3.0031e+10     1  1578 5896.5638 < 2.2e-16 ***
+    ## treatment      5.5458e+06 5.5458e+06     1     6    1.0889    0.3369    
+    ## date:treatment 1.7772e+08 1.7772e+08     1  1578   34.8965 4.251e-09 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -743,49 +738,47 @@ summary(growth_model_TEMP)
     ## Predicted_Volume_Poly ~ date * treatment + (1 | treatment:field_cattle_tag)
     ##    Data: temp_data
     ## 
-    ## REML criterion at convergence: 22355.5
+    ## REML criterion at convergence: 22332.9
     ## 
     ## Scaled residuals: 
     ##     Min      1Q  Median      3Q     Max 
-    ## -3.6941 -0.6301 -0.1302  0.5472  3.5732 
+    ## -3.6942 -0.6301 -0.1302  0.5472  3.5732 
     ## 
     ## Random effects:
     ##  Groups                     Name        Variance Std.Dev.
-    ##  treatment:field_cattle_tag (Intercept)  463935   681.1  
-    ##  Residual                               6675304  2583.7  
+    ##  treatment:field_cattle_tag (Intercept)  463122   680.5  
+    ##  Residual                               6675340  2583.7  
     ## Number of obs: 1206, groups:  treatment:field_cattle_tag, 6
     ## 
     ## Fixed effects:
-    ##                                            Estimate Std. Error         df
-    ## (Intercept)                              -4.768e+08  1.497e+07  4.307e+01
-    ## date                                      2.356e+01  7.396e-01  4.307e+01
-    ## treatmentWeekly Temperature Treated      -6.955e+07  2.114e+07  3.855e+02
-    ## date:treatmentWeekly Temperature Treated  3.436e+00  1.044e+00  3.855e+02
-    ##                                          t value Pr(>|t|)    
-    ## (Intercept)                               -31.85  < 2e-16 ***
-    ## date                                       31.85  < 2e-16 ***
-    ## treatmentWeekly Temperature Treated        -3.29  0.00109 ** 
-    ## date:treatmentWeekly Temperature Treated    3.29  0.00109 ** 
+    ##                                                   Estimate Std. Error        df
+    ## (Intercept)                                       4700.123    420.268     4.560
+    ## date20240909                                      6713.288    210.781  1198.002
+    ## treatmentWeekly Temperature Treated              -1511.712    594.475     4.564
+    ## date20240909:treatmentWeekly Temperature Treated   978.969    297.620  1198.011
+    ##                                                  t value Pr(>|t|)    
+    ## (Intercept)                                       11.184 0.000174 ***
+    ## date20240909                                      31.850  < 2e-16 ***
+    ## treatmentWeekly Temperature Treated               -2.543 0.056280 .  
+    ## date20240909:treatmentWeekly Temperature Treated   3.289 0.001033 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Correlation of Fixed Effects:
-    ##             (Intr) date   trtWTT
-    ## date        -1.000              
-    ## trtmntWklTT -0.708  0.708       
-    ## dt:trtmnWTT  0.708 -0.708 -1.000
-    ## fit warnings:
-    ## Some predictor variables are on very different scales: consider rescaling
+    ##             (Intr) d20240 trtWTT
+    ## dat20240909 -0.251              
+    ## trtmntWklTT -0.707  0.178       
+    ## d20240909TT  0.178 -0.708 -0.252
 
 ``` r
 anova(growth_model_TEMP)
 ```
 
     ## Type III Analysis of Variance Table with Satterthwaite's method
-    ##                    Sum Sq    Mean Sq NumDF  DenDF  F value    Pr(>F)    
-    ## date           1.5639e+10 1.5639e+10     1 318.45 2342.833 < 2.2e-16 ***
-    ## date:treatment 7.2266e+07 7.2266e+07     1 385.53   10.826  0.001093 ** 
-    ## treatment                                                               
+    ##                    Sum Sq    Mean Sq NumDF DenDF  F value    Pr(>F)    
+    ## date           1.5639e+10 1.5639e+10     1  1198 2342.804 < 2.2e-16 ***
+    ## treatment      2.1081e+07 2.1081e+07     1     4    3.158  0.150177    
+    ## date:treatment 7.2225e+07 7.2225e+07     1  1198   10.820  0.001033 ** 
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 

@@ -37,7 +37,8 @@ library("cowplot")
 
 Read in data files. 
 ```{r}
-data<-read_csv(file="data/outplanting/GoosePoint/growth_GoosePoint.csv")
+data<-read_csv(file="data/outplanting/GoosePoint/growth_GoosePoint.csv")%>%
+  mutate(date=as.factor(date))
 ```
 
 Set data attributes. 
