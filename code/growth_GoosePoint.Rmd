@@ -127,6 +127,8 @@ Obtain training data with known length width and depth from 20240909 dataset.
 training_data<-data%>%
   filter(date=="20240909")%>%
   filter(!is.na(volume))
+
+hist(training_data$volume)
 ```
 
 Fit a polynomial regression and a GAM model and compare the fits. 
@@ -214,12 +216,115 @@ hist(data$Predicted_Volume_Poly)
 min(data$Predicted_Volume_Poly)
 ```
 
+Remove outliers and reconstruct polynomial model. 
+
+There are several outliers. Conduct outlier removal and analyze again.  
+
+```{r}
+# Fit a polynomial regression model (2nd-degree polynomial)
+poly_model <- lm(volume ~ poly(length.mm, 2) + poly(width.mm, 2) + length.mm:width.mm, data = training_data)
+
+# Extract raw residuals
+training_data$raw_resid <- residuals(poly_model)
+
+# Standardize residuals
+training_data$std_resid <- training_data$raw_resid / sd(training_data$raw_resid)
+
+# Flag potential outliers
+outlier_threshold <- 3
+training_data$outlier_flag <- abs(training_data$std_resid) > outlier_threshold
+
+# Filter rows flagged as outliers
+outliers <- training_data %>% filter(outlier_flag == TRUE)
+print(outliers)
+
+# Plot standardized residuals
+ggplot(training_data, aes(x = seq_along(std_resid), y = std_resid)) +
+  geom_point(aes(color = outlier_flag), size = 2) +
+  geom_hline(yintercept = c(-outlier_threshold, outlier_threshold), linetype = "dashed", color = "red") +
+  labs(title = "Standardized Residuals with Outliers", x = "Index", y = "Standardized Residual") +
+  theme_minimal()
+```
+
+Re run the model after removing outliers. 
+
+```{r}
+training_data<-training_data%>%
+  filter(!outlier_flag==TRUE)
+```
+
+```{r}
+hist(training_data$volume)
+```
+
+Fit a polynomial regression. 
+```{r}
+# Fit a polynomial regression model (2nd-degree polynomial)
+poly_model <- lm(volume ~ poly(length.mm, 2) + poly(width.mm, 2) + length.mm:width.mm, data = training_data)
+
+# Compare model summaries
+summary(poly_model)
+```
+R sq improved to 0.785
+
+```{r}
+plot(poly_model)
+```
+
+Predict volume using poly model and evaluate fits.   
+```{r}
+# Predict Volume using the trained model
+data$Predicted_Volume_Poly <- predict(poly_model, data)
+```
+
+Plot predicted vs actual volume for each model. 
+
+```{r}
+plot(data$Predicted_Volume_Poly ~ data$volume)
+```
+
+Plot Poly model relationships
+```{r}
+# Plot polynomial fit for Length vs. Volume
+ggplot(training_data, aes(x = length.mm, y = volume)) +
+  geom_point() +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2), color = "blue", se = TRUE) +
+  ggtitle("Polynomial Regression (2nd Degree) Fit for Length vs Volume")
+
+# Plot polynomial fit for Width vs. Volume
+ggplot(training_data, aes(x = width.mm, y = volume)) +
+  geom_point() +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2), color = "red", se = TRUE) +
+  ggtitle("Polynomial Regression (2nd Degree) Fit for Width vs Volume")
+```
+
+View the relationship between known volume and predicted volume using Polynomial regression. 
+```{r}
+# Plot polynomial fit for Length vs. Volume
+ggplot(data%>%filter(date=="20240909"), aes(x = volume, y = Predicted_Volume_Poly)) +
+  geom_point() +
+  stat_smooth(method = "loess", color = "blue", se = TRUE) +
+  ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
+```
+
+Model fit looks good for our approximation. Proceed with using predicted volume calculated by polynomial regression. 
+
+Look for outliers. 
+```{r}
+hist(data$Predicted_Volume_Poly)
+min(data$Predicted_Volume_Poly)
+```
+
+There are fewer negative values than the first iteration of the model. 
+
 Remove any observation that resulted in a negative value. 
 
 ```{r}
 data<-data%>%filter(Predicted_Volume_Poly>0)
 hist(data$Predicted_Volume_Poly)
 ```
+
+Proceed with the calculated volume data.  
 
 # Analyze growth (volume) over time 
 
@@ -282,7 +387,7 @@ plot7<-data%>%
   theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot7
 ```
 
-Sizes vary between treatments at the start of the outplant. We should calculate percent change with each bag as a replicate. 
+Sizes vary between treatments at the start of the outplant. We will examine growth using models to calculate slopes of change in volume over time.  
 
 ## Run linear mixed models models 
 
@@ -296,7 +401,52 @@ qqPlot(residuals(model))
 hist(residuals(model))
 ```
 
-Different sizes by treatment and treatment by date.  
+Different sizes by treatment and treatment by date. 
+
+There are several outliers. Conduct outlier removal and analyze again.  
+
+```{r}
+# Extract raw residuals
+data$raw_resid <- residuals(model)
+
+# Standardize residuals
+data$std_resid <- data$raw_resid / sd(data$raw_resid)
+
+# Flag potential outliers
+outlier_threshold <- 3
+data$outlier_flag <- abs(data$std_resid) > outlier_threshold
+
+# Filter rows flagged as outliers
+outliers <- data %>% filter(outlier_flag == TRUE)
+print(outliers)
+
+# Plot standardized residuals
+ggplot(data, aes(x = seq_along(std_resid), y = std_resid)) +
+  geom_point(aes(color = outlier_flag), size = 2) +
+  geom_hline(yintercept = c(-outlier_threshold, outlier_threshold), linetype = "dashed", color = "red") +
+  labs(title = "Standardized Residuals with Outliers", x = "Index", y = "Standardized Residual") +
+  theme_minimal()
+```
+
+Remove identified outliers. 
+```{r}
+data<-data%>%
+  filter(!outlier_flag==TRUE)
+```
+
+Analyze again. 
+
+```{r}
+model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=data)
+
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+hist(residuals(model))
+```
+
+Residuals are much better.  
 
 # Analyze growth rates over time 
 
@@ -313,7 +463,7 @@ fixed_effects <- fixef(growth_model)
 random_effects <- ranef(growth_model)$`treatment:field_cattle_tag`
 
 # Plot growth trajectories
-ggplot(data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment))) +
+ggplot(data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment), group=treatment)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
   theme_minimal() +
@@ -325,10 +475,9 @@ ggplot(data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment))
 #plot model trajectories 
 ggpred <- ggpredict(growth_model, terms = c("date", "treatment"))
 ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
+  geom_line(aes(group=group)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, group=group), alpha = 0.2) +
   theme_classic() +
-  
   labs(title = "Modeled Oyster Growth Over Time",
        x = "Date",
        y = "Volume",
@@ -358,7 +507,7 @@ random_effects <- ranef(growth_model_FW)$`treatment:field_cattle_tag`
 # Plot growth trajectories
 ggplot(fresh_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment))) +
   geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
+  geom_smooth(aes(group=treatment), method = "lm", se = FALSE) +
   theme_minimal() +
   labs(title = "Oyster Growth Over Time",
        x = "Date",
@@ -367,7 +516,7 @@ ggplot(fresh_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treat
 
 #plot model trajectories 
 ggpred <- ggpredict(growth_model_FW, terms = c("date", "treatment"))
-plot1<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group)) +
+plot1<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group, group=group)) +
   geom_line() +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
   theme_classic() +
@@ -379,7 +528,7 @@ plot1<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group)) +
        fill = "Treatment");plot1
 ```
 
-No difference between control and treated in the fresh water experiment.  
+No clear difference between control and treated in the fresh water experiment.  
 
 Weekly temperature group:  
 ```{r}
@@ -397,7 +546,7 @@ fixed_effects <- fixef(growth_model_TEMP)
 random_effects <- ranef(growth_model_TEMP)$`treatment:field_cattle_tag`
 
 # Plot growth trajectories
-ggplot(temp_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment))) +
+ggplot(temp_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment), group=treatment)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
   theme_minimal() +
@@ -408,7 +557,7 @@ ggplot(temp_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatm
 
 #plot model trajectories 
 ggpred <- ggpredict(growth_model_TEMP, terms = c("date", "treatment"))
-plot2<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group)) +
+plot2<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group, group=group)) +
   geom_line() +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
   theme_classic() +
@@ -427,14 +576,6 @@ plots<-plot_grid(plot1, plot2, ncol=2, nrow=1);plots
 
 ggsave(filename="figures/growth/goose_point/growth.png", plots, width=14, height=6)
 ```
-
-
-
-
-
-
-
-
 
 
 
