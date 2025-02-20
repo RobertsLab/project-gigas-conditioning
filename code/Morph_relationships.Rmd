@@ -20,6 +20,7 @@ install.packages("glmmTMB")
 library(glmmTMB)#follows lme4 syntax
 install.packages("DHARMa")
 library(DHARMa)
+library(broom)
 ```
 
 
@@ -1023,5 +1024,49 @@ height <- ggplot(means_perc_dimension, aes(x = date, y = mean_perc_height, color
     legend.title = element_text(size = 20, color = "black"))
 
 grid.arrange(length,width,height)
+```
+### Fitting volume models to each bag
+```{r}
+# first part
+#Graph all volume data by bag
+#somehow fit models by bag number 
+#save coefficients
+#graph fits of model to actual values
+
+
+growth_list <- growth %>%
+  group_by(bag_num) %>%
+  group_split()
+
+gmodel_list <- lapply(growth_list, function(x) nls(log(volume) ~ a*length.mm^b, data = growth, start = list(a = 6.8, b = 1.1)))
+
+pred1 <- lapply(1:length(growth_list), 
+                function(x) predict(growth_list[[x]], 
+                                    newdata = growth[[length.mm]], 
+                                    type = "response"))
+
+
+#second part
+# use models to predict volumes based on imageJ length data
+
+```
+
+```{r}
+
+growth_split <- split(growth, growth$bag_num)
+
+lapply(growth_split, function(growth) {
+  ggplot(growth, aes(x = length.mm, y = log(volume), color = date)) +
+    geom_point()+
+    geom_line(aes(y = predicted), color = "red", size = 1) + 
+    theme_classic()+
+    ylim(0,15)+
+    xlim(0,90)
+})
+
+
+```
+```{r}
+
 ```
 

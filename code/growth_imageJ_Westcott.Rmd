@@ -35,11 +35,11 @@ growth_IJ <- growth_IJ %>%
 
 ```{r}
 
-
-growth_IJ$pred_log_vol <- 2.2170013*growth_IJ$length^0.3521082 
+names(growth_IJ)[names(growth_IJ) == 'length'] <- 'length.mm'
+growth_IJ$pred_log_vol <- predict(model, newdata= growth_IJ) 
 growth_IJ$pred_vol <- exp(growth_IJ$pred_log_vol)
 
-ggplot(growth_IJ, aes(x = length, y = pred_vol)) +
+ggplot(growth_IJ, aes(x = length.mm, y = pred_log_vol)) +
   geom_point(color = "blue", size = 2) +  
   labs(x = "length",
        y = "volume") +
@@ -47,6 +47,7 @@ ggplot(growth_IJ, aes(x = length, y = pred_vol)) +
 
 
 ```
+
 ```{r}
 plot(growth$length.mm, growth$volume) 
   
