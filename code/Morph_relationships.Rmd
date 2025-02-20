@@ -38,8 +38,11 @@ B_growth$date <- as.Date(B_growth$date)
 B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 # D survival
-D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx")
+D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx", guess_max = 2000)
 D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
+D_growth$length.mm <- as.numeric(D_growth$length.mm)
+D_growth$width.mm <- as.numeric(D_growth$width.mm)
+D_growth$height.mm <- as.numeric(D_growth$height.mm)
 D_growth$date <- as.Date(D_growth$date)
 ```
 ## Histograms
@@ -399,7 +402,7 @@ bptest(model5)
 
 
 ```{r}
-growth$volume <- (4/3) * pi * (growth$length.mm/2) * (growth$width.mm/2) * (growth$height.mm/2) * (1/2)
+growth$volume <- (4/3) * pi * (growth$length.mm/2) * (growth$width.mm/2) * (growth$height.mm) * (1/2)
 
 growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
 growth$conditioning <- gsub("daily", "treated", growth$conditioning)
@@ -726,7 +729,7 @@ ggplot(growth, aes(x = log(volume), y = predicted)) +
 ### Looking at percent change in volume 
 ```{r}
 means_vols <- growth %>%
-  group_by(effort, conditioning, date) %>%
+  group_by(effort, conditioning, date, bag_num) %>%
   summarise(mean_vol = mean(volume),
             std_error = sd(volume)/sqrt(length(volume)),
             .groups = 'drop')
@@ -1039,6 +1042,8 @@ growth_list <- growth %>%
   group_split()
 
 gmodel_list <- lapply(growth_list, function(x) nls(log(volume) ~ a*length.mm^b, data = growth, start = list(a = 6.8, b = 1.1)))
+
+
 
 pred1 <- lapply(1:length(growth_list), 
                 function(x) predict(growth_list[[x]], 
