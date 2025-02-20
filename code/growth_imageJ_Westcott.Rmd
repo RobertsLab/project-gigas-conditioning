@@ -37,7 +37,7 @@ growth_IJ <- growth_IJ %>%
 ### Run morph relationships code first to get the non linear model set up
 
 names(growth_IJ)[names(growth_IJ) == 'length'] <- 'length.mm'
-growth_IJ$pred_log_vol <- predict(model, newdata= growth_IJ) 
+growth_IJ$pred_log_vol <- 2.677551*growth_IJ$length.mm^0.323301
 growth_IJ$pred_vol <- exp(growth_IJ$pred_log_vol)
 
 ggplot(growth_IJ, aes(x = length.mm, y = pred_log_vol)) +
@@ -63,6 +63,7 @@ points(growth_IJ$length.mm, growth_IJ$pred_vol, col = "green")
 names(growth_IJ)[names(growth_IJ) == 'width'] <- 'width.mm'
 names(growth_IJ)[names(growth_IJ) == 'pred_vol'] <- 'volume'
 
+
 growth_IJ_sym <- growth_IJ %>% select(-c(oyster, pred_log_vol))
 growth_sym <- growth %>% select(-c(bag_num, height.mm, duplicate, tag_num, notes,date_numeric, predicted, lower_ci, upper_ci))
 
@@ -72,7 +73,7 @@ growth_with_IJ <- rbind(growth_sym, growth_IJ_sym)
 
 ### Predicted volumes underestimate vol 
 ```{r}
-ggplot(growth_with_IJ, aes(x=length.mm, y=volume, col = date))+
+ggplot(growth_with_IJ, aes(x=length.mm, y=log(volume), col = date))+
   geom_point()+
   theme_classic()+
   labs(x= "Length (mm)", y = expression(paste("Volume ", (mm^{3}))), col = "Date")

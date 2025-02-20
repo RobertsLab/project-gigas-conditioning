@@ -207,9 +207,6 @@ growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
 # lme model with nested random effects structure
 model <- lmer(length.mm ~ width.mm + height.mm + effort/conditioning + date_numeric + (1 | bag_num/tag_num), data = growth_noNT)
 
-summary(model)
-library(car)
-vif(lm(length.mm ~ effort/conditioning + date_numeric, data = growth_noNT))
 
 ```
 
@@ -706,10 +703,9 @@ growth$lower_ci <- growth$predicted - z_value * se_pred
 growth$upper_ci <- growth$predicted + z_value * se_pred
 
 # Graph Length to log volume with model line
-ggplot(growth, aes(x = length.mm, y = log(volume))) +
-  geom_point(color = "blue", size = 2) +  
+ggplot(growth, aes(x = length.mm, y = log(volume), color = date)) +
+  geom_point() +  
   geom_line(aes(y = predicted), color = "red", size = 1) + 
-  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci),alpha = 0.2, fill = "purple")+
   labs(x = "length",
        y = "volume") +
   theme_classic()
