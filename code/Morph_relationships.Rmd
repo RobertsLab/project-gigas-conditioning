@@ -2,6 +2,8 @@
 title: "Morph_relationships"
 output: html_document
 date: "2024-10-03"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ### Load libraries
@@ -27,7 +29,7 @@ library(broom)
 ### Load Data
 ```{r}
 # B survival
-B_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_12172024.xlsx")
+B_growth <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_12172024.xlsx")
 
 # Heights from bag 2 for 07/05/2024 showing up as NAs for some reason when data imported
 B_growth$length.mm <- as.numeric(B_growth$length.mm)
@@ -38,7 +40,7 @@ B_growth$date <- as.Date(B_growth$date)
 B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 # D survival
-D_growth <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx", guess_max = 2000)
+D_growth <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx", guess_max = 2000)
 D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 D_growth$length.mm <- as.numeric(D_growth$length.mm)
 D_growth$width.mm <- as.numeric(D_growth$width.mm)
@@ -841,7 +843,7 @@ means_vols %>%
 ```
 
 ```{r}
-ggplot(means_perc_vols, aes(x = date, y = log(mean_perc_vol), color = effort)) +
+ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
    geom_point() +
   geom_line(aes(linetype=conditioning))+
   labs(x = "Date",
@@ -850,6 +852,7 @@ ggplot(means_perc_vols, aes(x = date, y = log(mean_perc_vol), color = effort)) +
   theme_classic()+
   scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  ylim(0,4000)+
   theme(
     axis.title.x = element_text(size = 20, color = "black"),       
     axis.text.x = element_text(size=18, color = "black"),
@@ -1067,7 +1070,3 @@ lapply(growth_split, function(growth) {
 
 
 ```
-```{r}
-
-```
-

@@ -15,7 +15,7 @@ library(gridExtra)
 ```
 
 ```{r}
-growth_IJ <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
+growth_IJ <- read_xlsx("data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
 ```
 
 
@@ -50,7 +50,7 @@ ggplot(growth_IJ, aes(x = length.mm, y = pred_log_vol)) +
 ```
 
 ```{r}
-plot(growth$length.mm, growth$volume) 
+plot(growth_IJ$length.mm, growth_IJ$volume) 
   
 # overlay line plot  
 points(growth_IJ$length.mm, growth_IJ$pred_vol, col = "green")
@@ -65,7 +65,7 @@ names(growth_IJ)[names(growth_IJ) == 'pred_vol'] <- 'volume'
 
 
 growth_IJ_sym <- growth_IJ %>% select(-c(oyster, pred_log_vol))
-growth_sym <- growth %>% select(-c(bag_num, height.mm, duplicate, tag_num, notes,date_numeric, predicted, lower_ci, upper_ci))
+growth_sym <- growth_IJ %>% dplyr::select(-c(bag_num, height.mm, duplicate, tag_num, notes,date_numeric, predicted, lower_ci, upper_ci))
 
 growth_with_IJ <- rbind(growth_sym, growth_IJ_sym)
 ```
