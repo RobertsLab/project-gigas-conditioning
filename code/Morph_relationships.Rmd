@@ -795,6 +795,35 @@ ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
 
 
 ```
+
+```{r}
+library(scales)  # for date_format()
+
+ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
+  geom_point() +
+  geom_line(aes(linetype = conditioning)) +
+  labs(x = "Date",
+       y = "Percent change in volume") +
+  labs(color = "Conditioning Type", linetype = "Treatment") +
+  theme_classic() +
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen")) +
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed")) +
+  geom_errorbar(aes(ymin = mean_perc_vol - std_error, ymax = mean_perc_vol + std_error), 
+                width = 0.2,
+                position = position_dodge(0.05)) +
+  scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +  # <-- add this line
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 1),  # angled for readability
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size = 18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+
+```
+
+
+
 ```{r}
 means_vols %>%
   filter(effort == "D") %>%
