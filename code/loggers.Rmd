@@ -208,11 +208,11 @@ Overall, loggers at Westcott show huge swings in temperature with maximum temper
 
 Read in Hobo Tidbit files  
 ```{r}
-goose.files <- list.files(path="data/environmental/loggers/goose_point", pattern="*.csv", full.names=TRUE)
+goose.files <- list.files(path="data/environmental/loggers/goose_point", pattern="*.xlsx", full.names=TRUE)
 
 goose <- setNames(goose.files, goose.files) %>%
-    map_dfr(read_csv, .id = "logger") %>%
-    rename(DateTime=`Date-Time (PST/PDT)`, temp.C=`Temp (°C)`)%>%
+    map_dfr(read_excel, .id = "logger") %>%
+    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temp , °C`)%>%
     select(!`#`)%>%
     select(logger, DateTime, temp.C)%>%
     mutate(logger=sub(".*/", "", logger))%>% #remove the path name
@@ -248,7 +248,7 @@ Remove temperature data from read out days (6/24, 9/9, 12/11)
 
 ```{r}
 # Dates to filter out
-dates_to_filter <- as.Date(c("2024-06-19", "2024-06-20", "2024-06-21", "2024-06-22", "2024-06-23", "2024-06-24", "2024-06-25", "2024-09-09", "2024-09-10", "2024-12-11"))
+dates_to_filter <- as.Date(c("2024-06-19", "2024-06-20", "2024-06-21", "2024-06-22", "2024-06-23", "2024-06-24", "2024-06-25", "2024-09-09", "2024-09-10", "2024-12-11", "2025-05-20"))
 
 # Filter out rows with specified dates
 goose <- goose %>%
@@ -268,7 +268,7 @@ goose_plot<-goose%>%
   geom_smooth(colour="black", se=FALSE)+
   ylab("Temperature (°C)")+
   xlab("Date")+
-  ylim(0,40)+
+  ylim(-5,40)+
   theme_classic(); goose_plot
 
 ggsave(goose_plot, filename="figures/environmental/goose-loggers.png", width=10, height=6)
@@ -294,7 +294,7 @@ goose_plot2<-daily_goose%>%
   geom_smooth(colour="black", se=FALSE)+
   ylab("Daily Temperature Range (°C)")+
   xlab("Date")+
-  ylim(0,20)+
+  ylim(-5,20)+
   theme_classic(); goose_plot2
 
 ggsave(goose_plot2, filename="figures/environmental/goose-loggers_daily-range.png", width=8, height=6)
