@@ -1,0 +1,6 @@
+logger,date.launched,time.launched,date.deployed,date.stopped,site,model,interval,notes,bag
+20174083,,,,20250528,Sequim,Hobo Pendant ,15 min,Unsure of deployment date ,G099
+22105350,20250528,10:30,20250528,,Sequim,Hobo Tidbit MX Temp 400,15 min,,G099
+22105351,20250528,10:30,20250528,,Sequim,Hobo Tidbit MX Temp 400,15 min,,G097
+,,,,,,,,,
+,,,,,,,,,
