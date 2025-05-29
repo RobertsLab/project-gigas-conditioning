@@ -302,3 +302,99 @@ ggsave(goose_plot2, filename="figures/environmental/goose-loggers_daily-range.pn
 
 
 
+
+# Sequim
+
+Read in Hobo file  
+```{r}
+sequim.files <- list.files(path="data/environmental/loggers/sequim", pattern="*.csv", full.names=TRUE)
+
+sequim <- setNames(sequim.files, sequim.files) %>%
+    map_dfr(read_csv, .id = "logger") %>%
+    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temp , °C`)%>%
+    select(logger, DateTime, temp.C)%>%
+    mutate(logger=sub(".*/", "", logger))%>% #remove the path name
+    mutate(logger=sub("_.*", "", logger))%>% #keep only the serial number 
+    filter(!temp.C=="NA")
+
+#export data 
+sequim%>%
+  write_csv("output/environmental/sequim-temperature-data.csv")
+
+sequim$DateTime<-as.POSIXct(sequim$DateTime, format="%m/%d/%y %H:%M")
+```
+
+List the logger serial numbers in this dataframe.  
+```{r}
+levels(as.factor(sequim$logger))
+```
+
+Add in group information. 
+
+```{r}
+sequim <- sequim %>%
+  mutate(group = c("Sequim"))
+
+levels(as.factor(sequim$group))
+```
+
+Group information is now added.  
+
+Remove temperature data from read out days. 
+
+```{r}
+# Dates to filter out
+dates_to_filter <- as.Date(c("2024-04-03"))
+
+# Filter out rows with specified dates
+sequim <- sequim %>%
+  mutate(day=as.Date(DateTime))%>%
+  filter(!day < dates_to_filter)
+
+```
+
+## Plot data 
+
+All loggers 
+```{r}
+sequim_plot<-sequim%>%
+  
+  ggplot(aes(x=DateTime, y=temp.C))+
+  geom_point(alpha=0.7, colour="darkgray")+
+  geom_smooth(colour="black", se=FALSE)+
+  ylab("Temperature (°C)")+
+  xlab("Date")+
+  #ylim(-5,40)+
+  theme_classic(); sequim_plot
+
+ggsave(sequim_plot, filename="figures/environmental/sequim-loggers.png", width=10, height=6)
+```
+
+Plot amount of daily variability over a 24 hour cycle. 
+
+```{r}
+#calculate min and max of each day and plot this difference over time 
+daily_sequim<-sequim%>%
+  group_by(logger, day, group)%>%
+  summarise(min=min(temp.C), max=max(temp.C))%>%
+  mutate(diff=max-min)
+```
+
+Plot daily range over time. 
+
+```{r}
+sequim_plot2<-daily_sequim%>%
+  
+  ggplot(aes(x=day, y=diff))+
+  geom_point(alpha=0.7, colour="darkgray")+
+  geom_smooth(colour="black", se=FALSE)+
+  ylab("Daily Temperature Range (°C)")+
+  xlab("Date")+
+  #ylim(-5,20)+
+  theme_classic(); sequim_plot2
+
+ggsave(sequim_plot2, filename="figures/environmental/sequim-loggers_daily-range.png", width=8, height=6)
+```
+
+
+
