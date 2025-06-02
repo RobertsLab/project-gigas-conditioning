@@ -38,29 +38,19 @@ library(cowplot)
 
 Read in Hobo Tidbit files  
 ```{r}
-tidbit.files <- list.files(path="data/environmental/loggers/point_whitney/for-analysis", pattern="*.csv", full.names=TRUE)
+tidbit.files <- list.files(path="data/environmental/loggers/point_whitney/for-analysis", pattern="*.xlsx", full.names=TRUE)
 
 #will need to change to HST time 
 tidbits <- setNames(tidbit.files, tidbit.files) %>%
-    map_dfr(read_csv, .id = "logger") %>%
-    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temp   (°C)`)%>%
+    map_dfr(read_xlsx, .id = "logger") %>%
+    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temp , °C`)%>%
     select(!`#`)%>%
     select(logger, DateTime, temp.C)%>%
     mutate(logger=sub(".*/", "", logger))%>% #remove the path name
     mutate(logger=sub("_.*", "", logger))%>% #keep only the serial number 
     filter(!temp.C=="NA")
 
-#format date for trays logger, formatted differently 
-trays<-tidbits%>%
-  filter(logger=="22023395")
-
-other<-tidbits%>%
-  filter(!logger=="22023395")
-
-trays$DateTime<-as.POSIXct(trays$DateTime, format="%m/%d/%y %H:%M")
-other$DateTime<-as.POSIXct(other$DateTime, format="%m/%d/%Y %H:%M:%S")
-
-tidbits<-rbind(trays,other)
+tidbits$DateTime<-as.POSIXct(tidbits$DateTime, format="%m/%d/%Y %H:%M:%S")
 ```
 
 List the logger serial numbers in this dataframe.  
