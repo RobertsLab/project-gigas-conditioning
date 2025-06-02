@@ -87,7 +87,7 @@ temp_plot<-tidbits%>%
   geom_point(alpha=0.7)+
   ylab("Temperature (°C)")+
   xlab("Date Time")+
-  ylim(8,32)+
+  #ylim(8,32)+
   theme_classic(); temp_plot
 
 ggsave(temp_plot, filename="figures/environmental/point-whitney-loggers.png", width=6, height=4)
