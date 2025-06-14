@@ -448,6 +448,111 @@ hist(residuals(model))
 
 Residuals are much better.  
 
+# Plot sizes for each effort 
+
+## Temperature experiment 
+
+Plot size over time for each bag. 
+```{r}
+plot8<-data%>%
+  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = field_cattle_tag, group=field_cattle_tag)) +
+  facet_wrap(~treatment)+
+  stat_smooth(color="darkgray", fill="darkgray")+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Date") + 
+  theme_classic(); plot8
+```
+
+Plot summarized by treatment 
+```{r}
+plot9<-data%>%
+  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = treatment, group=interaction(date, treatment))) +
+  scale_colour_manual(values=c("darkgray", "orange2"))+
+  scale_fill_manual(values=c("darkgray", "orange2"))+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.9), alpha=0.5) +
+  geom_boxplot(aes(group=interaction(date, treatment)), fill=NA, outliers = FALSE)+
+  xlab("Date") + 
+  theme_classic(); plot9
+```
+
+Run a model. 
+
+```{r}
+model<-data%>%
+  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  
+  lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=.)
+
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+
+emm<-emmeans(model, ~treatment|date)
+pairs(emm)
+
+emm<-emmeans(model, ~treatment)
+pairs(emm)
+```
+
+No significant differences between dates. Trend for smaller at the start. 
+
+
+## Fresh water experiment 
+
+Plot size over time for each bag. 
+```{r}
+plot10<-data%>%
+  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = field_cattle_tag, group=field_cattle_tag)) +
+  facet_wrap(~treatment)+
+  stat_smooth(color="darkgray", fill="darkgray")+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Date") + 
+  theme_classic(); plot10
+```
+
+Plot summarized by treatment 
+```{r}
+plot11<-data%>%
+  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = treatment, group=interaction(date, treatment))) +
+  scale_colour_manual(values=c("darkgray", "cyan3"))+
+  scale_fill_manual(values=c("darkgray", "cyan3"))+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.9), alpha=0.5) +
+  geom_boxplot(aes(group=interaction(date, treatment)), fill=NA, outliers = FALSE)+
+  xlab("Date") + 
+  theme_classic(); plot11
+```
+
+Run a model. 
+
+```{r}
+model<-data%>%
+  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  
+  lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=.)
+
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+
+emm<-emmeans(model, ~treatment|date)
+pairs(emm)
+
+emm<-emmeans(model, ~treatment)
+pairs(emm)
+```
+
+No significant differences between dates. 
+
 # Analyze growth rates over time 
 
 ```{r}
