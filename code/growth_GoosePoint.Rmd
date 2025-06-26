@@ -448,6 +448,111 @@ hist(residuals(model))
 
 Residuals are much better.  
 
+# Plot sizes for each effort 
+
+## Temperature experiment 
+
+Plot size over time for each bag. 
+```{r}
+plot8<-data%>%
+  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = field_cattle_tag, group=field_cattle_tag)) +
+  facet_wrap(~treatment)+
+  stat_smooth(color="darkgray", fill="darkgray")+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Date") + 
+  theme_classic(); plot8
+```
+
+Plot summarized by treatment 
+```{r}
+plot9<-data%>%
+  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = treatment, group=interaction(date, treatment))) +
+  scale_colour_manual(values=c("darkgray", "orange2"))+
+  scale_fill_manual(values=c("darkgray", "orange2"))+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.9), alpha=0.5) +
+  geom_boxplot(aes(group=interaction(date, treatment)), fill=NA, outliers = FALSE)+
+  xlab("Date") + 
+  theme_classic(); plot9
+```
+
+Run a model. 
+
+```{r}
+model<-data%>%
+  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  
+  lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=.)
+
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+
+emm<-emmeans(model, ~treatment|date)
+pairs(emm)
+
+emm<-emmeans(model, ~treatment)
+pairs(emm)
+```
+
+No significant differences between dates. Trend for smaller at the start. 
+
+
+## Fresh water experiment 
+
+Plot size over time for each bag. 
+```{r}
+plot10<-data%>%
+  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = field_cattle_tag, group=field_cattle_tag)) +
+  facet_wrap(~treatment)+
+  stat_smooth(color="darkgray", fill="darkgray")+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Date") + 
+  theme_classic(); plot10
+```
+
+Plot summarized by treatment 
+```{r}
+plot11<-data%>%
+  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = treatment, group=interaction(date, treatment))) +
+  scale_colour_manual(values=c("darkgray", "cyan3"))+
+  scale_fill_manual(values=c("darkgray", "cyan3"))+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.9), alpha=0.5) +
+  geom_boxplot(aes(group=interaction(date, treatment)), fill=NA, outliers = FALSE)+
+  xlab("Date") + 
+  theme_classic(); plot11
+```
+
+Run a model. 
+
+```{r}
+model<-data%>%
+  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  
+  lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=.)
+
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+
+emm<-emmeans(model, ~treatment|date)
+pairs(emm)
+
+emm<-emmeans(model, ~treatment)
+pairs(emm)
+```
+
+No significant differences between dates. 
+
 # Analyze growth rates over time 
 
 ```{r}
@@ -474,6 +579,7 @@ ggplot(data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment),
 
 #plot model trajectories 
 ggpred <- ggpredict(growth_model, terms = c("date", "treatment"))
+
 ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group)) +
   geom_line(aes(group=group)) +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high, group=group), alpha = 0.2) +
@@ -484,8 +590,6 @@ ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group)) +
        color = "Treatment", 
        fill = "Treatment")
 ```
-
-No difference between treated and control within each group.  
 
 Analyze each effort separately. 
 
@@ -516,6 +620,7 @@ ggplot(fresh_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treat
 
 #plot model trajectories 
 ggpred <- ggpredict(growth_model_FW, terms = c("date", "treatment"))
+
 plot1<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group, group=group)) +
   geom_line() +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
@@ -528,7 +633,7 @@ plot1<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group, group
        fill = "Treatment");plot1
 ```
 
-No clear difference between control and treated in the fresh water experiment.  
+Treated are very slightly but significantly larger than controls. 
 
 Weekly temperature group:  
 ```{r}
@@ -557,6 +662,7 @@ ggplot(temp_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatm
 
 #plot model trajectories 
 ggpred <- ggpredict(growth_model_TEMP, terms = c("date", "treatment"))
+
 plot2<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group, group=group)) +
   geom_line() +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
