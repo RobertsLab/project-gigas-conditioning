@@ -275,33 +275,6 @@ outliers_cooks <- which(cooksd > 4 / nrow(D_growth))
 print(D_growth[outliers_cooks, ]) 
 ```
 
-```{r}
-D_growth_PCA <- subset(D_growth, select = c(length.mm, width.mm, height.mm))
-
-pca_result <- prcomp(D_growth_PCA, scale. = TRUE)
-
-biplot(pca_result)
-
-
-pca_data <- as.data.frame(pca_result$x)
-
-# Create a scatter plot of the first two principal components
-library(ggplot2)
-ggplot(pca_data, aes(x = PC1, y = PC2)) +
-  geom_point() +
-  labs(title = "PCA: Length, Width, and Height", x = "PC1", y = "PC2") +
-  theme_minimal()
-
-pca_result$sdev^2 / sum(pca_result$sdev^2)
-
-# Loadings (contribution of each variable to the principal components)
-pca_result$rotation
-
-# Scree plot
-scree_values <- pca_result$sdev^2
-plot(scree_values, type = "b", xlab = "Principal Component", ylab = "Eigenvalue", main = "Scree Plot")
-
-```
 
 ## Predicting height and width from length
 
@@ -795,7 +768,7 @@ ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
     legend.title = element_text(size = 20, color = "black"))
 
 
-
+x
 ```
 
 ```{r}

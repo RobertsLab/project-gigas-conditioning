@@ -1,0 +1,54 @@
+---
+title: "growth_withImageJ"
+output: html_document
+date: "2025-07-03"
+---
+### Load libraries
+```{r}
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(lmtest)
+library(car)
+install.packages("lmerTest")
+library(lmerTest)
+install.packages("modelr")
+library(modelr)
+install.packages("glmmTMB")
+library(glmmTMB)#follows lme4 syntax
+install.packages("DHARMa")
+library(DHARMa)
+```
+
+
+### Load data
+
+```{r}
+B_growth_sum <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_12172024.xlsx")
+B_growth_sum$date <- as.Date(B_growth_sum$date)
+B_growth_sum <- B_growth_sum[which(B_growth_sum$date < as.Date("2024-12-17")),]
+
+
+D_growth_sum <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx", guess_max = 2000)
+D_growth_sum$date <- as.Date(D_growth_sum$date)
+D_growth_sum <- D_growth_sum[which(D_growth_sum$date < as.Date("2024-12-17")),]
+
+Dec_sizes <- read_xlsx("data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
+May_sizes <- read_xlsx("data/outplanting/Westcott/20250513_images/sizes_05132025.xlsx")
+
+
+```
+
+
+```{r}
+Dec_sizes <- Dec_sizes %>%
+  pivot_wider(names_from = metric,
+              values_from = c(measure.mm))
+Dec_sizes$width 
+
+May_sizes <- May_sizes %>%
+  pivot_wider(names_from = metric,
+              values_from = c(measure.mm))
+```
+
