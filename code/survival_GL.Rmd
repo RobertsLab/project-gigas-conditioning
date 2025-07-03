@@ -1,0 +1,390 @@
+---
+title: "Survival_analysis"
+output: html_document
+date: "2024-06-26"
+---
+
+### Load libraries
+```{r}
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(DHARMa)
+library(glmmTMB)
+
+```
+
+### Load Data
+```{r}
+# B survival
+B_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_12172024.xlsx")
+B_survival$conditioning <- gsub("daily", "treated", B_survival$conditioning)
+
+# D survival
+D_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_12172024.xlsx")
+D_survival$conditioning <- gsub("weekly", "treated", D_survival$conditioning)
+
+```
+
+### Combine data, reup it
+```{r}
+means_B_live <- B_survival %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_survival = mean(alive_num),
+            std_error = sd(alive_num)/sqrt(length(alive_num)),
+            .groups = 'drop')
+
+means_D_live <- D_survival %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_survival = mean(alive_num),
+            std_error = sd(alive_num)/sqrt(length(alive_num)),
+            .groups = 'drop')
+
+means_live <- rbind(means_B_live, means_D_live)
+
+
+```
+
+### Stats
+
+
+```{r}
+ggplot(means_live, aes(x = date, y = mean_survival, shape = conditioning , color = effort)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Mean live oysters per bag") +
+  scale_color_manual(labels = c("Weekly", "Daily"), values = c("green", "purple"))+
+  labs(color = "Conditioning")+
+  geom_errorbar(aes(ymin=mean_survival-std_error, ymax=mean_survival+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme_classic()
+```
+```{r}
+
+ggplot(D_survival, aes(x = date, y = alive_num, group = effort, color = conditioning)) +
+   geom_jitter(width = 10, height = 0, size=3) +
+  labs(x = "Date",
+       y = "Live oysters per bag") +
+  scale_color_manual(labels = c("Control", "Weekly"), values = c("green","purple"))+
+  labs(color = "Conditioning")+
+  theme_classic()+
+  ylim(0,120)
+
+```
+
+```{r}
+
+ggplot(B_survival, aes(x = date, y = alive_num, group = effort, color = conditioning)) +
+   geom_jitter(width = 10, height = 0,size=3) +
+  labs(x = "Date",
+       y = "Live oysters per bag") +
+  scale_color_manual(labels = c("Control", "Daily"), values = c("blue","red"))+
+  labs(color = "Conditioning")+
+  theme_classic()+
+  ylim(0,55)
+
+```
+
+```{r}
+ggplot(B_survival, aes(x=date,y=dead, color=conditioning))+
+  geom_jitter(width = 0.2, height = 0.2, size = 3) +
+  theme_classic()+
+  ylab("Dead oysters found")+
+  xlab("Date")
+
+
+```
+```{r}
+ggplot(D_survival, aes(x=date, y=dead, color=conditioning))+
+  geom_jitter(width = 0.2, height = 0.2, size = 3) +
+  theme_classic()+
+  ylab("Dead oysters found")+
+  xlab("Date")
+
+```
+### Cumulative survival
+```{r}
+B_survival <- B_survival %>%
+  group_by(effort, conditioning, bag_num) %>%
+  arrange(date)%>%
+  mutate(cumulative_deaths = cumsum(dead)) %>%
+  ungroup()
+
+D_survival <- D_survival %>%
+  group_by(effort, conditioning, bag_num) %>%
+  arrange(date)%>%
+  mutate(cumulative_deaths = cumsum(dead)) %>%
+  ungroup()
+
+```
+
+
+```{r}
+ggplot(B_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
+  geom_jitter(height = 0.3) +
+  theme_classic()+
+  ylab("Cumulative dead oysters found")+
+  xlab("Date")+
+  labs(color = "Conditioning")+
+  scale_color_manual(labels = c("Control", "Daily"),values = c("blue", "red"))+
+  ylim(-0.5,6)
+```
+```{r}
+ggplot(D_survival, aes(x=date, y=cumulative_deaths, color=conditioning))+
+  geom_jitter(height = 0.2) +
+  theme_classic()+
+  ylab("Cumulative dead oysters found")+
+  xlab("Date")+
+  labs(color= "Conditioning")+
+  scale_color_manual(labels = c("Control", "Weekly"),values = c("green", "purple"))
+```
+### Means cumulative death
+```{r}
+means_B_cumdead <- B_survival %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_cumdead = mean(cumulative_deaths),
+            std_error = sd(cumulative_deaths)/sqrt(length(cumulative_deaths)),
+            .groups = 'drop')
+
+means_D_cumdead <- D_survival %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_cumdead = mean(cumulative_deaths),
+            std_error = sd(cumulative_deaths)/sqrt(length(cumulative_deaths)),
+            .groups = 'drop')
+
+means_cumdead <- rbind(means_B_cumdead, means_D_cumdead)
+
+
+```
+
+### Means Cumulative death graphed
+```{r}
+ggplot(means_cumdead, aes(x = date, y = mean_cumdead, shape = conditioning, color = effort)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Mean cumulative dead oysters per bag") +
+  scale_color_manual(labels = c("Daily Control", "Daily", "Weekly Control", "Weekly"), values = c("blue", "red", "green", "purple"))+
+  labs(color = "Conditioning")+
+  geom_errorbar(aes(ymin=mean_cumdead-std_error, ymax=mean_cumdead+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme_classic()
+```
+### Calculating proportion survival 
+```{r}
+initial_counts <- B_survival %>%
+  group_by(effort, conditioning, bag_num) %>%
+  summarize(initial_count = nth(alive_num, 4)) %>%
+  ungroup()
+
+# Join the initial counts back to the original dataframe
+B_survival <- B_survival %>%
+  left_join(initial_counts, by = c("effort", "conditioning", "bag_num"))
+
+# Calculate the proportion of organisms remaining alive at each timepoint
+B_survival <- B_survival %>%
+  mutate(proportion_remaining = alive_num / initial_count)
+```
+
+```{r}
+
+
+initial_counts <- D_survival %>%
+  group_by(effort, conditioning, bag_num) %>%
+  summarize(initial_count = nth(alive_num, 4)) %>%
+  ungroup()
+
+# Join the initial counts back to the original dataframe
+D_survival <- D_survival %>%
+  left_join(initial_counts, by = c("effort", "conditioning", "bag_num"))
+
+# Calculate the proportion of organisms remaining alive at each timepoint
+D_survival <- D_survival %>%
+  mutate(proportion_remaining = alive_num / initial_count)
+```
+
+### Mean proportion survival
+
+```{r}
+means_B_prop <- B_survival %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_prop = mean(proportion_remaining),
+            std_error = sd(proportion_remaining)/sqrt(length(proportion_remaining)),
+            .groups = 'drop')
+
+means_D_prop <- D_survival %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_prop = mean(proportion_remaining),
+            std_error = sd(proportion_remaining)/sqrt(length(proportion_remaining)),
+            .groups = 'drop')
+
+means_prop <- rbind(means_B_prop, means_D_prop)
+
+
+```
+
+```{r}
+ggplot(means_prop, aes(x = date, y = mean_prop, group = effort, color = conditioning)) +
+   geom_point(size=3) +
+  labs(x = "Date",
+       y = "Proportion survival (Oysters left / Starting # oysters)") +
+  scale_color_manual(labels = c("Daily Control", "Daily", "Weekly Control", "Weekly"), values = c("blue", "red", "green", "purple"))+
+  labs(color = "Conditioning")+
+  geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme_classic()+
+  theme(axis.text = element_text(size = 18, color= "black"),
+        axis.title = element_text(size = 20, color= "black"),
+        legend.text = element_text(size = 18, color= "black"),
+        legend.title = element_text(size = 20, color= "black"))
+```
+```{r}
+ggplot(D_survival, aes(x=date, y=proportion_remaining, color=conditioning))+
+  geom_jitter() +
+  theme_classic()+
+  ylab("Proportion of oysters remaining")+
+  xlab("Date")+
+  labs(color= "Conditioning")+
+  scale_color_manual(labels = c("Control", "Weekly"),values = c("green", "purple"))
+```
+```{r}
+ggplot(B_survival, aes(x=date, y=proportion_remaining, color=conditioning))+
+  geom_jitter() +
+  theme_classic()+
+  ylab("Proportion of oysters remaining")+
+  xlab("Date")+
+  labs(color = "Conditioning")+
+  scale_color_manual(labels = c("Control", "Daily"),values = c("blue", "red"))
+```
+
+```{r}
+library(car)
+library(lme4)
+survival <- rbind(B_survival, D_survival)
+survival$conditioning <- gsub("daily", "treated", survival$conditioning)
+survival$conditioning <- gsub("weekly", "treated", survival$conditioning)
+
+modelsurv <- lmer(proportion_remaining ~  effort/conditioning + (1|bag_num),  data = survival)
+summary(modelsurv)
+qqPlot(residuals(modelsurv))
+
+
+
+```
+
+```{r}
+means_prop <- survival %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_prop = mean(proportion_remaining),
+            std_error = sd(proportion_remaining)/sqrt(length(proportion_remaining)),
+            .groups = 'drop')
+
+```
+
+```{r}
+ggplot(means_prop, aes(x = date, y = mean_prop, color = effort)) +
+   geom_point(size=3) +
+  geom_line(aes(linetype = conditioning))+
+  labs(x = "Date",
+       y = "Proportion survival (Oysters left / Starting # oysters)") +
+    scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme_classic()+
+  theme(axis.text = element_text(size = 18, color= "black"),
+        axis.title = element_text(size = 20, color= "black"),
+        legend.text = element_text(size = 18, color= "black"),
+        legend.title = element_text(size = 20, color= "black"))
+```
+
+### Redoing prop survival based on second measurement
+```{r}
+initial_counts <- survival %>%
+  group_by(effort, conditioning, bag_num) %>%
+  summarize(initial_count = nth(alive_num, 4)) %>%
+  ungroup()
+
+# Join the initial counts back to the original dataframe
+survival <- survival  %>%
+  left_join(initial_counts, by = c("effort", "conditioning", "bag_num"))
+
+# Calculate the proportion of organisms remaining alive at each timepoint
+survival <- survival %>%
+  mutate(proportion_remaining = alive_num/initial_count)
+```
+
+### Mean proportion survival
+
+```{r}
+
+means_prop <- survival %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_prop = mean(proportion_remaining),
+            std_error = sd(proportion_remaining)/sqrt(length(proportion_remaining)),
+            .groups = 'drop')
+```
+
+```{r}
+means_prop %>%
+  filter(date > "2024-07-17")%>%
+  ggplot(aes(x = date, y = mean_prop, color = effort)) +
+   geom_point(size=3) +
+  geom_line(aes(linetype = conditioning))+
+  labs(x = "Date",
+       y = "Proportion survival (Oysters left / Starting # oysters)") +
+    scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme_classic()+
+  theme(axis.text = element_text(size = 18, color= "black"),
+        axis.title = element_text(size = 20, color= "black"),
+        legend.text = element_text(size = 18, color= "black"),
+        legend.title = element_text(size = 20, color= "black"))+
+  ylim(0, 1.03)
+```
+
+```{r}
+
+survival$date <- as.POSIXct(survival$date)
+survival$days <- as.numeric(survival$date - min(survival$date))
+survival$days <- survival$days/86400
+survival$days <- survival$days + 13
+survival <- subset(survival, date > "2024-07-17")
+
+survival$prop_remaining_adjusted <- log(1.05-survival$proportion_remaining) + 4.7
+hist(1.05-survival$proportion_remaining)
+hist(survival$proportion_remaining)
+hist(survival$prop_remaining_adjusted)
+boxplot(survival$prop_remaining_adjusted)
+survival2 <- subset(survival, bag_num != 22)
+hist(survival2$proportion_remaining)
+hist(survival2$prop_remaining_adjusted)
+boxplot(survival2$prop_remaining_adjusted)
+boxplot(survival2$proportion_remaining)
+
+model.s<-glmmTMB(prop_remaining_adjusted~  effort/conditioning*days + (1|bag_num),  data = survival2, family = gaussian()) #glmmTMB
+summary(model.s)
+testDispersion(model.s)
+tst_simres <- simulateResiduals(fittedModel = model.s) #DHARMa
+plot(tst_simres)
+
+
+car::Anova(model.s, type = "III")
+
+```
+
+```{r}
+model.s2<-glmmTMB(proportion_remaining ~  effort/conditioning*days + (1|bag_num),  data = survival2, family = gaussian()) #glmmTMB
+summary(model.s2)
+testDispersion(model.s2)
+tst_simres <- simulateResiduals(fittedModel = model.s2) #DHARMa
+plot(tst_simres)
+
+
+car::Anova(model.s2, type = "III")
+```
+
+

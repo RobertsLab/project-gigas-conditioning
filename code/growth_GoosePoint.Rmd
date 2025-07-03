@@ -1,0 +1,689 @@
+---
+title: "Goose Point oyster size analysis"
+author: "AS Huffmyer"
+date: '2024'
+output:
+  github_document: default
+  github_md: default
+editor_options:
+  chunk_output_type: console
+---
+
+# Set up 
+
+Set up workspace, set options, and load required packages.    
+```{r}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+Load libraries. 
+```{r}
+if ("tidyverse" %in% rownames(installed.packages()) == 'FALSE') install.packages('tidyverse') 
+if ("ggplot2" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggplot2') 
+if ("ggeffects" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggeffects') 
+
+library("ggplot2")
+library("tidyverse")
+library("lme4")
+library("lmerTest")
+library("emmeans")
+library("car")
+library("mgcv")
+library("ggeffects")
+library("cowplot")
+```
+
+# Load data 
+
+Read in data files. 
+```{r}
+data<-read_csv(file="data/outplanting/GoosePoint/growth_GoosePoint.csv")%>%
+  mutate(date=as.factor(date))
+```
+
+Set data attributes. 
+```{r}
+data$field_cattle_tag<-factor(data$field_cattle_tag)
+```
+
+Set value to 0 for dead or stuck if NA. 
+```{r}
+data$dead[is.na(data$dead)] <- 0
+data$stuck[is.na(data$stuck)] <- 0
+```
+
+Add in treatment information 
+```{r}
+metadata<-read_csv(file="data/outplanting/GoosePoint/bag_list_GoosePoint.csv")
+metadata$field_cattle_tag<-factor(metadata$field_cattle_tag)
+
+data$treatment<-metadata$treatment[match(data$field_cattle_tag, metadata$field_cattle_tag)]
+```
+
+# Plot data 
+
+Plot a histogram of each data column to identify any outliers. 
+```{r}
+hist(data$length.mm)
+hist(data$width.mm)
+hist(data$depth.mm)
+```
+
+No obvious outliers. 
+
+Plot a box plot of length, width, and depth as a function of bag number, colored by treatment. 
+
+```{r}
+plot1<-data%>%
+  ggplot(aes(x=field_cattle_tag, y=length.mm, fill = treatment)) +
+  facet_wrap(~date)+
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Bag") + 
+  theme_classic(); plot1
+```
+
+Plot width. 
+```{r}
+plot2<-data%>%
+  ggplot(aes(x=field_cattle_tag, y=width.mm, fill = treatment)) +
+  facet_wrap(~date)+
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Bag") + 
+  theme_classic(); plot2
+```
+
+Plot depth 
+```{r}
+plot3<-data%>%
+  ggplot(aes(x=field_cattle_tag, y=depth.mm, fill = treatment)) +
+  facet_wrap(~date)+
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Bag") + 
+  theme_classic(); plot3
+```
+
+# Generate a metric of volume
+
+Generate an equation to predict depth from length and width using 20240909 data and then use this equation to calculate predicted volume from length and width for other dates. 
+
+Calculate oyster volume as an ellipsoid using known. 
+
+```{r}
+data$volume <- (4/3) * pi * (data$length.mm/2) * (data$width.mm/2) * (data$depth.mm/2)
+```
+
+View the relationship between length, width, and volume. 
+```{r}
+plot(data$volume ~ data$length.mm)
+plot(data$volume ~ data$width.mm)
+```
+Relationships may be non linear. 
+
+Obtain training data with known length width and depth from 20240909 dataset. 
+```{r}
+training_data<-data%>%
+  filter(date=="20240909")%>%
+  filter(!is.na(volume))
+
+hist(training_data$volume)
+```
+
+Fit a polynomial regression and a GAM model and compare the fits. 
+```{r}
+# Fit a polynomial regression model (2nd-degree polynomial)
+poly_model <- lm(volume ~ poly(length.mm, 2) + poly(width.mm, 2) + length.mm:width.mm, data = training_data)
+
+# Fit a Generalized Additive Model (GAM) for comparison
+gam_model <- gam(volume ~ s(length.mm, bs = "cs") + s(width.mm, bs = "cs"), data = training_data)
+
+# Compare model summaries
+summary(poly_model)
+summary(gam_model)
+```
+Poly model adjusted R sq = 0.757
+GAM model adjusted R sq = 0.755 
+
+Both models have similar fits. Plot the models. 
+```{r}
+plot(poly_model)
+plot(gam_model)
+```
+
+Predict volume using both models and evaluate fits.   
+```{r}
+# Predict Volume using the trained model
+data$Predicted_Volume_GAM <- predict(gam_model, data)
+data$Predicted_Volume_Poly <- predict(poly_model, data)
+```
+
+Plot predicted vs actual volume for each model. 
+
+```{r}
+plot(data$Predicted_Volume_GAM ~ data$volume)
+plot(data$Predicted_Volume_Poly ~ data$volume)
+```
+
+Relationships look similar for both models. 
+
+Plot GAM relationships
+```{r}
+# Plot the relationship for visualization
+ggplot(training_data, aes(x = length.mm, y = volume)) +
+  geom_point() +
+  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), color = "blue") +
+  ggtitle("GAM Fit for Length vs Volume")
+
+ggplot(training_data, aes(x = width.mm, y = volume)) +
+  geom_point() +
+  geom_smooth(method = "gam", formula = y ~ s(x, bs = "cs"), color = "red") +
+  ggtitle("GAM Fit for Width vs Volume")
+```
+
+Plot Poly relationships
+```{r}
+# Plot polynomial fit for Length vs. Volume
+ggplot(training_data, aes(x = length.mm, y = volume)) +
+  geom_point() +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2), color = "blue", se = TRUE) +
+  ggtitle("Polynomial Regression (2nd Degree) Fit for Length vs Volume")
+
+# Plot polynomial fit for Width vs. Volume
+ggplot(training_data, aes(x = width.mm, y = volume)) +
+  geom_point() +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2), color = "red", se = TRUE) +
+  ggtitle("Polynomial Regression (2nd Degree) Fit for Width vs Volume")
+```
+
+I am going to select the polynomial model, because the GAM is more affected by higher observations in width. 
+
+View the relationship between known volume and predicted volume using Polynomial regression. 
+```{r}
+# Plot polynomial fit for Length vs. Volume
+ggplot(data%>%filter(date=="20240909"), aes(x = volume, y = Predicted_Volume_Poly)) +
+  geom_point() +
+  stat_smooth(method = "loess", color = "blue", se = TRUE) +
+  ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
+```
+
+Model fit looks good for our approximation. Proceed with using predicted volume calculated by polynomial regression. 
+
+Look for outliers. 
+```{r}
+hist(data$Predicted_Volume_Poly)
+min(data$Predicted_Volume_Poly)
+```
+
+Remove outliers and reconstruct polynomial model. 
+
+There are several outliers. Conduct outlier removal and analyze again.  
+
+```{r}
+# Fit a polynomial regression model (2nd-degree polynomial)
+poly_model <- lm(volume ~ poly(length.mm, 2) + poly(width.mm, 2) + length.mm:width.mm, data = training_data)
+
+# Extract raw residuals
+training_data$raw_resid <- residuals(poly_model)
+
+# Standardize residuals
+training_data$std_resid <- training_data$raw_resid / sd(training_data$raw_resid)
+
+# Flag potential outliers
+outlier_threshold <- 3
+training_data$outlier_flag <- abs(training_data$std_resid) > outlier_threshold
+
+# Filter rows flagged as outliers
+outliers <- training_data %>% filter(outlier_flag == TRUE)
+print(outliers)
+
+# Plot standardized residuals
+ggplot(training_data, aes(x = seq_along(std_resid), y = std_resid)) +
+  geom_point(aes(color = outlier_flag), size = 2) +
+  geom_hline(yintercept = c(-outlier_threshold, outlier_threshold), linetype = "dashed", color = "red") +
+  labs(title = "Standardized Residuals with Outliers", x = "Index", y = "Standardized Residual") +
+  theme_minimal()
+```
+
+Re run the model after removing outliers. 
+
+```{r}
+training_data<-training_data%>%
+  filter(!outlier_flag==TRUE)
+```
+
+```{r}
+hist(training_data$volume)
+```
+
+Fit a polynomial regression. 
+```{r}
+# Fit a polynomial regression model (2nd-degree polynomial)
+poly_model <- lm(volume ~ poly(length.mm, 2) + poly(width.mm, 2) + length.mm:width.mm, data = training_data)
+
+# Compare model summaries
+summary(poly_model)
+```
+R sq improved to 0.785
+
+```{r}
+plot(poly_model)
+```
+
+Predict volume using poly model and evaluate fits.   
+```{r}
+# Predict Volume using the trained model
+data$Predicted_Volume_Poly <- predict(poly_model, data)
+```
+
+Plot predicted vs actual volume for each model. 
+
+```{r}
+plot(data$Predicted_Volume_Poly ~ data$volume)
+```
+
+Plot Poly model relationships
+```{r}
+# Plot polynomial fit for Length vs. Volume
+ggplot(training_data, aes(x = length.mm, y = volume)) +
+  geom_point() +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2), color = "blue", se = TRUE) +
+  ggtitle("Polynomial Regression (2nd Degree) Fit for Length vs Volume")
+
+# Plot polynomial fit for Width vs. Volume
+ggplot(training_data, aes(x = width.mm, y = volume)) +
+  geom_point() +
+  stat_smooth(method = "lm", formula = y ~ poly(x, 2), color = "red", se = TRUE) +
+  ggtitle("Polynomial Regression (2nd Degree) Fit for Width vs Volume")
+```
+
+View the relationship between known volume and predicted volume using Polynomial regression. 
+```{r}
+# Plot polynomial fit for Length vs. Volume
+ggplot(data%>%filter(date=="20240909"), aes(x = volume, y = Predicted_Volume_Poly)) +
+  geom_point() +
+  stat_smooth(method = "loess", color = "blue", se = TRUE) +
+  ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
+```
+
+Model fit looks good for our approximation. Proceed with using predicted volume calculated by polynomial regression. 
+
+Look for outliers. 
+```{r}
+hist(data$Predicted_Volume_Poly)
+min(data$Predicted_Volume_Poly)
+```
+
+There are fewer negative values than the first iteration of the model. 
+
+Remove any observation that resulted in a negative value. 
+
+```{r}
+data<-data%>%filter(Predicted_Volume_Poly>0)
+hist(data$Predicted_Volume_Poly)
+```
+
+Proceed with the calculated volume data.  
+
+# Analyze growth (volume) over time 
+
+## Plot data 
+
+```{r}
+plot4<-data%>%
+  ggplot(aes(x=field_cattle_tag, y=Predicted_Volume_Poly, fill = treatment)) +
+  facet_wrap(~date)+
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Bag") + 
+  theme_classic(); plot4
+```
+
+Plot summarized by treatment 
+
+```{r}
+plot5<-data%>%
+  ggplot(aes(x=treatment, y=Predicted_Volume_Poly, fill = treatment)) +
+  facet_wrap(~date)+
+  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Treatment") + 
+  theme_classic() + 
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot5
+```
+
+Plot summarized by mean and standard error for each bag. 
+
+```{r}
+plot6<-data%>%
+  group_by(field_cattle_tag, treatment, date)%>%
+  summarise(mean=mean(Predicted_Volume_Poly, na.rm=TRUE), se=sd(Predicted_Volume_Poly, na.rm=TRUE)/sqrt(length(Predicted_Volume_Poly)))%>%
+  
+  ggplot(aes(x=field_cattle_tag, y=mean, fill = treatment)) +
+  facet_wrap(~date)+
+  geom_point(pch = 21) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0)+
+  xlab("Bag") + 
+  ylab("Volume")+
+  #ylim(2000, 15000)+
+  theme_classic() + 
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot6
+```
+
+```{r}
+plot7<-data%>%
+  group_by(treatment, date)%>%
+  summarise(mean=mean(Predicted_Volume_Poly, na.rm=TRUE), se=sd(Predicted_Volume_Poly, na.rm=TRUE)/sqrt(length(Predicted_Volume_Poly)))%>%
+  
+  ggplot(aes(x=treatment, y=mean, fill = treatment)) +
+  facet_wrap(~date)+
+  geom_point(pch = 21, size=4) +
+  geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0)+
+  xlab("Treatment") + 
+  ylab("Volume")+
+  #ylim(5000, 15000)+
+  theme_classic() + 
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot7
+```
+
+Sizes vary between treatments at the start of the outplant. We will examine growth using models to calculate slopes of change in volume over time.  
+
+## Run linear mixed models models 
+
+```{r}
+model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=data)
+
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+hist(residuals(model))
+```
+
+Different sizes by treatment and treatment by date. 
+
+There are several outliers. Conduct outlier removal and analyze again.  
+
+```{r}
+# Extract raw residuals
+data$raw_resid <- residuals(model)
+
+# Standardize residuals
+data$std_resid <- data$raw_resid / sd(data$raw_resid)
+
+# Flag potential outliers
+outlier_threshold <- 3
+data$outlier_flag <- abs(data$std_resid) > outlier_threshold
+
+# Filter rows flagged as outliers
+outliers <- data %>% filter(outlier_flag == TRUE)
+print(outliers)
+
+# Plot standardized residuals
+ggplot(data, aes(x = seq_along(std_resid), y = std_resid)) +
+  geom_point(aes(color = outlier_flag), size = 2) +
+  geom_hline(yintercept = c(-outlier_threshold, outlier_threshold), linetype = "dashed", color = "red") +
+  labs(title = "Standardized Residuals with Outliers", x = "Index", y = "Standardized Residual") +
+  theme_minimal()
+```
+
+Remove identified outliers. 
+```{r}
+data<-data%>%
+  filter(!outlier_flag==TRUE)
+```
+
+Analyze again. 
+
+```{r}
+model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=data)
+
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+hist(residuals(model))
+```
+
+Residuals are much better.  
+
+# Plot sizes for each effort 
+
+## Temperature experiment 
+
+Plot size over time for each bag. 
+```{r}
+plot8<-data%>%
+  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = field_cattle_tag, group=field_cattle_tag)) +
+  facet_wrap(~treatment)+
+  stat_smooth(color="darkgray", fill="darkgray")+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Date") + 
+  theme_classic(); plot8
+```
+
+Plot summarized by treatment 
+```{r}
+plot9<-data%>%
+  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = treatment, group=interaction(date, treatment))) +
+  scale_colour_manual(values=c("darkgray", "orange2"))+
+  scale_fill_manual(values=c("darkgray", "orange2"))+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.9), alpha=0.5) +
+  geom_boxplot(aes(group=interaction(date, treatment)), fill=NA, outliers = FALSE)+
+  xlab("Date") + 
+  theme_classic(); plot9
+```
+
+Run a model. 
+
+```{r}
+model<-data%>%
+  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  
+  lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=.)
+
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+
+emm<-emmeans(model, ~treatment|date)
+pairs(emm)
+
+emm<-emmeans(model, ~treatment)
+pairs(emm)
+```
+
+No significant differences between dates. Trend for smaller at the start. 
+
+
+## Fresh water experiment 
+
+Plot size over time for each bag. 
+```{r}
+plot10<-data%>%
+  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = field_cattle_tag, group=field_cattle_tag)) +
+  facet_wrap(~treatment)+
+  stat_smooth(color="darkgray", fill="darkgray")+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
+  xlab("Date") + 
+  theme_classic(); plot10
+```
+
+Plot summarized by treatment 
+```{r}
+plot11<-data%>%
+  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = treatment, group=interaction(date, treatment))) +
+  scale_colour_manual(values=c("darkgray", "cyan3"))+
+  scale_fill_manual(values=c("darkgray", "cyan3"))+
+  geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.9), alpha=0.5) +
+  geom_boxplot(aes(group=interaction(date, treatment)), fill=NA, outliers = FALSE)+
+  xlab("Date") + 
+  theme_classic(); plot11
+```
+
+Run a model. 
+
+```{r}
+model<-data%>%
+  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  
+  lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=.)
+
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+
+emm<-emmeans(model, ~treatment|date)
+pairs(emm)
+
+emm<-emmeans(model, ~treatment)
+pairs(emm)
+```
+
+No significant differences between dates. 
+
+# Analyze growth rates over time 
+
+```{r}
+# Fit a mixed-effects model to estimate growth rate
+growth_model <- lmer(Predicted_Volume_Poly ~ date * treatment + (1|treatment:field_cattle_tag), data = data)
+
+# Summarize the model
+summary(growth_model)
+anova(growth_model)
+
+# Extract fixed effects (overall growth rate) and random effects (bag-specific deviations)
+fixed_effects <- fixef(growth_model)
+random_effects <- ranef(growth_model)$`treatment:field_cattle_tag`
+
+# Plot growth trajectories
+ggplot(data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment), group=treatment)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  labs(title = "Oyster Growth Over Time",
+       x = "Date",
+       y = "Volume",
+       color = "Treatment")
+
+#plot model trajectories 
+ggpred <- ggpredict(growth_model, terms = c("date", "treatment"))
+
+ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group)) +
+  geom_line(aes(group=group)) +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high, group=group), alpha = 0.2) +
+  theme_classic() +
+  labs(title = "Modeled Oyster Growth Over Time",
+       x = "Date",
+       y = "Volume",
+       color = "Treatment", 
+       fill = "Treatment")
+```
+
+Analyze each effort separately. 
+
+Weekly fresh water group:  
+```{r}
+fresh_data<-data[grepl("Fresh Water", data$treatment), ]
+
+# Fit a mixed-effects model to estimate growth rate
+growth_model_FW <- lmer(Predicted_Volume_Poly ~ date * treatment + (1|treatment:field_cattle_tag), data = fresh_data)
+
+# Summarize the model
+summary(growth_model_FW)
+anova(growth_model_FW)
+
+# Extract fixed effects (overall growth rate) and random effects (bag-specific deviations)
+fixed_effects <- fixef(growth_model_FW)
+random_effects <- ranef(growth_model_FW)$`treatment:field_cattle_tag`
+
+# Plot growth trajectories
+ggplot(fresh_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment))) +
+  geom_point() +
+  geom_smooth(aes(group=treatment), method = "lm", se = FALSE) +
+  theme_minimal() +
+  labs(title = "Oyster Growth Over Time",
+       x = "Date",
+       y = "Volume",
+       color = "Treatment")
+
+#plot model trajectories 
+ggpred <- ggpredict(growth_model_FW, terms = c("date", "treatment"))
+
+plot1<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group, group=group)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
+  theme_classic() +
+  
+  labs(title = "Modeled Oyster Growth Over Time (Fresh Water)",
+       x = "Date",
+       y = "Predicted Volume",
+       color = "Treatment", 
+       fill = "Treatment");plot1
+```
+
+Treated are very slightly but significantly larger than controls. 
+
+Weekly temperature group:  
+```{r}
+temp_data<-data[grepl("Temperature", data$treatment), ]
+
+# Fit a mixed-effects model to estimate growth rate
+growth_model_TEMP <- lmer(Predicted_Volume_Poly ~ date * treatment + (1|treatment:field_cattle_tag), data = temp_data)
+
+# Summarize the model
+summary(growth_model_TEMP)
+anova(growth_model_TEMP)
+
+# Extract fixed effects (overall growth rate) and random effects (bag-specific deviations)
+fixed_effects <- fixef(growth_model_TEMP)
+random_effects <- ranef(growth_model_TEMP)$`treatment:field_cattle_tag`
+
+# Plot growth trajectories
+ggplot(temp_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment), group=treatment)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  labs(title = "Oyster Growth Over Time",
+       x = "Date",
+       y = "Volume",
+       color = "Treatment")
+
+#plot model trajectories 
+ggpred <- ggpredict(growth_model_TEMP, terms = c("date", "treatment"))
+
+plot2<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group, group=group)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
+  theme_classic() +
+  
+  labs(title = "Modeled Oyster Growth Over Time (Temperature)",
+       x = "Date",
+       y = "Predicted Volume",
+       color = "Treatment", 
+       fill = "Treatment");plot2
+```
+
+No clear difference between control and treated in the temperature experiment. 
+
+```{r}
+plots<-plot_grid(plot1, plot2, ncol=2, nrow=1);plots
+
+ggsave(filename="figures/growth/goose_point/growth.png", plots, width=14, height=6)
+```
+
+
+
+
+

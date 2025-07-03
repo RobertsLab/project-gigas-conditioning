@@ -1,0 +1,57 @@
+field_cattle_tag,effort,treatment,source_cattle_tag,date,total,live,dead
+80,Effort E,Weekly Temperature Control,1,20240624,100,100,0
+80,Effort E,Weekly Temperature Control,1,20240909,100,100,0
+80,Effort E,Weekly Temperature Control,1,20241211,103,102,1
+80,Effort E,Weekly Temperature Control,1,20250520,90,89,1
+81,Effort E,Weekly Fresh Water Control,24,20240624,100,100,0
+81,Effort E,Weekly Fresh Water Control,24,20240909,103,103,0
+81,Effort E,Weekly Fresh Water Control,24,20241211,102,102,0
+81,Effort E,Weekly Fresh Water Control,24,20250520,109,109,0
+82,Effort E,Weekly Fresh Water Control,24,20240624,100,100,0
+82,Effort E,Weekly Fresh Water Control,24,20240909,99,97,2
+82,Effort E,Weekly Fresh Water Control,24,20241211,94,94,0
+82,Effort E,Weekly Fresh Water Control,24,20250520,90,90,0
+83,Effort E,Weekly Temperature Treated,20,20240624,100,100,0
+83,Effort E,Weekly Temperature Treated,20,20240909,104,99,5
+83,Effort E,Weekly Temperature Treated,20,20241211,96,96,0
+83,Effort E,Weekly Temperature Treated,20,20250520,97,96,1
+84,Effort E,Weekly Fresh Water Treated,23,20240624,100,100,0
+84,Effort E,Weekly Fresh Water Treated,23,20240909,102,102,0
+84,Effort E,Weekly Fresh Water Treated,23,20241211,98,98,0
+84,Effort E,Weekly Fresh Water Treated,23,20250520,113,113,0
+85,Effort E,Weekly Temperature Treated,20,20240624,100,100,0
+85,Effort E,Weekly Temperature Treated,20,20240909,101,101,0
+85,Effort E,Weekly Temperature Treated,20,20241211,96,96,0
+85,Effort E,Weekly Temperature Treated,20,20250520,108,108,0
+86,Effort E,Weekly Fresh Water Control,24,20240624,100,100,0
+86,Effort E,Weekly Fresh Water Control,24,20240909,100,99,1
+86,Effort E,Weekly Fresh Water Control,24,20241211,97,97,0
+86,Effort E,Weekly Fresh Water Control,24,20250520,96,96,0
+87,Effort E,Weekly Fresh Water Control,24,20240624,100,100,0
+87,Effort E,Weekly Fresh Water Control,24,20240909,101,101,0
+87,Effort E,Weekly Fresh Water Control,24,20241211,95,95,0
+87,Effort E,Weekly Fresh Water Control,24,20250520,95,95,0
+88,Effort E,Weekly Temperature Control,1,20240624,100,100,0
+88,Effort E,Weekly Temperature Control,1,20240909,100,100,0
+88,Effort E,Weekly Temperature Control,1,20241211,94,94,0
+88,Effort E,Weekly Temperature Control,1,20250520,104,104,0
+91,Effort E,Weekly Temperature Treated,20,20240624,100,100,0
+91,Effort E,Weekly Temperature Treated,20,20240909,102,102,0
+91,Effort E,Weekly Temperature Treated,20,20241211,98,98,0
+91,Effort E,Weekly Temperature Treated,20,20250520,95,95,0
+94,Effort E,Weekly Fresh Water Treated,23,20240624,100,100,0
+94,Effort E,Weekly Fresh Water Treated,23,20240909,102,101,1
+94,Effort E,Weekly Fresh Water Treated,23,20241211,97,97,0
+94,Effort E,Weekly Fresh Water Treated,23,20250520,106,106,1
+95,Effort E,Weekly Fresh Water Control,24,20240624,100,100,0
+95,Effort E,Weekly Fresh Water Control,24,20240909,102,100,2
+95,Effort E,Weekly Fresh Water Control,24,20241211,98,97,1
+95,Effort E,Weekly Fresh Water Control,24,20250520,105,105,0
+96,Effort E,Weekly Fresh Water Treated,23,20240624,100,100,0
+96,Effort E,Weekly Fresh Water Treated,23,20240909,101,101,0
+96,Effort E,Weekly Fresh Water Treated,23,20241211,102,102,0
+96,Effort E,Weekly Fresh Water Treated,23,20250520,98,97,1
+97,Effort E,Weekly Temperature Control,1,20240624,100,100,0
+97,Effort E,Weekly Temperature Control,1,20240909,101,99,2
+97,Effort E,Weekly Temperature Control,1,20241211,96,96,0
+97,Effort E,Weekly Temperature Control,1,20250520,97,95,2

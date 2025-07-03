@@ -1,0 +1,9 @@
+bag,effort,tag,treatment,date,alive,dead
+G100,Effort A,Bag 3 Roberts,Treated,20250528,42,1
+G099,Effort A,Bag 1 Roberts,Treated,20250528,43,0
+G098,Effort A,Bag 2 Roberts,Treated,20250528,49,0
+G097,Effort A,POGS 2023,Control,20250528,42,7
+G096,Effort A,POGS 2023,Control,20250528,54,1
+G095,Effort A,POGS 2023,Control,20250528,50,2
+G094,Effort A,POGS 2023,Control,20250528,36,0
+G093,Effort A,POGS 2023,Control,20250528,40,2

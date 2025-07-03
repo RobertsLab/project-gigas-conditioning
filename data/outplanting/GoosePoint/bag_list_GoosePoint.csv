@@ -1,0 +1,15 @@
+bag,effort,treatment,source_cattle_tag,field_cattle_tag,number_oysters,photo_taken,logger
+UW-SR33,Effort E,Weekly Temperature Control,1,80,100,yes,no
+UW-SR34,Effort E,Weekly Temperature Control,1,97,100,yes,yes
+UW-SR35,Effort E,Weekly Temperature Control,1,88,100,yes,no
+UW-SR36,Effort E,Weekly Temperature Treated,20,91,100,yes,no
+UW-SR37,Effort E,Weekly Temperature Treated,20,83,100,yes,no
+UW-SR38,Effort E,Weekly Temperature Treated,20,85,100,yes,yes
+UW-SR39,Effort E,Weekly Fresh Water Control,24,95,100,yes,no
+UW-SR40,Effort E,Weekly Fresh Water Control,24,87,100,yes,no
+UW-SR41,Effort E,Weekly Fresh Water Control,24,81,100,yes,no
+UW-SR42,Effort E,Weekly Fresh Water Control,24,86,100,yes,no
+UW-SR43,Effort E,Weekly Fresh Water Control,24,82,100,yes,no
+UW-SR44,Effort E,Weekly Fresh Water Treated,23,94,100,yes,yes
+UW-SR45,Effort E,Weekly Fresh Water Treated,23,84,100,yes,no
+UW-SR46,Effort E,Weekly Fresh Water Treated,23,96,100,yes,yes

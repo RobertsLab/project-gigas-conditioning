@@ -1,0 +1,1101 @@
+---
+title: "Morph_relationships"
+output: html_document
+date: "2024-10-03"
+editor_options: 
+  chunk_output_type: console
+---
+
+### Load libraries
+```{r}
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(lmtest)
+library(car)
+install.packages("lmerTest")
+library(lmerTest)
+install.packages("modelr")
+library(modelr)
+install.packages("glmmTMB")
+library(glmmTMB)#follows lme4 syntax
+install.packages("DHARMa")
+library(DHARMa)
+library(broom)
+```
+
+
+### Load Data
+```{r}
+# B survival
+B_growth <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_12172024.xlsx")
+
+# Heights from bag 2 for 07/05/2024 showing up as NAs for some reason when data imported
+B_growth$length.mm <- as.numeric(B_growth$length.mm)
+B_growth$width.mm <- as.numeric(B_growth$width.mm)
+B_growth$height.mm <- as.numeric(B_growth$height.mm)
+B_growth$date <- as.Date(B_growth$date)
+
+B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
+
+# D survival
+D_growth <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx", guess_max = 2000)
+D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
+D_growth$length.mm <- as.numeric(D_growth$length.mm)
+D_growth$width.mm <- as.numeric(D_growth$width.mm)
+D_growth$height.mm <- as.numeric(D_growth$height.mm)
+D_growth$date <- as.Date(D_growth$date)
+```
+## Histograms
+
+### B
+```{r}
+B_growth %>%
+  filter(date == "2024-09-13") %>%
+  ggplot(aes(x = length.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Length (mm)", y = "Count") +
+  theme_classic()
+
+# B_growth$log_length <- log(B_growth$length.mm)
+# hist(B_growth$log_length)
+
+```
+
+```{r}
+B_growth %>%
+  filter(date == "2024-12-17") %>%
+ggplot(aes(x = height.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Height (mm)", y = "Count") +
+  theme_classic()
+# B_growth$log_height <- log(B_growth$height.mm)
+# hist(B_growth$log_height)
+```
+```{r}
+B_growth %>%
+  filter(date == "2024-12-17") %>%
+ggplot(aes(x = width.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Width (mm)", y = "Count") +
+  theme_classic()
+# B_growth$log_width <- log(B_growth$width.mm)
+# hist(B_growth$log_width)
+```
+### D
+
+```{r}
+D_growth %>%
+  filter(date == "2024-12-17") %>%
+ggplot(aes(x = length.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Length (mm)", y = "Count") +
+  theme_classic()
+# D_growth$log_length <- log(D_growth$length.mm)
+# hist(_growth$log_length)
+```
+
+```{r}
+D_growth %>%
+  filter(date == "2024-12-17") %>%
+ggplot(aes(x = height.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Height (mm)", y = "Count") +
+  theme_classic()
+```
+
+```{r}
+
+
+D_growth %>%
+  filter(date == "2024-09-13") %>%
+ggplot(aes(x = width.mm)) +
+  geom_histogram(fill = "blue", color = "black") +
+  labs(x = "Width (mm)", y = "Count") +
+  theme_classic()
+
+```
+
+
+
+
+## B comparisons
+
+```{r}
+ggplot(B_growth, aes(x=length.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length", y = "Height")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+ggplot(B_growth, aes(x=length.mm, y= width.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length", y = "Width")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+ggplot(B_growth, aes(x=height.mm, y= width.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Height", y = "Width")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+## D comparisons
+
+```{r}
+ggplot(D_growth, aes(x=length.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length", y = "Height")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+```{r}
+ggplot(D_growth, aes(x=length.mm, y= width.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length", y = "Width")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+
+# Removing an outlier, I think it was an incorrect measurement
+D_growth <- D_growth[D_growth$width.mm != 82, ]
+```
+
+```{r}
+ggplot(D_growth, aes(x=width.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Width", y = "Height")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+## D size correlations
+### LM for correlation
+```{r}
+library(nlme)
+library(lme4)
+growth <- rbind(B_growth,D_growth)
+growth_noNT <- growth[growth$tag_num != "NT", ]
+growth_noNT$date_numeric <-  as.numeric(as.Date(growth_noNT$date))
+growth$date_numeric <- as.numeric(as.Date(growth$date))
+
+growth <- growth %>%
+  mutate(conditioning = ifelse(bag_num %in% c(1:5, 11:21), "control", "treated"))
+growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
+
+
+# Linear model with date as a continuous variable
+# model <- lm(length.mm ~ width.mm + height.mm + date_numeric + effort/conditioning, data = growth_noNT)
+# summary(model)
+
+
+
+# lme model with nested random effects structure
+model <- lmer(length.mm ~ width.mm + height.mm + effort/conditioning + date_numeric + (1 | bag_num/tag_num), data = growth_noNT)
+
+
+```
+
+
+```{r}
+ggplot(growth, aes(x=length.mm, y= width.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Width (mm)")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+```{r}
+ggplot(growth, aes(x=length.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Height (mm)")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+
+```{r}
+ggplot(growth, aes(x=length.mm, y= log(height.mm)))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Log of height (mm)")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+```{r}
+ggplot(growth, aes(x=length.mm, y= sqrt(width.mm)))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Square root of width (mm)")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+```{r}
+plot(fitted(model), residuals(model), 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red") 
+
+
+qqnorm(residuals(model))
+qqline(residuals(model), col = "red") 
+
+```
+
+```{r}
+cooksd <- cooks.distance(model)
+
+# Identify points with high Cook's distance (e.g., greater than 4/n where n is the number of observations)
+outliers_cooks <- which(cooksd > 4 / nrow(D_growth))
+print(D_growth[outliers_cooks, ]) 
+```
+
+```{r}
+D_growth_PCA <- subset(D_growth, select = c(length.mm, width.mm, height.mm))
+
+pca_result <- prcomp(D_growth_PCA, scale. = TRUE)
+
+biplot(pca_result)
+
+
+pca_data <- as.data.frame(pca_result$x)
+
+# Create a scatter plot of the first two principal components
+library(ggplot2)
+ggplot(pca_data, aes(x = PC1, y = PC2)) +
+  geom_point() +
+  labs(title = "PCA: Length, Width, and Height", x = "PC1", y = "PC2") +
+  theme_minimal()
+
+pca_result$sdev^2 / sum(pca_result$sdev^2)
+
+# Loadings (contribution of each variable to the principal components)
+pca_result$rotation
+
+# Scree plot
+scree_values <- pca_result$sdev^2
+plot(scree_values, type = "b", xlab = "Principal Component", ylab = "Eigenvalue", main = "Scree Plot")
+
+```
+
+## Predicting height and width from length
+
+```{r}
+model2 <- lm(log(height.mm)~length.mm+date_numeric, growth)
+summary(model2)
+plot(fitted(model2), residuals(model2), 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red") 
+library(car)
+
+qqPlot(model2)
+
+hist(residuals(model2))
+
+
+bptest(model2)
+
+# weighted model does not provide a better fit than first model (standard error increased, not much change in R squared)
+# wt <- 1 / lm(abs(model2$residuals) ~ model2$fitted.values)$fitted.values^2
+# wls_model2 <- lm( log(height.mm)~ length.mm+date_numeric, growth, weights=wt)
+# summary(wls_model2)
+# bptest(wls_model2)
+
+```
+
+```{r}
+## Successful model!
+model3 <- lm(sqrt(width.mm)~length.mm+date_numeric, growth)
+summary(model3)
+
+plot(fitted(model3), residuals(model3), 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red") 
+
+qqPlot(model3)
+
+hist(residuals(model3))
+
+bptest(model3)
+# p = 0.03978
+
+#made data more heteroskedastic somehow
+# wt <- 1 / lm(abs(model3$residuals) ~ model3$fitted.values)$fitted.values^2
+# wls_model3 <- lm(sqrt(width.mm)~ length.mm+date_numeric, growth, weights=wt)
+# summary(wls_model3)
+
+```
+### Tried to see if subsetting improved anything
+```{r}
+day1 <- subset(growth, date_numeric == 19884)
+
+ggplot(day1, aes(x=length.mm, y= height.mm))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length", y = "Width")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+
+model4 <- lm(sqrt(width.mm)~length.mm, day1)
+summary(model4)
+
+plot(fitted(model4), residuals(model4), 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red") 
+
+qqPlot(model4)
+
+hist(residuals(model4))
+
+bptest(model4)
+
+## Subsetting made it pass the bp test, fit not as good though
+model5 <- lm(log(height.mm)~length.mm, day1)
+summary(model5)
+
+plot(fitted(model5), residuals(model5), 
+     xlab = "Fitted Values", 
+     ylab = "Residuals", 
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red") 
+
+qqPlot(model5)
+
+hist(residuals(model5))
+
+bptest(model5)
+
+```
+
+
+```{r}
+growth$volume <- (4/3) * pi * (growth$length.mm/2) * (growth$width.mm/2) * (growth$height.mm) * (1/2)
+
+growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
+growth$conditioning <- gsub("daily", "treated", growth$conditioning)
+
+```
+
+
+### Modeling looking for effect of effort and conditioning on volume (measurement date and bag number as random effects)
+```{r}
+growth$tag_num <- as.factor(growth$tag_num)
+growth$bag_num <- as.factor(growth$bag_num)
+model <- lmer(log(volume) ~  effort/conditioning * date_numeric + (1 | bag_num/tag_num), data = growth)
+summary(model)
+anova(model)
+
+qqPlot(residuals(model))
+plot(fitted(model), residuals(model))
+abline(h = 0, col = "red") 
+
+
+```
+
+```{r}
+means_sizes <- growth %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            mean_height = mean(height.mm, na.rm = TRUE), 
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            stderr_height = sd(height.mm, na.rm = TRUE)/sqrt(length(height.mm)),
+            .groups = 'drop')
+```
+
+
+```{r}
+length <- ggplot(means_sizes, aes(x = date, y = mean_length, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean length (mm)") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))+
+  ylim(0,80)
+
+width <- ggplot(means_sizes, aes(x = date, y = mean_width, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean width (mm)") +
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  geom_errorbar(aes(ymin=mean_width-stderr_width, ymax = mean_width+stderr_width), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))+
+  ylim(0,80)
+
+height <- ggplot(means_sizes, aes(x = date, y = mean_height, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean height (mm)") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  geom_errorbar(aes(ymin=mean_height-stderr_height, ymax = mean_height+stderr_height), width=.2,
+                 position=position_dodge(0.05))+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  theme(axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))+
+  ylim(0,40)
+
+grid.arrange(length,width,height)
+```
+## Graphing volume
+```{r}
+
+ggplot(growth, aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+
+  
+```
+
+#### Effort B volume
+```{r}
+growth %>%
+  filter(effort == "B") %>%
+  ggplot(aes(x=length.mm, y= volume, color = date))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+```{r}
+growth %>%
+  filter(effort == "B", date == "2024-06-10") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,8200)+
+  xlim(0,65)
+```
+
+```{r}
+growth %>%
+  filter(effort == "B", date == "2024-07-05") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,8200)+
+  xlim(0,65)
+```
+
+```{r}
+growth %>%
+  filter(effort == "B", date == "2024-08-02") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,8200)+
+  xlim(0,65)
+```
+
+```{r}
+growth %>%
+  filter(effort == "B", date == "2024-09-13") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,8200)+
+  xlim(0,65)
+```
+```{r}
+growth %>%
+  filter(effort == "B", date == "2024-12-17") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  xlim(0,90)
+```
+
+#### Effort D volume
+```{r}
+growth %>%
+  filter(effort == "D") %>%
+  ggplot(aes(x=length.mm, y= volume, color = date))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+```{r}
+growth %>%
+  filter(effort == "D", date == "2024-06-10") %>%
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,15100)+
+  xlim(0,65)
+```
+
+
+```{r}
+growth %>%
+  filter(effort == "D", date == "2024-07-05") %>%
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,15100)+
+  xlim(0,65)
+```
+```{r}
+growth %>%
+  filter(effort == "D", date == "2024-08-02") %>%
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,15100)+
+  xlim(0,65)
+```
+```{r}
+growth %>%
+  filter(effort == "D", date == "2024-09-13") %>%
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,15100)+
+  xlim(0,65)
+```
+```{r}
+growth %>%
+  filter(effort == "D", date == "2024-12-17") %>%
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  xlim(0,90)
+```
+
+### Non linear model for log volume
+```{r}
+# Non Linear model predicting log volume from length 
+model <- nls(log(volume) ~ a*length.mm^b, data = growth, start = list(a = 6.8, b = 1.1))
+summary(model)
+modelr::rsquare(model, growth)
+plot(model)
+
+# Extracting coefficients 
+coef_est <- coef(model)
+cov_matrix <- vcov(model)
+
+# Calculate standard errors for predictions
+growth$predicted <- predict(model)
+se_pred <- numeric(length(growth$predicted))
+for (i in 1:length(growth$predicted)) {
+  x_val <- growth$length.mm[i]
+  # Jacobian for the prediction
+  jacobian <- c(x_val^coef_est["b"], coef_est["a"] * log(x_val) * x_val^coef_est["b"])
+  se_pred[i] <- sqrt(t(jacobian) %*% cov_matrix %*% jacobian)
+}
+
+# Calculate the confidence intervals
+alpha <- 0.05  # significance level for 95% CI
+z_value <- qnorm(1 - alpha / 2)  # Z value for the normal distribution
+
+# Compute confidence intervals
+growth$lower_ci <- growth$predicted - z_value * se_pred
+growth$upper_ci <- growth$predicted + z_value * se_pred
+
+# Graph Length to log volume with model line
+ggplot(growth, aes(x = length.mm, y = log(volume), color = date)) +
+  geom_point() +  
+  geom_line(aes(y = predicted), color = "red", size = 1) + 
+  labs(x = "length",
+       y = "volume") +
+  theme_classic()
+
+# Graph actual log volume versus predicted log volume 
+ggplot(growth, aes(x = log(volume), y = predicted)) +
+  geom_point(color = "blue", size = 2) +
+  labs(x = "Log volume",
+       y = "Predicted log volume") +
+  geom_smooth(method='lm', color = "red")+
+  theme_classic()
+
+```
+
+
+
+### Looking at percent change in volume 
+```{r}
+means_vols <- growth %>%
+  group_by(effort, conditioning, date, bag_num) %>%
+  summarise(mean_vol = mean(volume),
+            std_error = sd(volume)/sqrt(length(volume)),
+            .groups = 'drop')
+
+
+means_vols <- means_vols %>%
+  group_by(bag_num) %>%
+  mutate(initial_vol = first(mean_vol)) %>%
+  ungroup()
+
+
+means_vols <- means_vols %>%
+  mutate(perc_change_vol = 100*(mean_vol-initial_vol)/initial_vol ) 
+```
+
+```{r}
+ggplot(means_vols, aes(x = date, y = mean_vol, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean volume ") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_vol-std_error, ymax = mean_vol+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+```
+
+
+
+```{r}
+means_perc_vols <- means_vols %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_perc_vol = mean(perc_change_vol),
+            std_error = sd(perc_change_vol)/sqrt(length(perc_change_vol)),
+            .groups = 'drop')
+
+means_perc_vols$date <- as.POSIXct(means_perc_vols$date)
+
+ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Percent change in volume") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_perc_vol-std_error, ymax = mean_perc_vol+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+
+
+
+```
+
+```{r}
+library(scales)  # for date_format()
+
+ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
+  geom_point() +
+  geom_line(aes(linetype = conditioning)) +
+  labs(x = "Date",
+       y = "Percent change in volume") +
+  labs(color = "Conditioning Type", linetype = "Treatment") +
+  theme_classic() +
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen")) +
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed")) +
+  geom_errorbar(aes(ymin = mean_perc_vol - std_error, ymax = mean_perc_vol + std_error), 
+                width = 0.2,
+                position = position_dodge(0.05)) +
+  scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +  # <-- add this line
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 1),  # angled for readability
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size = 18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+
+```
+
+
+
+```{r}
+means_vols %>%
+  filter(effort == "D") %>%
+  ggplot(aes(x=date, y= perc_change_vol, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Date", y = "Percent change volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+means_vols %>%
+  filter(effort == "B") %>%
+  ggplot(aes(x=date, y= perc_change_vol, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Date", y = "Percent change volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+means_vols %>%
+  filter(effort == "B") %>%
+  ggplot(aes(x=date, y= mean_vol, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Date", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+means_vols %>%
+  filter(effort == "D") %>%
+  ggplot(aes(x=date, y= mean_vol, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Date", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+
+```{r}
+ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Percent change in volume") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  ylim(0,4000)+
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+```
+
+### Percent change in volume model
+```{r}
+means_vols$date <- as.POSIXct(means_vols$date)
+means_vols$bag_num <- as.factor(means_vols$bag_num)
+means_vols
+model <- lmer(log(perc_change_vol) ~  effort/conditioning *date + (1|bag_num), data = means_vols)
+summary(model)
+```
+
+```{r}
+plot(means_vols$date, log(means_vols$perc_change_vol))
+```
+
+```{r}
+means_vols$days <- as.numeric(means_vols$date - min(means_vols$date))
+means_vols$days <- means_vols$days/(60*60*24)
+means_vols <- subset(means_vols, days != 0)
+model.m<-glmmTMB(log(perc_change_vol) ~  effort/conditioning *days+ (1|bag_num),data = means_vols, family = gaussian()) #glmmTMB
+summary(model.m)
+car::Anova(model.m, type = "III")
+
+model.b<- lmer(sqrt(perc_change_vol) ~  effort/conditioning *days + (1|bag_num), data = means_vols)
+summary(model.b)
+qqnorm(resid(model.b))
+qqline(resid(model.b))
+
+testDispersion(model.m)
+tst_simres <- simulateResiduals(fittedModel = model.m) #DHARMa
+plot(tst_simres)
+
+testDispersion(model.b)
+tst_simres <- simulateResiduals(fittedModel = model.b) #DHARMa
+plot(tst_simres)
+
+
+```
+
+```{r}
+hist(means_vols$perc_change_vol)
+hist(log(means_vols$perc_change_vol))
+hist(sqrt(means_vols$perc_change_vol))
+```
+
+#### Pairwise comparisons for percent change volume model
+```{r}
+install.packages("emmeans")
+library(emmeans)
+emm_interaction <- emmeans(model.b, ~ effort * conditioning | days)
+emm_interaction
+
+# Pairwise comparisons for interaction
+pairs(emm_interaction, by = "days", adjust= "tukey")  # Compare effort * conditioning combinations within days
+
+
+```
+### Percent change in length, width, height
+```{r}
+means_sizes <- growth %>%
+  group_by(effort, conditioning, date, bag_num) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            mean_height = mean(height.mm, na.rm = TRUE), 
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            stderr_height = sd(height.mm, na.rm = TRUE)/sqrt(length(height.mm)),
+            .groups = 'drop')
+
+means_sizes <- means_sizes %>%
+  group_by(bag_num) %>%
+  mutate(initial_length = first(mean_length)) %>%
+  mutate(initial_width = first(mean_width)) %>%
+  mutate(initial_height = first(mean_height)) %>%
+  ungroup()
+
+
+means_sizes <- means_sizes %>%
+  mutate(perc_change_length = 100*(mean_length-initial_length)/initial_length ) %>%
+  mutate(perc_change_width = 100*(mean_width-initial_width)/initial_width ) %>%
+  mutate(perc_change_height = 100*(mean_height-initial_height)/initial_height ) 
+```
+
+```{r}
+means_sizes %>%
+  filter(effort == "D") %>%
+  ggplot(aes(x=date, y= perc_change_length, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Date", y = "Percent change length")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))
+```
+```{r}
+means_perc_dimension <- means_sizes %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_perc_length = mean(perc_change_length),
+            std_error_length = sd(perc_change_length)/sqrt(length(perc_change_length)),
+            mean_perc_width = mean(perc_change_width),
+            std_error_width = sd(perc_change_width)/sqrt(length(perc_change_width)),
+            mean_perc_height = mean(perc_change_height),
+            std_error_height = sd(perc_change_height)/sqrt(length(perc_change_height)),
+            .groups = 'drop')
+
+means_perc_dimension$date <- as.POSIXct(means_perc_dimension$date)
+```
+
+```{r}
+length <- ggplot(means_perc_dimension, aes(x = date, y = mean_perc_length, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Percent change length") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_perc_length-std_error_length, ymax = mean_perc_length+std_error_length), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+
+width <- ggplot(means_perc_dimension, aes(x = date, y = mean_perc_width, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Percent change width") +
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  geom_errorbar(aes(ymin=mean_perc_width-std_error_width, ymax = mean_perc_width+std_error_width), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+
+height <- ggplot(means_perc_dimension, aes(x = date, y = mean_perc_height, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Percent change height") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  geom_errorbar(aes(ymin=mean_perc_height-std_error_height, ymax = mean_perc_height+std_error_height), width=.2,
+                 position=position_dodge(0.05))+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  theme(axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+
+grid.arrange(length,width,height)
+```
+### Fitting volume models to each bag
+```{r}
+# first part
+#Graph all volume data by bag
+#somehow fit models by bag number 
+#save coefficients
+#graph fits of model to actual values
+
+
+growth_list <- growth %>%
+  group_by(bag_num) %>%
+  group_split()
+
+gmodel_list <- lapply(growth_list, function(x) nls(log(volume) ~ a*length.mm^b, data = growth, start = list(a = 6.8, b = 1.1)))
+
+
+
+pred1 <- lapply(1:length(growth_list), 
+                function(x) predict(growth_list[[x]], 
+                                    newdata = growth[[length.mm]], 
+                                    type = "response"))
+
+
+#second part
+# use models to predict volumes based on imageJ length data
+
+```
+
+```{r}
+
+growth_split <- split(growth, growth$bag_num)
+
+lapply(growth_split, function(growth) {
+  ggplot(growth, aes(x = length.mm, y = log(volume), color = date)) +
+    geom_point()+
+    geom_line(aes(y = predicted), color = "red", size = 1) + 
+    theme_classic()+
+    ylim(0,15)+
+    xlim(0,90)
+})
+
+
+```
