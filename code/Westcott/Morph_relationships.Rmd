@@ -29,7 +29,7 @@ library(broom)
 ### Load Data
 ```{r}
 # B survival
-B_growth <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_12172024.xlsx")
+B_growth <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_05132025.xlsx")
 
 # Heights from bag 2 for 07/05/2024 showing up as NAs for some reason when data imported
 B_growth$length.mm <- as.numeric(B_growth$length.mm)
@@ -40,7 +40,7 @@ B_growth$date <- as.Date(B_growth$date)
 B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 # D survival
-D_growth <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx", guess_max = 2000)
+D_growth <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_05132025.xlsx", guess_max = 2000)
 D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 D_growth$length.mm <- as.numeric(D_growth$length.mm)
 D_growth$width.mm <- as.numeric(D_growth$width.mm)
@@ -52,7 +52,7 @@ D_growth$date <- as.Date(D_growth$date)
 ### B
 ```{r}
 B_growth %>%
-  filter(date == "2024-09-13") %>%
+  filter(date == "2025-05-13") %>%
   ggplot(aes(x = length.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Length (mm)", y = "Count") +
@@ -65,7 +65,7 @@ B_growth %>%
 
 ```{r}
 B_growth %>%
-  filter(date == "2024-12-17") %>%
+  filter(date == "2025-05-13") %>%
 ggplot(aes(x = height.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Height (mm)", y = "Count") +
@@ -73,9 +73,10 @@ ggplot(aes(x = height.mm)) +
 # B_growth$log_height <- log(B_growth$height.mm)
 # hist(B_growth$log_height)
 ```
+
 ```{r}
 B_growth %>%
-  filter(date == "2024-12-17") %>%
+  filter(date == "2025-05-13") %>%
 ggplot(aes(x = width.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Width (mm)", y = "Count") +
@@ -87,7 +88,7 @@ ggplot(aes(x = width.mm)) +
 
 ```{r}
 D_growth %>%
-  filter(date == "2024-12-17") %>%
+  filter(date == "2025-05-13") %>%
 ggplot(aes(x = length.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Length (mm)", y = "Count") +
@@ -98,7 +99,7 @@ ggplot(aes(x = length.mm)) +
 
 ```{r}
 D_growth %>%
-  filter(date == "2024-12-17") %>%
+  filter(date == "2025-05-13") %>%
 ggplot(aes(x = height.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Height (mm)", y = "Count") +
@@ -109,7 +110,7 @@ ggplot(aes(x = height.mm)) +
 
 
 D_growth %>%
-  filter(date == "2024-09-13") %>%
+  filter(date == "2025-05-13") %>%
 ggplot(aes(x = width.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Width (mm)", y = "Count") +
@@ -131,6 +132,7 @@ ggplot(B_growth, aes(x=length.mm, y= height.mm))+
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))
 ```
+
 ```{r}
 ggplot(B_growth, aes(x=length.mm, y= width.mm))+
   geom_point()+
@@ -140,6 +142,7 @@ ggplot(B_growth, aes(x=length.mm, y= width.mm))+
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))
 ```
+
 ```{r}
 ggplot(B_growth, aes(x=height.mm, y= width.mm))+
   geom_point()+
@@ -190,7 +193,7 @@ ggplot(D_growth, aes(x=width.mm, y= height.mm))+
 ```{r}
 library(nlme)
 library(lme4)
-growth <- rbind(B_growth,D_growth)
+growth_model <- rbind(B_growth,D_growth)
 growth_noNT <- growth[growth$tag_num != "NT", ]
 growth_noNT$date_numeric <-  as.numeric(as.Date(growth_noNT$date))
 growth$date_numeric <- as.numeric(as.Date(growth$date))
@@ -214,7 +217,7 @@ model <- lmer(length.mm ~ width.mm + height.mm + effort/conditioning + date_nume
 
 
 ```{r}
-ggplot(growth, aes(x=length.mm, y= width.mm))+
+ggplot(growth_model, aes(x=length.mm, y= width.mm))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Width (mm)")+
@@ -224,7 +227,7 @@ ggplot(growth, aes(x=length.mm, y= width.mm))+
 ```
 
 ```{r}
-ggplot(growth, aes(x=length.mm, y= height.mm))+
+ggplot(growth_model, aes(x=length.mm, y= height.mm))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Height (mm)")+
@@ -235,7 +238,7 @@ ggplot(growth, aes(x=length.mm, y= height.mm))+
 
 
 ```{r}
-ggplot(growth, aes(x=length.mm, y= log(height.mm)))+
+ggplot(growth_model, aes(x=length.mm, y= log(height.mm)))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Log of height (mm)")+
@@ -245,7 +248,7 @@ ggplot(growth, aes(x=length.mm, y= log(height.mm)))+
 ```
 
 ```{r}
-ggplot(growth, aes(x=length.mm, y= sqrt(width.mm)))+
+ggplot(growth_model, aes(x=length.mm, y= sqrt(width.mm)))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Square root of width (mm)")+
@@ -374,18 +377,18 @@ bptest(model5)
 
 
 ```{r}
-growth$volume <- (4/3) * pi * (growth$length.mm/2) * (growth$width.mm/2) * (growth$height.mm) * (1/2)
+growth_model$volume <- (4/3) * pi * (growth_model$length.mm/2) * (growth_model$width.mm/2) * (growth_model$height.mm) * (1/2)
 
-growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
-growth$conditioning <- gsub("daily", "treated", growth$conditioning)
+growth_model$conditioning <- gsub("weekly", "treated", growth_model$conditioning)
+growth_model$conditioning <- gsub("daily", "treated", growth_model$conditioning)
 
 ```
 
 
 ### Modeling looking for effect of effort and conditioning on volume (measurement date and bag number as random effects)
 ```{r}
-growth$tag_num <- as.factor(growth$tag_num)
-growth$bag_num <- as.factor(growth$bag_num)
+growth_model$tag_num <- as.factor(growth_model$tag_num)
+growth_model$bag_num <- as.factor(growth_model$bag_num)
 model <- lmer(log(volume) ~  effort/conditioning * date_numeric + (1 | bag_num/tag_num), data = growth)
 summary(model)
 anova(model)
@@ -398,7 +401,7 @@ abline(h = 0, col = "red")
 ```
 
 ```{r}
-means_sizes <- growth %>%
+means_sizes <- growth_model %>%
   group_by(effort, conditioning, date) %>%
   summarise(mean_length = mean(length.mm, na.rm = TRUE),
             mean_width = mean(width.mm, na.rm = TRUE),
@@ -475,7 +478,7 @@ grid.arrange(length,width,height)
 ## Graphing volume
 ```{r}
 
-ggplot(growth, aes(x=length.mm, y= volume))+
+ggplot(growth_model, aes(x=length.mm, y= volume))+
   geom_point()+
   theme_classic()+
   labs(x = "Length (mm)", y = "Volume")+
@@ -488,7 +491,7 @@ ggplot(growth, aes(x=length.mm, y= volume))+
 
 #### Effort B volume
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "B") %>%
   ggplot(aes(x=length.mm, y= volume, color = date))+
   geom_point()+
@@ -500,7 +503,7 @@ growth %>%
 ```
 
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "B", date == "2024-06-10") %>%
   ggplot(aes(x=length.mm, y= volume))+
   geom_point()+
@@ -509,12 +512,12 @@ growth %>%
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  ylim(0,8200)+
-  xlim(0,65)
+  ylim(0,60000)+
+  xlim(0,100)
 ```
 
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "B", date == "2024-07-05") %>%
   ggplot(aes(x=length.mm, y= volume))+
   geom_point()+
@@ -523,12 +526,12 @@ growth %>%
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  ylim(0,8200)+
-  xlim(0,65)
+  ylim(0,60000)+
+  xlim(0,100)
 ```
 
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "B", date == "2024-08-02") %>%
   ggplot(aes(x=length.mm, y= volume))+
   geom_point()+
@@ -537,12 +540,12 @@ growth %>%
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  ylim(0,8200)+
-  xlim(0,65)
+  ylim(0,60000)+
+  xlim(0,100)
 ```
 
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "B", date == "2024-09-13") %>%
   ggplot(aes(x=length.mm, y= volume))+
   geom_point()+
@@ -551,11 +554,12 @@ growth %>%
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  ylim(0,8200)+
-  xlim(0,65)
+  ylim(0,60000)+
+  xlim(0,100)
 ```
+
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "B", date == "2024-12-17") %>%
   ggplot(aes(x=length.mm, y= volume))+
   geom_point()+
@@ -564,12 +568,28 @@ growth %>%
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  xlim(0,90)
+  ylim(0,60000)+
+  xlim(0,100)
 ```
+
+```{r}
+growth_model %>%
+  filter(effort == "B", date == "2025-05-13") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,60000)+
+  xlim(0,100)
+```
+
 
 #### Effort D volume
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "D") %>%
   ggplot(aes(x=length.mm, y= volume, color = date))+
   geom_point()+
@@ -581,7 +601,7 @@ growth %>%
 ```
 
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "D", date == "2024-06-10") %>%
   ggplot(aes(x=length.mm, y= volume, color = conditioning))+
   geom_point()+
@@ -590,13 +610,13 @@ growth %>%
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  ylim(0,15100)+
-  xlim(0,65)
+  ylim(0,70000)+
+  xlim(0,100)
 ```
 
 
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "D", date == "2024-07-05") %>%
   ggplot(aes(x=length.mm, y= volume, color = conditioning))+
   geom_point()+
@@ -605,11 +625,12 @@ growth %>%
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  ylim(0,15100)+
-  xlim(0,65)
+  ylim(0,70000)+
+  xlim(0,100)
 ```
+
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "D", date == "2024-08-02") %>%
   ggplot(aes(x=length.mm, y= volume, color = conditioning))+
   geom_point()+
@@ -618,11 +639,12 @@ growth %>%
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  ylim(0,15100)+
-  xlim(0,65)
+  ylim(0,70000)+
+  xlim(0,100)
 ```
+
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "D", date == "2024-09-13") %>%
   ggplot(aes(x=length.mm, y= volume, color = conditioning))+
   geom_point()+
@@ -631,11 +653,12 @@ growth %>%
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  ylim(0,15100)+
-  xlim(0,65)
+  ylim(0,70000)+
+  xlim(0,100)
 ```
+
 ```{r}
-growth %>%
+growth_model %>%
   filter(effort == "D", date == "2024-12-17") %>%
   ggplot(aes(x=length.mm, y= volume, color = conditioning))+
   geom_point()+
@@ -644,15 +667,30 @@ growth %>%
   theme(axis.title.x = element_text(size = 20),
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))+
-  xlim(0,90)
+  ylim(0,70000)+
+  xlim(0,100)
+```
+
+```{r}
+growth_model %>%
+  filter(effort == "D", date == "2025-05-13") %>%
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,70000)+
+  xlim(0,100)
 ```
 
 ### Non linear model for log volume
 ```{r}
 # Non Linear model predicting log volume from length 
-model <- nls(log(volume) ~ a*length.mm^b, data = growth, start = list(a = 6.8, b = 1.1))
+model <- nls(log(volume) ~ a*length.mm^b, data = growth_model, start = list(a = 6.8, b = 1.1))
 summary(model)
-modelr::rsquare(model, growth)
+modelr::rsquare(model, growth_model)
 plot(model)
 
 # Extracting coefficients 
@@ -661,8 +699,8 @@ cov_matrix <- vcov(model)
 
 # Calculate standard errors for predictions
 growth$predicted <- predict(model)
-se_pred <- numeric(length(growth$predicted))
-for (i in 1:length(growth$predicted)) {
+se_pred <- numeric(length(growth_model$predicted))
+for (i in 1:length(growth_model$predicted)) {
   x_val <- growth$length.mm[i]
   # Jacobian for the prediction
   jacobian <- c(x_val^coef_est["b"], coef_est["a"] * log(x_val) * x_val^coef_est["b"])
@@ -674,11 +712,11 @@ alpha <- 0.05  # significance level for 95% CI
 z_value <- qnorm(1 - alpha / 2)  # Z value for the normal distribution
 
 # Compute confidence intervals
-growth$lower_ci <- growth$predicted - z_value * se_pred
-growth$upper_ci <- growth$predicted + z_value * se_pred
+growth_model$lower_ci <- growth_model$predicted - z_value * se_pred
+growth_model$upper_ci <- growth_model$predicted + z_value * se_pred
 
 # Graph Length to log volume with model line
-ggplot(growth, aes(x = length.mm, y = log(volume), color = date)) +
+ggplot(growth_model, aes(x = length.mm, y = log(volume), color = date)) +
   geom_point() +  
   geom_line(aes(y = predicted), color = "red", size = 1) + 
   labs(x = "length",
@@ -686,12 +724,14 @@ ggplot(growth, aes(x = length.mm, y = log(volume), color = date)) +
   theme_classic()
 
 # Graph actual log volume versus predicted log volume 
-ggplot(growth, aes(x = log(volume), y = predicted)) +
+ggplot(growth_model, aes(x = log(volume), y = predicted)) +
   geom_point(color = "blue", size = 2) +
   labs(x = "Log volume",
        y = "Predicted log volume") +
   geom_smooth(method='lm', color = "red")+
-  theme_classic()
+  theme_classic()+
+  ylim(5,13)+
+  xlim(5,13)
 
 ```
 
@@ -700,14 +740,14 @@ ggplot(growth, aes(x = log(volume), y = predicted)) +
 ### Looking at percent change in volume 
 ```{r}
 means_vols <- growth %>%
-  group_by(effort, conditioning, date, bag_num) %>%
-  summarise(mean_vol = mean(volume),
-            std_error = sd(volume)/sqrt(length(volume)),
+  group_by(effort, conditioning, date, bag_tag_num) %>%
+  summarise(mean_vol = mean(predicted),
+            std_error = sd(predicted)/sqrt(length(predicted)),
             .groups = 'drop')
 
 
 means_vols <- means_vols %>%
-  group_by(bag_num) %>%
+  group_by(bag_tag_num) %>%
   mutate(initial_vol = first(mean_vol)) %>%
   ungroup()
 

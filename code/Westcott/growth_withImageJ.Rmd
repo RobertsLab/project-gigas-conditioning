@@ -25,30 +25,123 @@ library(DHARMa)
 ### Load data
 
 ```{r}
-B_growth_sum <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_12172024.xlsx")
+B_growth_sum <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_12172024.xlsx")
 B_growth_sum$date <- as.Date(B_growth_sum$date)
 B_growth_sum <- B_growth_sum[which(B_growth_sum$date < as.Date("2024-12-17")),]
+B_growth_sum$length.mm <- as.numeric(B_growth_sum$length.mm)
+B_growth_sum$width.mm <- as.numeric(B_growth_sum$width.mm)
+B_growth_sum <- subset(B_growth_sum, select=-c(bag_tag_num,notes, tag_num, duplicate,height.mm ))
 
-
-D_growth_sum <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx", guess_max = 2000)
+D_growth_sum <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx", guess_max = 2000)
 D_growth_sum$date <- as.Date(D_growth_sum$date)
 D_growth_sum <- D_growth_sum[which(D_growth_sum$date < as.Date("2024-12-17")),]
+D_growth_sum <- subset(D_growth_sum, select=-c(bag_tag_num,notes, tag_num, duplicate,height.mm ))
 
-Dec_sizes <- read_xlsx("data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
-May_sizes <- read_xlsx("data/outplanting/Westcott/20250513_images/sizes_05132025.xlsx")
+Dec_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
+May_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250513_images/sizes_05132025.xlsx")
 
 
 ```
 
-
+### Make ImageJ data compatible with early data
 ```{r}
 Dec_sizes <- Dec_sizes %>%
   pivot_wider(names_from = metric,
               values_from = c(measure.mm))
-Dec_sizes$width 
+
+Dec_sizes$width[Dec_sizes$width < 2] <- NA
+names(Dec_sizes)[names(Dec_sizes) == "length"] <- "length.mm"
+names(Dec_sizes)[names(Dec_sizes) == "width"] <- "width.mm"
+Dec_sizes <- subset(Dec_sizes, select=-c(oyster))
 
 May_sizes <- May_sizes %>%
   pivot_wider(names_from = metric,
               values_from = c(measure.mm))
+
+May_sizes$width[May_sizes$width < 2] <- NA
+
+names(May_sizes)[names(May_sizes) == "length"] <- "length.mm"
+names(May_sizes)[names(May_sizes) == "width"] <- "width.mm"
+May_sizes <- subset(May_sizes, select=-c(oyster))
+
+bag_tag_key <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/bag_tag_key.xlsx")
+
+B_growth_sum <- left_join(B_growth_sum, bag_tag_key, by = "bag_num")
+D_growth_sum  <- left_join(D_growth_sum, bag_tag_key, by = "bag_num")
+
+B_growth_sum <- subset(B_growth_sum, select=-c(bag_num))
+D_growth_sum <- subset(D_growth_sum, select=-c(bag_num))
+
+
+```
+
+### Combine ImageJ and early data
+```{r}
+
+growth <- bind_rows(B_growth_sum, D_growth_sum, Dec_sizes, May_sizes)
+growth$date <- as.Date(growth$date)
+growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
+growth$conditioning <- gsub("daily", "treated", growth$conditioning)
+
+```
+
+
+### Mean sizes
+```{r}
+means_sizes <- growth %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            .groups = 'drop')
+
+```
+
+```{r}
+DL <- ggplot(means_sizes, aes(x = date, y = mean_length, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean length (mm)") +
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank())
+
+DW <- ggplot(means_sizes, aes(x = date, y = mean_width, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean width (mm)") +
+  theme_classic()+
+   scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  labs(color = "Conditioning")+
+  geom_errorbar(aes(ymin=mean_width-stderr_width, ymax = mean_width+stderr_width), width=.2,
+                 position=position_dodge(0.05))
+
+grid.arrange(DL,DW)
+```
+
+```{r}
+ggplot(means_sizes, aes(x = date, y = mean_length, color = conditioning)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean length (mm)") +
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_blank(),       
+    axis.text.x = element_blank())+
+  ylim(0,50)
 ```
 

@@ -38,6 +38,7 @@ ggplot(B_growth, aes(x=length.mm, y= height.mm))+
   geom_point()+
   theme_classic()
 ```
+
 ```{r}
 ggplot(D_growth, aes(x=length.mm, y= height.mm))+
   geom_point()+
