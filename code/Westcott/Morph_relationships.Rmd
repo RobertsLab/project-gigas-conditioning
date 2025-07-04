@@ -740,9 +740,9 @@ ggplot(growth_model, aes(x = log(volume), y = predicted)) +
 ### Looking at percent change in volume 
 ```{r}
 means_vols <- growth %>%
-  group_by(effort, conditioning, date, bag_tag_num) %>%
-  summarise(mean_vol = mean(predicted),
-            std_error = sd(predicted)/sqrt(length(predicted)),
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_vol = mean(predicted, na.rm = TRUE),
+            std_error = sd(predicted, na.rm = TRUE)/sqrt(length(predicted)),
             .groups = 'drop')
 
 
