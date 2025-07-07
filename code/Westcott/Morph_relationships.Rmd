@@ -740,7 +740,7 @@ ggplot(growth_model, aes(x = log(volume), y = predicted)) +
 ### Looking at percent change in volume 
 ```{r}
 means_vols <- growth %>%
-  group_by(effort, conditioning, date) %>%
+  group_by(effort, conditioning, date, bag_tag_num) %>%
   summarise(mean_vol = mean(predicted, na.rm = TRUE),
             std_error = sd(predicted, na.rm = TRUE)/sqrt(length(predicted)),
             .groups = 'drop')
@@ -808,7 +808,6 @@ ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
     legend.title = element_text(size = 20, color = "black"))
 
 
-x
 ```
 
 ```{r}
@@ -894,7 +893,6 @@ ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
   theme_classic()+
   scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
-  ylim(0,4000)+
   theme(
     axis.title.x = element_text(size = 20, color = "black"),       
     axis.text.x = element_text(size=18, color = "black"),
@@ -907,21 +905,21 @@ ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
 ### Percent change in volume model
 ```{r}
 means_vols$date <- as.POSIXct(means_vols$date)
-means_vols$bag_num <- as.factor(means_vols$bag_num)
+means_vols$bag_tag_num <- as.factor(means_vols$bag_tag_num)
 means_vols
-model <- lmer(log(perc_change_vol) ~  effort/conditioning *date + (1|bag_num), data = means_vols)
+model <- lmer(perc_change_vol ~  effort/conditioning *date + (1|bag_tag_num), data = means_vols)
 summary(model)
 ```
 
 ```{r}
-plot(means_vols$date, log(means_vols$perc_change_vol))
+plot(means_vols$date, means_vols$perc_change_vol)
 ```
 
 ```{r}
 means_vols$days <- as.numeric(means_vols$date - min(means_vols$date))
 means_vols$days <- means_vols$days/(60*60*24)
 means_vols <- subset(means_vols, days != 0)
-model.m<-glmmTMB(log(perc_change_vol) ~  effort/conditioning *days+ (1|bag_num),data = means_vols, family = gaussian()) #glmmTMB
+model.m<-glmmTMB(perc_change_vol ~  effort/conditioning *days+ (1|bag_tag_num),data = means_vols, family = gaussian()) #glmmTMB
 summary(model.m)
 car::Anova(model.m, type = "III")
 
@@ -962,27 +960,23 @@ pairs(emm_interaction, by = "days", adjust= "tukey")  # Compare effort * conditi
 ### Percent change in length, width, height
 ```{r}
 means_sizes <- growth %>%
-  group_by(effort, conditioning, date, bag_num) %>%
+  group_by(effort, conditioning, date, bag_tag_num) %>%
   summarise(mean_length = mean(length.mm, na.rm = TRUE),
             mean_width = mean(width.mm, na.rm = TRUE),
-            mean_height = mean(height.mm, na.rm = TRUE), 
             stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
             stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
-            stderr_height = sd(height.mm, na.rm = TRUE)/sqrt(length(height.mm)),
             .groups = 'drop')
 
 means_sizes <- means_sizes %>%
-  group_by(bag_num) %>%
+  group_by(bag_tag_num) %>%
   mutate(initial_length = first(mean_length)) %>%
   mutate(initial_width = first(mean_width)) %>%
-  mutate(initial_height = first(mean_height)) %>%
   ungroup()
 
 
 means_sizes <- means_sizes %>%
   mutate(perc_change_length = 100*(mean_length-initial_length)/initial_length ) %>%
-  mutate(perc_change_width = 100*(mean_width-initial_width)/initial_width ) %>%
-  mutate(perc_change_height = 100*(mean_height-initial_height)/initial_height ) 
+  mutate(perc_change_width = 100*(mean_width-initial_width)/initial_width )
 ```
 
 ```{r}
@@ -996,6 +990,7 @@ means_sizes %>%
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))
 ```
+
 ```{r}
 means_perc_dimension <- means_sizes %>%
   group_by(effort, conditioning, date) %>%
@@ -1003,8 +998,6 @@ means_perc_dimension <- means_sizes %>%
             std_error_length = sd(perc_change_length)/sqrt(length(perc_change_length)),
             mean_perc_width = mean(perc_change_width),
             std_error_width = sd(perc_change_width)/sqrt(length(perc_change_width)),
-            mean_perc_height = mean(perc_change_height),
-            std_error_height = sd(perc_change_height)/sqrt(length(perc_change_height)),
             .groups = 'drop')
 
 means_perc_dimension$date <- as.POSIXct(means_perc_dimension$date)
@@ -1049,25 +1042,7 @@ width <- ggplot(means_perc_dimension, aes(x = date, y = mean_perc_width, color =
     legend.text = element_text(size = 18, color = "black"),
     legend.title = element_text(size = 20, color = "black"))
 
-height <- ggplot(means_perc_dimension, aes(x = date, y = mean_perc_height, color = effort)) +
-   geom_point() +
-  geom_line(aes(linetype=conditioning))+
-  labs(x = "Date",
-       y = "Percent change height") +
-  labs(color = "Conditioning Type", linetype = "Treatment")+
-  theme_classic()+
-  geom_errorbar(aes(ymin=mean_perc_height-std_error_height, ymax = mean_perc_height+std_error_height), width=.2,
-                 position=position_dodge(0.05))+
-  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
-  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
-  theme(axis.title.x = element_text(size = 20, color = "black"),       
-    axis.text.x = element_text(size = 18, color = "black"),
-    axis.title.y = element_text(size = 20, color = "black"),
-    axis.text.y = element_text(size=18, color = "black"),
-    legend.text = element_text(size = 18, color = "black"),
-    legend.title = element_text(size = 20, color = "black"))
-
-grid.arrange(length,width,height)
+grid.arrange(length,width)
 ```
 ### Fitting volume models to each bag
 ```{r}
@@ -1112,3 +1087,63 @@ lapply(growth_split, function(growth) {
 
 
 ```
+
+
+### Model just for length
+```{r}
+means_sizes$date <- as.Date(means_sizes$date)
+means_sizes$days <- as.numeric(means_sizes$date - min(means_sizes$date))
+model.m<-glmmTMB(perc_change_length ~  effort/conditioning *days+ (1|bag_tag_num),data = means_sizes, family = gaussian()) #glmmTMB
+summary(model.m)
+car::Anova(model.m, type = "III")
+```
+
+
+```{r}
+means_sizes_big <- growth %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            .groups = 'drop')
+```
+
+```{r}
+ggplot(means_sizes_big, aes(x = date, y = mean_length, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Length") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+```
+
+```{r}
+ggplot(means_sizes_big, aes(x = date, y = mean_width, color = effort)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Length") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_width-stderr_width, ymax = mean_width+stderr_width), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+```
+
