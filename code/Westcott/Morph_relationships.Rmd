@@ -58,6 +58,8 @@ B_growth %>%
   labs(x = "Length (mm)", y = "Count") +
   theme_classic()
 
+
+
 # B_growth$log_length <- log(B_growth$length.mm)
 # hist(B_growth$log_length)
 
@@ -196,11 +198,11 @@ library(lme4)
 growth_model <- rbind(B_growth,D_growth)
 growth_noNT <- growth[growth$tag_num != "NT", ]
 growth_noNT$date_numeric <-  as.numeric(as.Date(growth_noNT$date))
-growth$date_numeric <- as.numeric(as.Date(growth$date))
+growth_model$date_numeric <- as.numeric(as.Date(growth_model$date))
 
-growth <- growth %>%
+growth_model <- growth_model %>%
   mutate(conditioning = ifelse(bag_num %in% c(1:5, 11:21), "control", "treated"))
-growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
+growth_model$conditioning <- gsub("weekly", "treated", growth_model$conditioning)
 
 
 # Linear model with date as a continuous variable
@@ -332,7 +334,7 @@ bptest(model3)
 ```
 ### Tried to see if subsetting improved anything
 ```{r}
-day1 <- subset(growth, date_numeric == 19884)
+day1 <- subset(growth_model, date_numeric == 19884)
 
 ggplot(day1, aes(x=length.mm, y= height.mm))+
   geom_point()+
@@ -389,7 +391,7 @@ growth_model$conditioning <- gsub("daily", "treated", growth_model$conditioning)
 ```{r}
 growth_model$tag_num <- as.factor(growth_model$tag_num)
 growth_model$bag_num <- as.factor(growth_model$bag_num)
-model <- lmer(log(volume) ~  effort/conditioning * date_numeric + (1 | bag_num/tag_num), data = growth)
+model <- lmer(log(volume) ~  effort/conditioning * date_numeric + (1 | bag_num/tag_num), data = growth_model)
 summary(model)
 anova(model)
 
@@ -698,10 +700,10 @@ coef_est <- coef(model)
 cov_matrix <- vcov(model)
 
 # Calculate standard errors for predictions
-growth$predicted <- predict(model)
+growth_model$predicted <- predict(model)
 se_pred <- numeric(length(growth_model$predicted))
 for (i in 1:length(growth_model$predicted)) {
-  x_val <- growth$length.mm[i]
+  x_val <- growth_model$length.mm[i]
   # Jacobian for the prediction
   jacobian <- c(x_val^coef_est["b"], coef_est["a"] * log(x_val) * x_val^coef_est["b"])
   se_pred[i] <- sqrt(t(jacobian) %*% cov_matrix %*% jacobian)

@@ -189,7 +189,8 @@ westcott_plot<-westcott%>%
   ylim(-5,50)+
   theme_classic(); westcott_plot
 
-ggsave(westcott_plot, filename="figures/environmental/westcott-loggers.png", width=10, height=6)
+
+#ggsave(westcott_plot, filename="figures/environmental/westcott-loggers.png", width=10, height=6)
 ```
 
 Overall, loggers at Westcott show huge swings in temperature with maximum temperatures above 40 and low temperatures at approximately 10C. 
