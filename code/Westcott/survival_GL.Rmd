@@ -311,8 +311,18 @@ survival <- survival  %>%
 
 # Calculate the proportion of organisms remaining alive at each timepoint
 survival <- survival %>%
-  mutate(proportion_remaining = alive_num/initial_count.y)
+  mutate(proportion_remaining = alive_num/initial_count)
 ```
+
+
+```{r}
+survival <- survival %>%
+  group_by(effort, conditioning, bag_num) %>%
+  arrange(date)%>%
+  mutate(cumulative_deaths = cumsum(dead)) %>%
+  ungroup()
+```
+
 
 ### Mean proportion survival
 
@@ -386,4 +396,15 @@ plot(tst_simres)
 car::Anova(model.s2, type = "III")
 ```
 
+### Binomial log reg model
+```{r}
+model.s3<-glmmTMB(cbind(alive_num, cumulative_deaths) ~  effort/conditioning*days + (1|bag_num),  data = survival, family = binomial()) #glmmTMB
+summary(model.s3)
+testDispersion(model.s3)
+tst_simres <- simulateResiduals(fittedModel = model.s3) #DHARMa
+plot(tst_simres)
+
+
+car::Anova(model.s3, type = "III")
+```
 

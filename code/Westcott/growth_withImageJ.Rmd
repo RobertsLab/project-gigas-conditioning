@@ -326,7 +326,6 @@ plot(means_vols$date, means_vols$perc_change_vol)
 ```{r}
 means_vols$days <- as.numeric(means_vols$date - min(means_vols$date))
 means_vols$days <- means_vols$days/(60*60*24)
-means_vols <- subset(means_vols, days != 0)
 model.m<-glmmTMB(perc_change_vol ~  effort/conditioning *days+ (1|bag_tag_num),data = means_vols, family = gaussian()) #glmmTMB
 summary(model.m)
 car::Anova(model.m,type = "III")
@@ -346,6 +345,29 @@ tst_simres <- simulateResiduals(fittedModel = model.b) #DHARMa
 plot(tst_simres)
 
 
+```
+```{r}
+vols_w <- means_vols %>% filter(effort == "D")
+vols_d <- means_vols %>% filter(effort == "B")
+
+
+model.w<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_w, family = gaussian()) #glmmTMB
+summary(model.w)
+car::Anova(model.w,type = "III")
+qqPlot(residuals(model.w))
+
+testDispersion(model.w)
+tst_simres <- simulateResiduals(fittedModel = model.w) #DHARMa
+plot(tst_simres)
+
+model.d<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_d, family = gaussian()) #glmmTMB
+summary(model.d)
+car::Anova(model.d,type = "III")
+qqPlot(residuals(model.d))
+
+testDispersion(model.d)
+tst_simres <- simulateResiduals(fittedModel = model.d) #DHARMa
+plot(tst_simres)
 ```
 
 ```{r}
