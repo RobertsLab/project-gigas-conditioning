@@ -406,5 +406,6 @@ plot(tst_simres)
 
 
 car::Anova(model.s3, type = "III")
+
 ```
 
