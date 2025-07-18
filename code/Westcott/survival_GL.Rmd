@@ -17,11 +17,11 @@ library(glmmTMB)
 ### Load Data
 ```{r}
 # B survival
-B_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_06252025.xlsx")
+B_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_07112025.xlsx")
 B_survival$conditioning <- gsub("daily", "treated", B_survival$conditioning)
 
 # D survival
-D_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_06252025.xlsx")
+D_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_07112025.xlsx")
 D_survival$conditioning <- gsub("weekly", "treated", D_survival$conditioning)
 
 ```
@@ -53,7 +53,7 @@ ggplot(means_live, aes(x = date, y = mean_survival, shape = conditioning , color
    geom_point(size=3) +
   labs(x = "Date",
        y = "Mean live oysters per bag") +
-  scale_color_manual(labels = c("Weekly", "Daily"), values = c("green", "purple"))+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("green", "purple"))+
   labs(color = "Conditioning")+
   geom_errorbar(aes(ymin=mean_survival-std_error, ymax=mean_survival+std_error), width=.2,
                  position=position_dodge(0.05))+
@@ -223,7 +223,7 @@ means_prop <- rbind(means_B_prop, means_D_prop)
 ```
 
 ```{r}
-ggplot(means_prop, aes(x = date, y = mean_prop, group = effort, color = conditioning)) +
+ggplot(means_prop, aes(x = date, y = mean_prop, shape = conditioning, color = effort)) +
    geom_point(size=3) +
   labs(x = "Date",
        y = "Proportion survival (Oysters left / Starting # oysters)") +
@@ -311,7 +311,7 @@ survival <- survival  %>%
 
 # Calculate the proportion of organisms remaining alive at each timepoint
 survival <- survival %>%
-  mutate(proportion_remaining = alive_num/initial_count)
+  mutate(proportion_remaining = alive_num/initial_count.y)
 ```
 
 
