@@ -39,6 +39,7 @@ D_growth_sum <- subset(D_growth_sum, select=-c(bag_tag_num,notes, tag_num, dupli
 
 Dec_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
 May_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250513_images/sizes_05132025.xlsx")
+June_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250625_images/sizes_06252025.xlsx")
 
 
 ```
@@ -64,6 +65,16 @@ names(May_sizes)[names(May_sizes) == "length"] <- "length.mm"
 names(May_sizes)[names(May_sizes) == "width"] <- "width.mm"
 May_sizes <- subset(May_sizes, select=-c(oyster))
 
+June_sizes <- June_sizes %>%
+  pivot_wider(names_from = metric,
+              values_from = c(measure.mm))
+
+June_sizes$width[June_sizes$width < 2] <- NA
+
+names(June_sizes)[names(June_sizes) == "length"] <- "length.mm"
+names(June_sizes)[names(June_sizes) == "width"] <- "width.mm"
+June_sizes <- subset(June_sizes, select=-c(oyster))
+
 bag_tag_key <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/bag_tag_key.xlsx")
 
 B_growth_sum <- left_join(B_growth_sum, bag_tag_key, by = "bag_num")
@@ -78,7 +89,7 @@ D_growth_sum <- subset(D_growth_sum, select=-c(bag_num))
 ### Combine ImageJ and early data
 ```{r}
 
-growth <- bind_rows(B_growth_sum, D_growth_sum, Dec_sizes, May_sizes)
+growth <- bind_rows(B_growth_sum, D_growth_sum, Dec_sizes, May_sizes, June_sizes)
 growth$date <- as.Date(growth$date)
 growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
 growth$conditioning <- gsub("daily", "treated", growth$conditioning)
@@ -314,7 +325,7 @@ ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
 ```{r}
 means_vols$date <- as.POSIXct(means_vols$date)
 means_vols$bag_tag_num <- as.factor(means_vols$bag_tag_num)
-means_vols
+
 model <- lmer(perc_change_vol ~  effort/conditioning *date + (1|bag_tag_num), data = means_vols)
 summary(model)
 ```
@@ -331,7 +342,7 @@ summary(model.m)
 car::Anova(model.m,type = "III")
 qqPlot(residuals(model.m))
 
-model.b<- lmer(sqrt(perc_change_vol) ~  effort/conditioning *days + (1|bag_num), data = means_vols)
+model.b<- lmer(sqrt(perc_change_vol) ~  effort/conditioning *days + (1|bag_tag_num), data = means_vols)
 summary(model.b)
 qqnorm(resid(model.b))
 qqline(resid(model.b))
