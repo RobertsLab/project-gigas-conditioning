@@ -159,11 +159,13 @@ means_cumdead <- rbind(means_B_cumdead, means_D_cumdead)
 
 ### Means Cumulative death graphed
 ```{r}
-ggplot(means_cumdead, aes(x = date, y = mean_cumdead, shape = conditioning, color = effort)) +
+ggplot(means_cumdead, aes(x = date, y = mean_cumdead, color = effort)) +
    geom_point(size=3) +
+  geom_line(aes(linetype = conditioning)) +
   labs(x = "Date",
        y = "Mean cumulative dead oysters per bag") +
-  #scale_color_manual(labels = c("Daily Control", "Daily", "Weekly Control", "Weekly"), values = c("blue", "red", "green", "purple"))+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   labs(color = "Conditioning")+
   geom_errorbar(aes(ymin=mean_cumdead-std_error, ymax=mean_cumdead+std_error), width=.2,
                  position=position_dodge(0.05))+

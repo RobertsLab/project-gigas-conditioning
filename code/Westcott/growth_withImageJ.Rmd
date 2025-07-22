@@ -158,10 +158,14 @@ ggplot(means_sizes, aes(x = date, y = mean_length, color = effort)) +
 
 ### Looking at percent change in volume 
 ```{r}
+
+growth <- growth %>%
+  mutate(vol = exp(1)^predicted)
+
 means_vols <- growth %>%
   group_by(effort, conditioning, date, bag_tag_num) %>%
-  summarise(mean_vol = mean(predicted, na.rm = TRUE),
-            std_error = sd(predicted, na.rm = TRUE)/sqrt(length(predicted)),
+  summarise(mean_vol = mean(vol, na.rm = TRUE),
+            std_error = sd(vol, na.rm = TRUE)/sqrt(length(vol)),
             .groups = 'drop')
 
 
@@ -360,6 +364,18 @@ plot(tst_simres)
 ```{r}
 vols_w <- means_vols %>% filter(effort == "D")
 vols_d <- means_vols %>% filter(effort == "B")
+meas_vols_model <- means_vols %>%
+  filter(days > 0)
+
+
+model.a <-glmmTMB(perc_change_vol ~  effort/conditioning *days+ (1|bag_tag_num),data = meas_vols_model, family = gaussian()) #glmmTMB
+summary(model.a)
+car::Anova(model.a,type = "III")
+qqPlot(residuals(model.a))
+
+testDispersion(model.a)
+tst_simres <- simulateResiduals(fittedModel = model.a) #DHARMa
+plot(tst_simres)
 
 
 model.w<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_w, family = gaussian()) #glmmTMB
