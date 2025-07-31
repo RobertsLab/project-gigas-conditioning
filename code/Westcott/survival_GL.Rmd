@@ -11,17 +11,18 @@ library(tidyverse)
 library(ggplot2)
 library(DHARMa)
 library(glmmTMB)
+library(emmeans)
 
 ```
 
 ### Load Data
 ```{r}
 # B survival
-B_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_07112025.xlsx")
+B_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_07242025.xlsx")
 B_survival$conditioning <- gsub("daily", "treated", B_survival$conditioning)
 
 # D survival
-D_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_07112025.xlsx")
+D_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_07242025.xlsx")
 D_survival$conditioning <- gsub("weekly", "treated", D_survival$conditioning)
 
 ```
@@ -408,6 +409,17 @@ plot(tst_simres)
 
 
 car::Anova(model.s3, type = "III")
+
+
+emm <- emmeans(model.s3, ~ effort/conditioning | days)
+contrast(emm, method = "pairwise")
+
+
+emm_inter <- emmeans(model.s3, ~ effort/conditioning * days)
+summary(emm_inter)
+contrast(emm_inter, method = "pairwise")
+
+contrast(emm_inter, interaction = "pairwise")
 
 ```
 
