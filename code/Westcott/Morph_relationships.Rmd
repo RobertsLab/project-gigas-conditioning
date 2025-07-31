@@ -29,7 +29,7 @@ library(broom)
 ### Load Data
 ```{r}
 # B survival
-B_growth <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_06252025.xlsx")
+B_growth <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_07242025.xlsx")
 
 # Heights from bag 2 for 07/05/2024 showing up as NAs for some reason when data imported
 B_growth$length.mm <- as.numeric(B_growth$length.mm)
@@ -40,7 +40,7 @@ B_growth$date <- as.Date(B_growth$date)
 B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 # D survival
-D_growth <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_06252025.xlsx", guess_max = 2000)
+D_growth <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_07242025.xlsx", guess_max = 2000)
 D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 D_growth$length.mm <- as.numeric(D_growth$length.mm)
 D_growth$width.mm <- as.numeric(D_growth$width.mm)
@@ -52,7 +52,7 @@ D_growth$date <- as.Date(D_growth$date)
 ### B
 ```{r}
 B_growth %>%
-  filter(date == "2025-06-25") %>%
+  filter(date == "2025-07-24") %>%
   ggplot(aes(x = length.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Length (mm)", y = "Count") +
@@ -67,7 +67,7 @@ B_growth %>%
 
 ```{r}
 B_growth %>%
-  filter(date == "2025-06-25") %>%
+  filter(date == "2025-07-24") %>%
 ggplot(aes(x = height.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Height (mm)", y = "Count") +
@@ -78,7 +78,7 @@ ggplot(aes(x = height.mm)) +
 
 ```{r}
 B_growth %>%
-  filter(date == "2025-06-25") %>%
+  filter(date == "2025-07-24") %>%
 ggplot(aes(x = width.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Width (mm)", y = "Count") +
@@ -90,7 +90,7 @@ ggplot(aes(x = width.mm)) +
 
 ```{r}
 D_growth %>%
-  filter(date == "2025-06-25") %>%
+  filter(date == "2025-07-24") %>%
 ggplot(aes(x = length.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Length (mm)", y = "Count") +
@@ -101,7 +101,7 @@ ggplot(aes(x = length.mm)) +
 
 ```{r}
 D_growth %>%
-  filter(date == "2025-06-25") %>%
+  filter(date == "2025-07-24") %>%
 ggplot(aes(x = height.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Height (mm)", y = "Count") +
@@ -112,7 +112,7 @@ ggplot(aes(x = height.mm)) +
 
 
 D_growth %>%
-  filter(date == "2025-06-25") %>%
+  filter(date == "2025-07-24") %>%
 ggplot(aes(x = width.mm)) +
   geom_histogram(fill = "blue", color = "black") +
   labs(x = "Width (mm)", y = "Count") +
@@ -603,6 +603,20 @@ growth_model %>%
 ```
 
 
+```{r}
+growth_model %>%
+  filter(effort == "B", date == "2025-07-24") %>%
+  ggplot(aes(x=length.mm, y= volume))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+  ylim(0,70000)+
+  xlim(0,100)
+```
+
 #### Effort D volume
 ```{r}
 growth_model %>%
@@ -713,6 +727,20 @@ growth_model %>%
         axis.text = element_text(size = 20))+
   ylim(0,70000)+
   xlim(0,100)
+```
+
+```{r}
+growth_model %>%
+  filter(effort == "D", date == "2025-07-24") %>%
+  ggplot(aes(x=length.mm, y= volume, color = conditioning))+
+  geom_point()+
+  theme_classic()+
+  labs(x = "Length (mm)", y = "Volume")+
+  theme(axis.title.x = element_text(size = 20),
+        axis.title.y = element_text(size = 20),
+        axis.text = element_text(size = 20))+
+   ylim(0,70000)+
+   xlim(0,100)
 ```
 
 ### Non linear model for log volume

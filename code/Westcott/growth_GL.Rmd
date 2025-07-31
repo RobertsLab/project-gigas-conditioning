@@ -18,7 +18,7 @@ library(gridExtra)
 ### Load Data
 ```{r}
 # B survival
-B_growth <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_05132025.xlsx")
+B_growth <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_07242025.xlsx")
 
 # Heights from bag 2 for 07/05/2024 showing up as NA's for some reason when data imported
 B_growth$length.mm <- as.numeric(B_growth$length.mm)
@@ -28,7 +28,7 @@ B_growth$height.mm <- as.numeric(B_growth$height.mm)
 B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 # D survival
-D_growth <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_05132025.xlsx")
+D_growth <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_07242025.xlsx")
 D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 ```
