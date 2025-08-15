@@ -40,6 +40,7 @@ D_growth_sum <- subset(D_growth_sum, select=-c(bag_tag_num,notes, tag_num, dupli
 Dec_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
 May_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250513_images/sizes_05132025.xlsx")
 June_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250625_images/sizes_06252025.xlsx")
+July_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250724_images/sizes_20250724.xlsx")
 
 
 ```
@@ -75,6 +76,16 @@ names(June_sizes)[names(June_sizes) == "length"] <- "length.mm"
 names(June_sizes)[names(June_sizes) == "width"] <- "width.mm"
 June_sizes <- subset(June_sizes, select=-c(oyster))
 
+July_sizes <- July_sizes %>%
+  pivot_wider(names_from = metric,
+              values_from = c(measure.mm))
+
+July_sizes$width[July_sizes$width < 2] <- NA
+
+names(July_sizes)[names(July_sizes) == "length"] <- "length.mm"
+names(July_sizes)[names(July_sizes) == "width"] <- "width.mm"
+July_sizes <- subset(July_sizes, select=-c(oyster))
+
 bag_tag_key <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/bag_tag_key.xlsx")
 
 B_growth_sum <- left_join(B_growth_sum, bag_tag_key, by = "bag_num")
@@ -89,7 +100,7 @@ D_growth_sum <- subset(D_growth_sum, select=-c(bag_num))
 ### Combine ImageJ and early data
 ```{r}
 
-growth <- bind_rows(B_growth_sum, D_growth_sum, Dec_sizes, May_sizes, June_sizes)
+growth <- bind_rows(B_growth_sum, D_growth_sum, Dec_sizes, May_sizes, June_sizes, July_sizes)
 growth$date <- as.Date(growth$date)
 growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
 growth$conditioning <- gsub("daily", "treated", growth$conditioning)
