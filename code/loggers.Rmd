@@ -235,11 +235,11 @@ levels(as.factor(goose$group))
 
 Group information is now added.  
 
-Remove temperature data from read out days (6/24, 9/9, 12/11)
+Remove temperature data from read out days (6/24, 9/9, 12/11, 08/25)
 
 ```{r}
 # Dates to filter out
-dates_to_filter <- as.Date(c("2024-06-19", "2024-06-20", "2024-06-21", "2024-06-22", "2024-06-23", "2024-06-24", "2024-06-25", "2024-09-09", "2024-09-10", "2024-12-11", "2025-05-20"))
+dates_to_filter <- as.Date(c("2024-06-19", "2024-06-20", "2024-06-21", "2024-06-22", "2024-06-23", "2024-06-24", "2024-06-25", "2024-09-09", "2024-09-10", "2024-12-11", "2025-05-20", "2025-08-25"))
 
 # Filter out rows with specified dates
 goose <- goose %>%
@@ -290,9 +290,6 @@ goose_plot2<-daily_goose%>%
 
 ggsave(goose_plot2, filename="figures/environmental/goose-loggers_daily-range.png", width=8, height=6)
 ```
-
-
-
 
 # Sequim
 

@@ -60,6 +60,60 @@ metadata$field_cattle_tag<-factor(metadata$field_cattle_tag)
 data$treatment<-metadata$treatment[match(data$field_cattle_tag, metadata$field_cattle_tag)]
 ```
 
+Read in survival data. 
+```{r}
+survival<-read_csv(file="data/outplanting/GoosePoint/survival_GoosePoint.csv")
+
+survival$group<-metadata$group[match(survival$field_cattle_tag, metadata$field_cattle_tag)]
+survival$treatment<-metadata$treatment[match(survival$field_cattle_tag, metadata$field_cattle_tag)]
+survival$experiment<-metadata$experiment[match(survival$field_cattle_tag, metadata$field_cattle_tag)]
+
+survival$date<-as.factor(survival$date)
+```
+
+# Survival 
+
+Plot number of dead oysters in each bag. 
+```{r}
+plot<-survival%>%
+  
+  ggplot(aes(x=date, y=dead, colour=treatment, fill=treatment))+
+  facet_wrap(~experiment)+
+  geom_point()+
+  geom_line(aes(group=field_cattle_tag))+
+  theme_classic(); plot
+```
+
+Calculate cumulative dead. 
+```{r}
+plot2<-survival%>%
+  select(field_cattle_tag, tag_20250825, date, treatment, group, experiment, dead)%>%
+  pivot_wider(names_from="date", values_from="dead")%>%
+  #group_by(field_cattle_tag, tag_20250825, treatment, group, experiment)%>%
+  dplyr::mutate(total_dead=rowSums(across(6:10)))%>%
+  
+  ggplot(aes(x=treatment, y=total_dead, colour=treatment, fill=treatment))+
+  facet_wrap(~experiment)+
+  geom_boxplot(fill=NA)+
+  geom_point(position=position_jitterdodge(0.6))+
+  theme_classic(); plot2
+```
+
+Group all experiments together to look at treated vs control for all. 
+
+```{r}
+plot3<-survival%>%
+  select(field_cattle_tag, tag_20250825, date, treatment, group, experiment, dead)%>%
+  pivot_wider(names_from="date", values_from="dead")%>%
+  #group_by(field_cattle_tag, tag_20250825, treatment, group, experiment)%>%
+  dplyr::mutate(total_dead=rowSums(across(6:10)))%>%
+  
+  ggplot(aes(x=treatment, y=total_dead, colour=treatment, fill=treatment))+
+  geom_boxplot(fill=NA)+
+  geom_point(position=position_jitterdodge(0.6))+
+  theme_classic(); plot3
+```
+
 # Plot data 
 
 Plot a histogram of each data column to identify any outliers. 
