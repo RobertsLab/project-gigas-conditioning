@@ -41,6 +41,7 @@ Dec_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~
 May_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250513_images/sizes_05132025.xlsx")
 June_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250625_images/sizes_06252025.xlsx")
 July_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250724_images/sizes_20250724.xlsx")
+Aug_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250820_images/sizes_20250820.xlsx")
 
 
 ```
@@ -86,6 +87,16 @@ names(July_sizes)[names(July_sizes) == "length"] <- "length.mm"
 names(July_sizes)[names(July_sizes) == "width"] <- "width.mm"
 July_sizes <- subset(July_sizes, select=-c(oyster))
 
+Aug_sizes <- Aug_sizes %>%
+  pivot_wider(names_from = metric,
+              values_from = c(measure.mm))
+
+Aug_sizes$width[Aug_sizes$width < 2] <- NA
+
+names(Aug_sizes)[names(Aug_sizes) == "length"] <- "length.mm"
+names(Aug_sizes)[names(Aug_sizes) == "width"] <- "width.mm"
+Aug_sizes <- subset(Aug_sizes, select=-c(oyster))
+
 bag_tag_key <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/bag_tag_key.xlsx")
 
 B_growth_sum <- left_join(B_growth_sum, bag_tag_key, by = "bag_num")
@@ -100,7 +111,7 @@ D_growth_sum <- subset(D_growth_sum, select=-c(bag_num))
 ### Combine ImageJ and early data
 ```{r}
 
-growth <- bind_rows(B_growth_sum, D_growth_sum, Dec_sizes, May_sizes, June_sizes, July_sizes)
+growth <- bind_rows(B_growth_sum, D_growth_sum, Dec_sizes, May_sizes, June_sizes, July_sizes, Aug_sizes)
 growth$date <- as.Date(growth$date)
 growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
 growth$conditioning <- gsub("daily", "treated", growth$conditioning)
@@ -523,7 +534,7 @@ grid.arrange(length,width)
 
 
 growth_list <- growth %>%
-  group_by(bag_num) %>%
+  group_by(bag_tag_num) %>%
   group_split()
 
 gmodel_list <- lapply(growth_list, function(x) nls(log(volume) ~ a*length.mm^b, data = growth, start = list(a = 6.8, b = 1.1)))
