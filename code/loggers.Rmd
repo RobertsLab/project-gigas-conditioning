@@ -295,11 +295,11 @@ ggsave(goose_plot2, filename="figures/environmental/goose-loggers_daily-range.pn
 
 Read in Hobo file  
 ```{r}
-sequim.files <- list.files(path="data/environmental/loggers/sequim", pattern="*.csv", full.names=TRUE)
+sequim.files <- list.files(path="data/environmental/loggers/sequim", pattern="*.xlsx", full.names=TRUE)
 
 sequim <- setNames(sequim.files, sequim.files) %>%
-    map_dfr(read_csv, .id = "logger") %>%
-    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temp , °C`)%>%
+    map_dfr(read_xlsx, .id = "logger") %>%
+    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temperature , °C`)%>%
     select(logger, DateTime, temp.C)%>%
     mutate(logger=sub(".*/", "", logger))%>% #remove the path name
     mutate(logger=sub("_.*", "", logger))%>% #keep only the serial number 
