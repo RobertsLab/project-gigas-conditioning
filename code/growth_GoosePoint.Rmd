@@ -129,15 +129,19 @@ hist(data$width.mm)
 hist(data$depth.mm)
 ```
 
+```{r}
+data<-data%>%
+  mutate(corrected_tag=as.factor(corrected_tag))
+```
+
 No obvious outliers. 
 
 Plot a box plot of length, width, and depth as a function of bag number, colored by treatment. 
 
 ```{r}
 plot1<-data%>%
-  ggplot(aes(x=corrected_tag, y=length.mm, fill = treatment)) +
+  ggplot(aes(x=corrected_tag, y=length.mm, fill = corrected_tag)) +
   facet_wrap(~date)+
-  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
   xlab("Bag") + 
   theme_classic(); plot1
@@ -146,9 +150,8 @@ plot1<-data%>%
 Plot width. 
 ```{r}
 plot2<-data%>%
-  ggplot(aes(x=corrected_tag, y=width.mm, fill = treatment)) +
+  ggplot(aes(x=corrected_tag, y=width.mm, fill = corrected_tag)) +
   facet_wrap(~date)+
-  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
   xlab("Bag") + 
   theme_classic(); plot2
@@ -157,9 +160,8 @@ plot2<-data%>%
 Plot depth 
 ```{r}
 plot3<-data%>%
-  ggplot(aes(x=corrected_tag, y=depth.mm, fill = treatment)) +
+  ggplot(aes(x=corrected_tag, y=depth.mm, fill = corrected_tag)) +
   facet_wrap(~date)+
-  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
   xlab("Bag") + 
   theme_classic(); plot3
@@ -182,10 +184,10 @@ plot(data$volume ~ data$width.mm)
 ```
 Relationships may be non linear. 
 
-Obtain training data with known length width and depth from 20240909 dataset. 
+Obtain training data with known length width and depth from 20240909 and 20250825 dataset. 
 ```{r}
 training_data<-data%>%
-  filter(date=="20240909")%>%
+  filter(date %in% c("20240909", "20250825"))%>%
   filter(!is.na(volume))
 
 hist(training_data$volume)
@@ -262,7 +264,7 @@ I am going to select the polynomial model, because the GAM is more affected by h
 View the relationship between known volume and predicted volume using Polynomial regression. 
 ```{r}
 # Plot polynomial fit for Length vs. Volume
-ggplot(data%>%filter(date=="20240909"), aes(x = volume, y = Predicted_Volume_Poly)) +
+ggplot(data%>%filter(date %in% c("20240909", "20250825")), aes(x = volume, y = Predicted_Volume_Poly)) +
   geom_point() +
   stat_smooth(method = "loess", color = "blue", se = TRUE) +
   ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
@@ -273,10 +275,17 @@ Model fit looks good for our approximation. Proceed with using predicted volume 
 Look for outliers. 
 ```{r}
 hist(data$Predicted_Volume_Poly)
-min(data$Predicted_Volume_Poly)
+min(data$Predicted_Volume_Poly, na.rm=TRUE)
 ```
 
 Remove outliers and reconstruct polynomial model. 
+
+```{r}
+data<-data%>%
+  filter(Predicted_Volume_Poly>0)
+
+hist(data$Predicted_Volume_Poly)
+```
 
 There are several outliers. Conduct outlier removal and analyze again.  
 
@@ -361,7 +370,7 @@ ggplot(training_data, aes(x = width.mm, y = volume)) +
 View the relationship between known volume and predicted volume using Polynomial regression. 
 ```{r}
 # Plot polynomial fit for Length vs. Volume
-ggplot(data%>%filter(date=="20240909"), aes(x = volume, y = Predicted_Volume_Poly)) +
+ggplot(data%>%filter(date %in% c("20240909", "20250825")), aes(x = volume, y = Predicted_Volume_Poly)) +
   geom_point() +
   stat_smooth(method = "loess", color = "blue", se = TRUE) +
   ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
@@ -377,13 +386,6 @@ min(data$Predicted_Volume_Poly)
 
 There are fewer negative values than the first iteration of the model. 
 
-Remove any observation that resulted in a negative value. 
-
-```{r}
-data<-data%>%filter(Predicted_Volume_Poly>0)
-hist(data$Predicted_Volume_Poly)
-```
-
 Proceed with the calculated volume data.  
 
 # Analyze growth (volume) over time 
@@ -392,11 +394,8 @@ Proceed with the calculated volume data.
 
 ```{r}
 data<-data%>%
-  filter(Predicted_Volume_Poly<2e+05)%>%
+  mutate(corrected_tag=as.factor(corrected_tag))%>%
   filter(!date=="20251009")
-
-data<-data%>%
-  mutate(corrected_tag=as.factor(corrected_tag))
 ```
 
 
