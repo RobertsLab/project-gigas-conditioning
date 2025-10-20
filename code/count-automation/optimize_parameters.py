@@ -43,7 +43,7 @@ def grid_search(image_dir: str, param_grid: dict, output_file: str = None):
     
     for i, combo in enumerate(combinations):
         # Create parameter dict
-        params = OysterCounter._default_params()
+        params = OysterCounter.get_default_params()
         for name, value in zip(param_names, combo):
             params[name] = value
         

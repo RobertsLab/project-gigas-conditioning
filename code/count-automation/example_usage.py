@@ -12,6 +12,11 @@ from oyster_counter import OysterCounter
 import json
 from pathlib import Path
 
+# Configuration paths - adjust these based on your setup
+DATA_DIR = Path("../../data/images")
+OUTPUT_DIR = Path("../../output/count-automation")
+BEST_PARAMS_FILE = OUTPUT_DIR / "best_params.json"
+
 
 def example_1_single_image():
     """Example 1: Count oysters in a single image with default parameters."""
@@ -23,10 +28,10 @@ def example_1_single_image():
     counter = OysterCounter()
     
     # Count oysters in an image
-    image_path = "../../data/images/juvenile-102.jpeg"
-    count, visualization = counter.count_oysters(image_path)
+    image_path = DATA_DIR / "juvenile-102.jpeg"
+    count, visualization = counter.count_oysters(str(image_path))
     
-    print(f"Image: {image_path}")
+    print(f"Image: {image_path.name}")
     print(f"Detected oysters: {count}")
     print()
 
@@ -54,10 +59,10 @@ def example_2_custom_parameters():
     counter = OysterCounter(params=custom_params)
     
     # Count oysters
-    image_path = "../../data/images/juvenile-114.jpeg"
-    count, visualization = counter.count_oysters(image_path)
+    image_path = DATA_DIR / "juvenile-114.jpeg"
+    count, visualization = counter.count_oysters(str(image_path))
     
-    print(f"Image: {image_path}")
+    print(f"Image: {image_path.name}")
     print(f"Detected oysters: {count}")
     print()
 
@@ -69,16 +74,14 @@ def example_3_load_parameters_from_file():
     print("="*60)
     
     # Load parameters from file
-    params_file = "../../output/count-automation/best_params.json"
-    with open(params_file, 'r') as f:
+    with open(BEST_PARAMS_FILE, 'r') as f:
         params = json.load(f)
     
     # Create counter with loaded parameters
     counter = OysterCounter(params=params)
     
     # Count oysters in multiple images
-    image_dir = Path("../../data/images")
-    images = sorted(image_dir.glob("*.jpeg"))[:3]  # First 3 images
+    images = sorted(DATA_DIR.glob("*.jpeg"))[:3]  # First 3 images
     
     for img in images:
         count, _ = counter.count_oysters(str(img))
@@ -96,8 +99,7 @@ def example_4_programmatic_evaluation():
     from oyster_counter import evaluate_on_dataset
     
     # Load optimized parameters
-    params_file = "../../output/count-automation/best_params.json"
-    with open(params_file, 'r') as f:
+    with open(BEST_PARAMS_FILE, 'r') as f:
         params = json.load(f)
     
     # Create counter
@@ -106,7 +108,7 @@ def example_4_programmatic_evaluation():
     # Evaluate on dataset
     results = evaluate_on_dataset(
         counter,
-        "../../data/images",
+        str(DATA_DIR),
         output_dir=None  # Don't save visualizations
     )
     
@@ -123,16 +125,16 @@ def example_5_adjust_parameters():
     print("Example 5: Experimenting with Parameters")
     print("="*60)
     
-    image_path = "../../data/images/juvenile-99.jpeg"
+    image_path = DATA_DIR / "juvenile-99.jpeg"
     
     # Test with different min_area thresholds
     min_areas = [200, 300, 400, 500]
     
-    print(f"Testing different min_area values on {Path(image_path).name}:\n")
+    print(f"Testing different min_area values on {image_path.name}:\n")
     
     for min_area in min_areas:
         # Start with default parameters
-        params = OysterCounter._default_params()
+        params = OysterCounter.get_default_params()
         # Override specific parameters
         params['min_area'] = min_area
         params['adaptive_block_size'] = 75
@@ -140,7 +142,7 @@ def example_5_adjust_parameters():
         params['morph_kernel_size'] = 7
         
         counter = OysterCounter(params=params)
-        count, _ = counter.count_oysters(image_path)
+        count, _ = counter.count_oysters(str(image_path))
         
         print(f"min_area={min_area:4d}: {count:3d} oysters detected")
     

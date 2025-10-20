@@ -38,7 +38,7 @@ class OysterCounter:
     
     @staticmethod
     def _default_params() -> Dict:
-        """Return default detection parameters."""
+        """Return default detection parameters (internal use)."""
         return {
             'resize_factor': 0.25,  # Resize images for faster processing
             'blur_kernel': 5,  # Gaussian blur kernel size
@@ -50,6 +50,16 @@ class OysterCounter:
             'circularity_threshold': 0.3,  # Minimum circularity (0-1)
             'aspect_ratio_max': 3.0,  # Maximum aspect ratio
         }
+    
+    @staticmethod
+    def get_default_params() -> Dict:
+        """
+        Get a copy of the default detection parameters.
+        
+        Returns:
+            Dictionary containing default parameter values
+        """
+        return OysterCounter._default_params().copy()
     
     def preprocess_image(self, image: np.ndarray) -> np.ndarray:
         """
