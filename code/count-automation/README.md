@@ -14,7 +14,8 @@ count-automation/
 ├── requirements.txt             # Python dependencies
 ├── oyster_counter.py           # Main counting algorithm
 ├── optimize_parameters.py      # Parameter optimization script
-└── batch_process.py            # Batch processing utility (optional)
+├── batch_process.py            # Batch processing utility
+└── example_usage.py            # Example code demonstrating usage
 ```
 
 ## Installation
@@ -39,6 +40,20 @@ Required packages:
 - matplotlib >= 3.7.0
 - pandas >= 2.0.0
 - pillow >= 10.0.0
+
+## Quick Start
+
+For a complete set of examples, run:
+```bash
+python example_usage.py
+```
+
+This will demonstrate:
+- Counting oysters with default parameters
+- Using custom parameters
+- Loading optimized parameters from file
+- Programmatic evaluation
+- Parameter experimentation
 
 ## Usage
 
