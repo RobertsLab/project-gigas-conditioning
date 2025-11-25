@@ -164,6 +164,7 @@ grid.arrange(DL,DW)
 ```
 
 ```{r}
+
 ggplot(means_sizes, aes(x = date, y = mean_length, color = effort)) +
    geom_point() +
   geom_line(aes(linetype=conditioning))+
@@ -202,12 +203,12 @@ means_vols <- means_vols %>%
 ```
 
 ```{r}
-ggplot(means_vols, aes(x = date, y = mean_vol, color = effort)) +
+  ggplot(means_vols, aes(x = date, y = mean_vol, color = effort)) +
    geom_point() +
   geom_line(aes(linetype=conditioning))+
   labs(x = "Date",
        y = "Mean volume ") +
-  labs(color = "Conditioning Type", linetype = "Treatment")+
+  labs(color = "Conditioning treatment", linetype = "Treatment")+
   theme_classic()+
   scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
@@ -221,7 +222,29 @@ ggplot(means_vols, aes(x = date, y = mean_vol, color = effort)) +
     legend.text = element_text(size = 18, color = "black"),
     legend.title = element_text(size = 20, color = "black"))
 ```
-
+```{r}
+means_vols %>%
+  filter(effort == "D")%>%
+  ggplot(aes(x = date, y = mean_vol)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = "Mean volume ") +
+  labs(title = "Weekly conditioning", linetype = "Treatment")+
+  theme_classic()+
+  #scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_vol-std_error, ymax = mean_vol+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))+
+  ylim(0,34000)
+```
 
 
 ```{r}
@@ -383,6 +406,53 @@ plot(tst_simres)
 
 
 ```
+
+```{r}
+mean_vols <- growth %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_vol = mean(vol, na.rm = TRUE),
+            std_error = sd(vol, na.rm = TRUE)/sqrt(length(vol)),
+            .groups = 'drop')
+
+
+mean_vols %>%
+  filter(date == "2024-06-10")%>%
+  ggplot(aes(x = effort, y = mean_vol, fill = conditioning)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(aes(ymin = mean_vol-std_error, ymax = mean_vol+std_error), position = position_dodge(width = 0.9), width = 0.2)+
+  labs(x = "Date",
+       y = "Mean volume") +
+  labs(fill= "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_fill_manual(labels = c("Control", "Primed"), values = c("blue","red"))+
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+```
+```{r}
+initial_sizes <- growth %>%
+  filter(date == "2024-06-10")
+
+model.i <-glmmTMB(vol ~  effort/conditioning + (1|bag_tag_num),data = initial_sizes, family = gaussian())
+summary(model.i)
+car::Anova(model.i)
+tst_simres <- simulateResiduals(fittedModel = model.i) #DHARMa
+plot(tst_simres)
+
+model.l <-glmmTMB(length.mm ~  effort/conditioning + (1|bag_tag_num),data = initial_sizes, family = gaussian())
+summary(model.l)
+car::Anova(model.l)
+tst_simres <- simulateResiduals(fittedModel = model.l) #DHARMa
+plot(tst_simres)
+
+
+```
+
+
 ```{r}
 vols_w <- means_vols %>% filter(effort == "D")
 vols_d <- means_vols %>% filter(effort == "B")
