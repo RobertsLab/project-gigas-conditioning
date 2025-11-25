@@ -295,11 +295,11 @@ ggsave(goose_plot2, filename="figures/environmental/goose-loggers_daily-range.pn
 
 Read in Hobo file  
 ```{r}
-sequim.files <- list.files(path="data/environmental/loggers/sequim", pattern="*.csv", full.names=TRUE)
+sequim.files <- list.files(path="data/environmental/loggers/sequim", pattern="*.xlsx", full.names=TRUE)
 
 sequim <- setNames(sequim.files, sequim.files) %>%
-    map_dfr(read_csv, .id = "logger") %>%
-    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temp , °C`)%>%
+    map_dfr(read_xlsx, .id = "logger") %>%
+    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temperature , °C`)%>%
     select(logger, DateTime, temp.C)%>%
     mutate(logger=sub(".*/", "", logger))%>% #remove the path name
     mutate(logger=sub("_.*", "", logger))%>% #keep only the serial number 
@@ -343,9 +343,10 @@ sequim <- sequim %>%
 
 ## Plot data 
 
-All loggers 
+All loggers for summer
 ```{r}
 sequim_plot<-sequim%>%
+  filter(day > as.Date(c("2025-04-03")))%>%
   
   ggplot(aes(x=DateTime, y=temp.C))+
   geom_point(alpha=0.7, colour="darkgray")+
@@ -363,6 +364,7 @@ Plot amount of daily variability over a 24 hour cycle.
 ```{r}
 #calculate min and max of each day and plot this difference over time 
 daily_sequim<-sequim%>%
+  filter(day > as.Date(c("2025-04-03")))%>%
   group_by(logger, day, group)%>%
   summarise(min=min(temp.C), max=max(temp.C))%>%
   mutate(diff=max-min)
@@ -372,6 +374,7 @@ Plot daily range over time.
 
 ```{r}
 sequim_plot2<-daily_sequim%>%
+  filter(day > as.Date(c("2025-04-03")))%>%
   
   ggplot(aes(x=day, y=diff))+
   geom_point(alpha=0.7, colour="darkgray")+
@@ -383,6 +386,8 @@ sequim_plot2<-daily_sequim%>%
 
 ggsave(sequim_plot2, filename="figures/environmental/sequim-loggers_daily-range.png", width=8, height=6)
 ```
+
+
 
 
 

@@ -1,15 +1,29 @@
-field_cattle_tag,tag_20250825,source_bag,effort,experiment,treatment,group,source_cattle_tag,number_oysters,photo_taken,logger
-80,358,UW-SR33,Effort E,weekly temperature,control,Weekly Temperature Control,1,100,yes,no
-81,340,UW-SR41,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
-82,357,UW-SR43,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
-83,339,UW-SR37,Effort E,weekly temperature,treated,Weekly Temperature Treated,20,100,yes,no
-84,342,UW-SR45,Effort E,weekly fresh water,treated,Weekly Fresh Water Treated,23,100,yes,no
-85,321,UW-SR38,Effort E,weekly temperature,treated,Weekly Temperature Treated,20,100,yes,yes
-86,322,UW-SR42,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
-87,337,UW-SR40,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
-88,341,UW-SR35,Effort E,weekly temperature,control,Weekly Temperature Control,1,100,yes,no
-91,343,UW-SR36,Effort E,weekly temperature,treated,Weekly Temperature Treated,20,100,yes,no
-94,361,UW-SR44,Effort E,weekly fresh water,treated,Weekly Fresh Water Treated,23,100,yes,yes
-95,380,UW-SR39,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
-96,359,UW-SR46,Effort E,weekly fresh water,treated,Weekly Fresh Water Treated,23,100,yes,yes
-97,360,UW-SR34,Effort E,weekly temperature,control,Weekly Temperature Control,1,100,yes,yes
+field_cattle_tag,tag_20250825,corrected_tag,source_bag,effort,experiment,treatment,group,source_cattle_tag,number_oysters,photo_taken,logger
+80,358,80,UW-SR33,Effort E,weekly temperature,control,Weekly Temperature Control,1,100,yes,no
+81,340,81,UW-SR41,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
+82,357,82,UW-SR43,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
+83,339,83,UW-SR37,Effort E,weekly temperature,treated,Weekly Temperature Treated,20,100,yes,no
+84,342,84,UW-SR45,Effort E,weekly fresh water,treated,Weekly Fresh Water Treated,23,100,yes,no
+85,321,85,UW-SR38,Effort E,weekly temperature,treated,Weekly Temperature Treated,20,100,yes,yes
+86,322,86,UW-SR42,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
+87,337,87,UW-SR40,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
+88,341,88,UW-SR35,Effort E,weekly temperature,control,Weekly Temperature Control,1,100,yes,no
+91,343,91,UW-SR36,Effort E,weekly temperature,treated,Weekly Temperature Treated,20,100,yes,no
+94,361,94,UW-SR44,Effort E,weekly fresh water,treated,Weekly Fresh Water Treated,23,100,yes,yes
+95,380,95,UW-SR39,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
+96,359,96,UW-SR46,Effort E,weekly fresh water,treated,Weekly Fresh Water Treated,23,100,yes,yes
+97,360,97,UW-SR34,Effort E,weekly temperature,control,Weekly Temperature Control,1,100,yes,yes
+358,NA,80,UW-SR33,Effort E,weekly temperature,control,Weekly Temperature Control,1,100,yes,no
+340,NA,81,UW-SR41,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
+357,NA,82,UW-SR43,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
+339,NA,83,UW-SR37,Effort E,weekly temperature,treated,Weekly Temperature Treated,20,100,yes,no
+342,NA,84,UW-SR45,Effort E,weekly fresh water,treated,Weekly Fresh Water Treated,23,100,yes,no
+321,NA,85,UW-SR38,Effort E,weekly temperature,treated,Weekly Temperature Treated,20,100,yes,yes
+322,NA,86,UW-SR42,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
+337,NA,87,UW-SR40,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
+341,NA,88,UW-SR35,Effort E,weekly temperature,control,Weekly Temperature Control,1,100,yes,no
+343,NA,91,UW-SR36,Effort E,weekly temperature,treated,Weekly Temperature Treated,20,100,yes,no
+361,NA,94,UW-SR44,Effort E,weekly fresh water,treated,Weekly Fresh Water Treated,23,100,yes,yes
+380,NA,95,UW-SR39,Effort E,weekly fresh water,control,Weekly Fresh Water Control,24,100,yes,no
+359,NA,96,UW-SR46,Effort E,weekly fresh water,treated,Weekly Fresh Water Treated,23,100,yes,yes
+360,NA,97,UW-SR34,Effort E,weekly temperature,control,Weekly Temperature Control,1,100,yes,yes

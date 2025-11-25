@@ -58,6 +58,10 @@ metadata<-read_csv(file="data/outplanting/GoosePoint/bag_list_GoosePoint.csv")
 metadata$field_cattle_tag<-factor(metadata$field_cattle_tag)
 
 data$treatment<-metadata$treatment[match(data$field_cattle_tag, metadata$field_cattle_tag)]
+data$corrected_tag<-metadata$corrected_tag[match(data$field_cattle_tag, metadata$field_cattle_tag)]
+data$experiment<-metadata$experiment[match(data$field_cattle_tag, metadata$field_cattle_tag)]
+
+metadata$corrected_tag<-factor(metadata$corrected_tag)
 ```
 
 Read in survival data. 
@@ -67,8 +71,10 @@ survival<-read_csv(file="data/outplanting/GoosePoint/survival_GoosePoint.csv")
 survival$group<-metadata$group[match(survival$field_cattle_tag, metadata$field_cattle_tag)]
 survival$treatment<-metadata$treatment[match(survival$field_cattle_tag, metadata$field_cattle_tag)]
 survival$experiment<-metadata$experiment[match(survival$field_cattle_tag, metadata$field_cattle_tag)]
+survival$corrected_tag<-metadata$corrected_tag[match(survival$field_cattle_tag, metadata$field_cattle_tag)]
 
 survival$date<-as.factor(survival$date)
+head(survival)
 ```
 
 # Survival 
@@ -80,17 +86,17 @@ plot<-survival%>%
   ggplot(aes(x=date, y=dead, colour=treatment, fill=treatment))+
   facet_wrap(~experiment)+
   geom_point()+
-  geom_line(aes(group=field_cattle_tag))+
+  geom_line(aes(group=corrected_tag))+
   theme_classic(); plot
 ```
 
 Calculate cumulative dead. 
 ```{r}
 plot2<-survival%>%
-  select(field_cattle_tag, tag_20250825, date, treatment, group, experiment, dead)%>%
+  select(field_cattle_tag, tag_20250825, corrected_tag, date, treatment, group, experiment, dead)%>%
   pivot_wider(names_from="date", values_from="dead")%>%
   #group_by(field_cattle_tag, tag_20250825, treatment, group, experiment)%>%
-  dplyr::mutate(total_dead=rowSums(across(6:10)))%>%
+  dplyr::mutate(total_dead=rowSums(across(7:11)))%>%
   
   ggplot(aes(x=treatment, y=total_dead, colour=treatment, fill=treatment))+
   facet_wrap(~experiment)+
@@ -103,10 +109,10 @@ Group all experiments together to look at treated vs control for all.
 
 ```{r}
 plot3<-survival%>%
-  select(field_cattle_tag, tag_20250825, date, treatment, group, experiment, dead)%>%
+  select(field_cattle_tag, tag_20250825, corrected_tag, date, treatment, group, experiment, dead)%>%
   pivot_wider(names_from="date", values_from="dead")%>%
   #group_by(field_cattle_tag, tag_20250825, treatment, group, experiment)%>%
-  dplyr::mutate(total_dead=rowSums(across(6:10)))%>%
+  dplyr::mutate(total_dead=rowSums(across(7:11)))%>%
   
   ggplot(aes(x=treatment, y=total_dead, colour=treatment, fill=treatment))+
   geom_boxplot(fill=NA)+
@@ -123,15 +129,19 @@ hist(data$width.mm)
 hist(data$depth.mm)
 ```
 
+```{r}
+data<-data%>%
+  mutate(corrected_tag=as.factor(corrected_tag))
+```
+
 No obvious outliers. 
 
 Plot a box plot of length, width, and depth as a function of bag number, colored by treatment. 
 
 ```{r}
 plot1<-data%>%
-  ggplot(aes(x=field_cattle_tag, y=length.mm, fill = treatment)) +
+  ggplot(aes(x=corrected_tag, y=length.mm, fill = corrected_tag)) +
   facet_wrap(~date)+
-  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
   xlab("Bag") + 
   theme_classic(); plot1
@@ -140,9 +150,8 @@ plot1<-data%>%
 Plot width. 
 ```{r}
 plot2<-data%>%
-  ggplot(aes(x=field_cattle_tag, y=width.mm, fill = treatment)) +
+  ggplot(aes(x=corrected_tag, y=width.mm, fill = corrected_tag)) +
   facet_wrap(~date)+
-  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
   xlab("Bag") + 
   theme_classic(); plot2
@@ -151,9 +160,8 @@ plot2<-data%>%
 Plot depth 
 ```{r}
 plot3<-data%>%
-  ggplot(aes(x=field_cattle_tag, y=depth.mm, fill = treatment)) +
+  ggplot(aes(x=corrected_tag, y=depth.mm, fill = corrected_tag)) +
   facet_wrap(~date)+
-  geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
   xlab("Bag") + 
   theme_classic(); plot3
@@ -176,10 +184,10 @@ plot(data$volume ~ data$width.mm)
 ```
 Relationships may be non linear. 
 
-Obtain training data with known length width and depth from 20240909 dataset. 
+Obtain training data with known length width and depth from 20240909 and 20250825 dataset. 
 ```{r}
 training_data<-data%>%
-  filter(date=="20240909")%>%
+  filter(date %in% c("20240909", "20250825"))%>%
   filter(!is.na(volume))
 
 hist(training_data$volume)
@@ -256,7 +264,7 @@ I am going to select the polynomial model, because the GAM is more affected by h
 View the relationship between known volume and predicted volume using Polynomial regression. 
 ```{r}
 # Plot polynomial fit for Length vs. Volume
-ggplot(data%>%filter(date=="20240909"), aes(x = volume, y = Predicted_Volume_Poly)) +
+ggplot(data%>%filter(date %in% c("20240909", "20250825")), aes(x = volume, y = Predicted_Volume_Poly)) +
   geom_point() +
   stat_smooth(method = "loess", color = "blue", se = TRUE) +
   ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
@@ -267,10 +275,17 @@ Model fit looks good for our approximation. Proceed with using predicted volume 
 Look for outliers. 
 ```{r}
 hist(data$Predicted_Volume_Poly)
-min(data$Predicted_Volume_Poly)
+min(data$Predicted_Volume_Poly, na.rm=TRUE)
 ```
 
 Remove outliers and reconstruct polynomial model. 
+
+```{r}
+data<-data%>%
+  filter(Predicted_Volume_Poly>0)
+
+hist(data$Predicted_Volume_Poly)
+```
 
 There are several outliers. Conduct outlier removal and analyze again.  
 
@@ -355,7 +370,7 @@ ggplot(training_data, aes(x = width.mm, y = volume)) +
 View the relationship between known volume and predicted volume using Polynomial regression. 
 ```{r}
 # Plot polynomial fit for Length vs. Volume
-ggplot(data%>%filter(date=="20240909"), aes(x = volume, y = Predicted_Volume_Poly)) +
+ggplot(data%>%filter(date %in% c("20240909", "20250825")), aes(x = volume, y = Predicted_Volume_Poly)) +
   geom_point() +
   stat_smooth(method = "loess", color = "blue", se = TRUE) +
   ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
@@ -371,13 +386,6 @@ min(data$Predicted_Volume_Poly)
 
 There are fewer negative values than the first iteration of the model. 
 
-Remove any observation that resulted in a negative value. 
-
-```{r}
-data<-data%>%filter(Predicted_Volume_Poly>0)
-hist(data$Predicted_Volume_Poly)
-```
-
 Proceed with the calculated volume data.  
 
 # Analyze growth (volume) over time 
@@ -385,8 +393,15 @@ Proceed with the calculated volume data.
 ## Plot data 
 
 ```{r}
+data<-data%>%
+  mutate(corrected_tag=as.factor(corrected_tag))%>%
+  filter(!date=="20251009")
+```
+
+
+```{r}
 plot4<-data%>%
-  ggplot(aes(x=field_cattle_tag, y=Predicted_Volume_Poly, fill = treatment)) +
+  ggplot(aes(x=corrected_tag, y=Predicted_Volume_Poly, fill = treatment, group=corrected_tag)) +
   facet_wrap(~date)+
   geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
@@ -399,7 +414,7 @@ Plot summarized by treatment
 ```{r}
 plot5<-data%>%
   ggplot(aes(x=treatment, y=Predicted_Volume_Poly, fill = treatment)) +
-  facet_wrap(~date)+
+  facet_wrap(~date*experiment)+
   geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
   xlab("Treatment") + 
@@ -411,11 +426,11 @@ Plot summarized by mean and standard error for each bag.
 
 ```{r}
 plot6<-data%>%
-  group_by(field_cattle_tag, treatment, date)%>%
+  group_by(corrected_tag, experiment, treatment, date)%>%
   summarise(mean=mean(Predicted_Volume_Poly, na.rm=TRUE), se=sd(Predicted_Volume_Poly, na.rm=TRUE)/sqrt(length(Predicted_Volume_Poly)))%>%
   
-  ggplot(aes(x=field_cattle_tag, y=mean, fill = treatment)) +
-  facet_wrap(~date)+
+  ggplot(aes(x=corrected_tag, y=mean, fill = treatment)) +
+  facet_wrap(~date*experiment)+
   geom_point(pch = 21) +
   geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0)+
   xlab("Bag") + 
@@ -427,11 +442,11 @@ plot6<-data%>%
 
 ```{r}
 plot7<-data%>%
-  group_by(treatment, date)%>%
+  group_by(treatment, date, experiment)%>%
   summarise(mean=mean(Predicted_Volume_Poly, na.rm=TRUE), se=sd(Predicted_Volume_Poly, na.rm=TRUE)/sqrt(length(Predicted_Volume_Poly)))%>%
   
   ggplot(aes(x=treatment, y=mean, fill = treatment)) +
-  facet_wrap(~date)+
+  facet_wrap(~date*experiment)+
   geom_point(pch = 21, size=4) +
   geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0)+
   xlab("Treatment") + 
@@ -446,7 +461,7 @@ Sizes vary between treatments at the start of the outplant. We will examine grow
 ## Run linear mixed models models 
 
 ```{r}
-model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=data)
+model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date * experiment + (1|corrected_tag:treatment), data=data)
 
 summary(model)
 anova(model)
@@ -491,7 +506,7 @@ data<-data%>%
 Analyze again. 
 
 ```{r}
-model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=data)
+model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date *experiment + (1|corrected_tag:experiment), data=data)
 
 summary(model)
 anova(model)
@@ -508,10 +523,12 @@ Residuals are much better.
 
 Plot size over time for each bag. 
 ```{r}
+head(data)
+
 plot8<-data%>%
-  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  filter(experiment %in% c("weekly temperature"))%>%
   
-  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = field_cattle_tag, group=field_cattle_tag)) +
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = corrected_tag, group=corrected_tag)) +
   facet_wrap(~treatment)+
   stat_smooth(color="darkgray", fill="darkgray")+
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
@@ -522,7 +539,7 @@ plot8<-data%>%
 Plot summarized by treatment 
 ```{r}
 plot9<-data%>%
-  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  filter(experiment %in% c("weekly temperature"))%>%
   
   ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = treatment, group=interaction(date, treatment))) +
   scale_colour_manual(values=c("darkgray", "orange2"))+
@@ -537,9 +554,9 @@ Run a model.
 
 ```{r}
 model<-data%>%
-  filter(treatment %in% c("Weekly Temperature Control", "Weekly Temperature Treated"))%>%
+  filter(experiment %in% c("weekly temperature"))%>%
   
-  lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=.)
+  lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|corrected_tag:treatment), data=.)
 
 summary(model)
 anova(model)
@@ -553,17 +570,16 @@ emm<-emmeans(model, ~treatment)
 pairs(emm)
 ```
 
-No significant differences between dates. Trend for smaller at the start. 
-
+Control bigger in august. 
 
 ## Fresh water experiment 
 
 Plot size over time for each bag. 
 ```{r}
 plot10<-data%>%
-  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  filter(experiment %in% c("weekly fresh water"))%>%
   
-  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = field_cattle_tag, group=field_cattle_tag)) +
+  ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = corrected_tag, group=corrected_tag)) +
   facet_wrap(~treatment)+
   stat_smooth(color="darkgray", fill="darkgray")+
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
@@ -574,7 +590,7 @@ plot10<-data%>%
 Plot summarized by treatment 
 ```{r}
 plot11<-data%>%
-  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  filter(experiment %in% c("weekly fresh water"))%>%
   
   ggplot(aes(x=date, y=Predicted_Volume_Poly, fill = treatment, group=interaction(date, treatment))) +
   scale_colour_manual(values=c("darkgray", "cyan3"))+
@@ -589,9 +605,9 @@ Run a model.
 
 ```{r}
 model<-data%>%
-  filter(treatment %in% c("Weekly Fresh Water Control", "Weekly Fresh Water Treated"))%>%
+  filter(experiment %in% c("weekly fresh water"))%>%
   
-  lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|field_cattle_tag:treatment), data=.)
+  lmer(sqrt(Predicted_Volume_Poly) ~ treatment * date + (1|corrected_tag:treatment), data=.)
 
 summary(model)
 anova(model)
@@ -605,13 +621,13 @@ emm<-emmeans(model, ~treatment)
 pairs(emm)
 ```
 
-No significant differences between dates. 
+Control smaller in August than treated.  
 
 # Analyze growth rates over time 
 
 ```{r}
 # Fit a mixed-effects model to estimate growth rate
-growth_model <- lmer(Predicted_Volume_Poly ~ date * treatment + (1|treatment:field_cattle_tag), data = data)
+growth_model <- lmer(Predicted_Volume_Poly ~ date * treatment * experiment + (1|treatment:corrected_tag), data = data)
 
 # Summarize the model
 summary(growth_model)
@@ -619,10 +635,11 @@ anova(growth_model)
 
 # Extract fixed effects (overall growth rate) and random effects (bag-specific deviations)
 fixed_effects <- fixef(growth_model)
-random_effects <- ranef(growth_model)$`treatment:field_cattle_tag`
+random_effects <- ranef(growth_model)$`treatment:corrected_tag`
 
 # Plot growth trajectories
 ggplot(data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment), group=treatment)) +
+  facet_wrap(~experiment)+
   geom_point() +
   geom_smooth(method = "lm", se = FALSE) +
   theme_minimal() +
@@ -632,9 +649,10 @@ ggplot(data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment),
        color = "Treatment")
 
 #plot model trajectories 
-ggpred <- ggpredict(growth_model, terms = c("date", "treatment"))
+ggpred <- ggpredict(growth_model, terms = c("date", "treatment", "experiment"))
 
-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group)) +
+plot1<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group)) +
+  facet_wrap(~facet)+
   geom_line(aes(group=group)) +
   geom_ribbon(aes(ymin = conf.low, ymax = conf.high, group=group), alpha = 0.2) +
   theme_classic() +
@@ -642,99 +660,11 @@ ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group)) +
        x = "Date",
        y = "Volume",
        color = "Treatment", 
-       fill = "Treatment")
-```
-
-Analyze each effort separately. 
-
-Weekly fresh water group:  
-```{r}
-fresh_data<-data[grepl("Fresh Water", data$treatment), ]
-
-# Fit a mixed-effects model to estimate growth rate
-growth_model_FW <- lmer(Predicted_Volume_Poly ~ date * treatment + (1|treatment:field_cattle_tag), data = fresh_data)
-
-# Summarize the model
-summary(growth_model_FW)
-anova(growth_model_FW)
-
-# Extract fixed effects (overall growth rate) and random effects (bag-specific deviations)
-fixed_effects <- fixef(growth_model_FW)
-random_effects <- ranef(growth_model_FW)$`treatment:field_cattle_tag`
-
-# Plot growth trajectories
-ggplot(fresh_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment))) +
-  geom_point() +
-  geom_smooth(aes(group=treatment), method = "lm", se = FALSE) +
-  theme_minimal() +
-  labs(title = "Oyster Growth Over Time",
-       x = "Date",
-       y = "Volume",
-       color = "Treatment")
-
-#plot model trajectories 
-ggpred <- ggpredict(growth_model_FW, terms = c("date", "treatment"))
-
-plot1<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group, group=group)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
-  theme_classic() +
-  
-  labs(title = "Modeled Oyster Growth Over Time (Fresh Water)",
-       x = "Date",
-       y = "Predicted Volume",
-       color = "Treatment", 
        fill = "Treatment");plot1
 ```
 
-Treated are very slightly but significantly larger than controls. 
-
-Weekly temperature group:  
 ```{r}
-temp_data<-data[grepl("Temperature", data$treatment), ]
-
-# Fit a mixed-effects model to estimate growth rate
-growth_model_TEMP <- lmer(Predicted_Volume_Poly ~ date * treatment + (1|treatment:field_cattle_tag), data = temp_data)
-
-# Summarize the model
-summary(growth_model_TEMP)
-anova(growth_model_TEMP)
-
-# Extract fixed effects (overall growth rate) and random effects (bag-specific deviations)
-fixed_effects <- fixef(growth_model_TEMP)
-random_effects <- ranef(growth_model_TEMP)$`treatment:field_cattle_tag`
-
-# Plot growth trajectories
-ggplot(temp_data, aes(x = date, y = Predicted_Volume_Poly, color = factor(treatment), group=treatment)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE) +
-  theme_minimal() +
-  labs(title = "Oyster Growth Over Time",
-       x = "Date",
-       y = "Volume",
-       color = "Treatment")
-
-#plot model trajectories 
-ggpred <- ggpredict(growth_model_TEMP, terms = c("date", "treatment"))
-
-plot2<-ggplot(ggpred, aes(x = x, y = predicted, color = group, fill=group, group=group)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = 0.2) +
-  theme_classic() +
-  
-  labs(title = "Modeled Oyster Growth Over Time (Temperature)",
-       x = "Date",
-       y = "Predicted Volume",
-       color = "Treatment", 
-       fill = "Treatment");plot2
-```
-
-No clear difference between control and treated in the temperature experiment. 
-
-```{r}
-plots<-plot_grid(plot1, plot2, ncol=2, nrow=1);plots
-
-ggsave(filename="figures/growth/goose_point/growth.png", plots, width=14, height=6)
+ggsave(filename="figures/growth/goose_point/growth.png", plot1, width=14, height=6)
 ```
 
 
