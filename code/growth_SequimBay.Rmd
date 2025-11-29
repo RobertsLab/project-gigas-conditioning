@@ -185,13 +185,15 @@ plot5<-data%>%
   ggplot(aes(x=treatment, y=Predicted_Volume_Poly, fill = treatment)) +
   geom_boxplot(width=.5, outlier.shape= NA, position = position_dodge(width = 0.4)) +
   geom_point(pch = 21, position=position_jitterdodge(dodge.width=0.4)) +
-  xlab("Treatment") + 
+  xlab("Treatment") +
+  ylab(expression(paste("Growth (mm" ^3, ")")))+
   theme_classic() +
-    scale_colour_manual(values=c("darkgray", "purple3"))+
-  scale_fill_manual(values=c("darkgray", "purple3"))+
-  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)); plot5
+    scale_colour_manual(values=c("darkgray", "orange"))+
+  scale_fill_manual(values=c("darkgray", "orange"))+
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1), 
+        legend.title=element_blank()); plot5
 
-ggsave(plot5, filename="figures/growth/sequim/treatment_sizes.png", width=6, height=4, units="in")
+ggsave(plot5, filename="figures/growth/sequim/treatment_sizes.png", width=5, height=4, units="in")
 ```
 
 Plot summarized by mean and standard error for each bag. 
