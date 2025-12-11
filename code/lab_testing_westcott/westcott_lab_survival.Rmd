@@ -1,0 +1,315 @@
+---
+title: Westcott lab survival analysis
+author: "AS Huffmyer"
+date: '2025'
+output:
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+  pdf_document:
+    keep_tex: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+# Set up 
+
+Set up workspace, set options, and load required packages.    
+```{r}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+Load libraries. 
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(survival)
+library(readxl)
+library(ggsurvfit)
+library(gtsummary)
+library(cardx)
+library(cowplot)
+```
+
+# Read in data 
+
+Read in data. 
+```{r}
+data<-read_csv("data/survival/survival_testing_Dec25/survival_westcott_lab.csv")
+```
+
+Turn into long format. 
+```{r}
+data<-data%>%
+  pivot_longer(names_to="time", values_to="status", cols=`0`:`31`)%>%
+  mutate(time=as.numeric(time))
+```
+
+Create data frames for each experiment 
+```{r}
+daily<-data%>%filter(experiment=="Daily")
+weekly<-data%>%filter(experiment=="Weekly")
+```
+
+Create data frames with control and high temperature subsets. 
+```{r}
+control_daily<-daily%>%filter(test_temperature=="22C")
+stress_daily<-daily%>%filter(test_temperature=="33C")
+
+control_weekly<-weekly%>%filter(test_temperature=="22C")
+stress_weekly<-weekly%>%filter(test_temperature=="33C")
+```
+
+
+# Daily temperature hardening experiment  
+
+## Generate Kaplan Meier survival curves 
+
+### Control temperature 22C
+
+```{r}
+s1 <- survfit(Surv(time, status) ~ treatment, data = control_daily)
+str(s1)
+```
+
+Plot the survival function
+```{r}
+survfit2(Surv(time, status) ~ treatment+test_temperature, data = control_daily) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability"
+  )
+```
+
+Estimate survival at 24 hours. 
+```{r}
+summary(survfit(Surv(time, status) ~ treatment, data = control_daily), times = 24)
+```
+
+Use a log rank model to determine statistical differences in curves. 
+```{r}
+survdiff(Surv(time, status) ~ treatment, data = control_daily)
+```
+
+Analyze again with a Cox proportional hazards model. 
+```{r}
+coxph(Surv(time, status) ~ treatment, data = control_daily)
+
+coxph(Surv(time, status) ~ treatment, data = control_daily) %>% 
+  tbl_regression(exp = TRUE) 
+```
+
+100% survival 
+
+## Generate Kaplan Meier survival curves 
+
+### Stress temperature 33C
+
+```{r}
+s2 <- survfit(Surv(time, status) ~ treatment, data = stress_daily)
+str(s2)
+```
+
+Plot the survival function
+```{r}
+survfit2(Surv(time, status) ~ treatment+test_temperature, data = stress_daily) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability"
+  )
+```
+
+Estimate survival at 24 hours. 
+```{r}
+summary(survfit(Surv(time, status) ~ treatment, data = stress_daily), times = 24)
+```
+
+Use a log rank model to determine statistical differences in curves. 
+```{r}
+survdiff(Surv(time, status) ~ treatment, data = stress_daily)
+```
+
+Analyze again with a Cox proportional hazards model. 
+```{r}
+coxph(Surv(time, status) ~ treatment, data = stress_daily)
+
+coxph(Surv(time, status) ~ treatment, data = stress_daily) %>% 
+  tbl_regression(exp = TRUE) 
+```
+
+## Generate plots 
+ 
+Set theme. 
+```{r}
+my_theme<-theme_classic()
+```
+
+Control
+```{r}
+plot1<-survfit2(Surv(time, status) ~ treatment, data = control_daily) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability",
+    title="Daily Hardening 22°C"
+  )+
+  ylim(0,1)+
+  scale_colour_manual(values=c("darkgray", "orange"))+
+  my_theme+
+  geom_text(x=10, y=0.2, label="Cox PH p=1", color="darkgray")+
+  #geom_text(x=10, y=0.2, label="Cox PH p=0.8")+
+  theme(legend.position="none")
+```
+
+Stress
+```{r}
+plot2<-survfit2(Surv(time, status) ~ treatment, data = stress_daily) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability",
+    title = "Daily Hardening 33°C"
+  )+
+  ylim(0,1)+
+  scale_colour_manual(values=c("darkgray", "orange"))+
+  my_theme+
+  geom_text(x=10, y=0.2, label="Cox PH p=0.264", color="darkgray")+
+  #geom_text(x=10, y=0.15, label="Temperature vs control p=0.002")+
+  #geom_text(x=10, y=0.10, label="All others vs control p>0.05")+
+  theme(legend.position="right")
+```
+
+Assemble plot
+```{r}
+plots<-plot_grid(plot1, plot2, rel_widths=c(0.75,1), ncol=2)
+
+ggsave(plots, filename="figures/survival/westcott_lab_survival/daily-hardening.png", width=8, height=4)
+```
+
+
+# Weekly temperature hardening experiment  
+
+## Generate Kaplan Meier survival curves 
+
+### Control temperature 22C
+
+```{r}
+s1 <- survfit(Surv(time, status) ~ treatment, data = control_weekly)
+str(s1)
+```
+
+Plot the survival function
+```{r}
+survfit2(Surv(time, status) ~ treatment+test_temperature, data = control_weekly) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability"
+  )
+```
+
+Estimate survival at 24 hours. 
+```{r}
+summary(survfit(Surv(time, status) ~ treatment, data = control_weekly), times = 24)
+```
+
+Use a log rank model to determine statistical differences in curves. 
+```{r}
+survdiff(Surv(time, status) ~ treatment, data = control_weekly)
+```
+
+Analyze again with a Cox proportional hazards model. 
+```{r}
+coxph(Surv(time, status) ~ treatment, data = control_weekly)
+
+coxph(Surv(time, status) ~ treatment, data = control_weekly) %>% 
+  tbl_regression(exp = TRUE) 
+```
+
+100% survival 
+
+## Generate Kaplan Meier survival curves 
+
+### Stress temperature 33C
+
+```{r}
+s2 <- survfit(Surv(time, status) ~ treatment, data = stress_weekly)
+str(s2)
+```
+
+Plot the survival function
+```{r}
+survfit2(Surv(time, status) ~ treatment+test_temperature, data = stress_weekly) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability"
+  )
+```
+
+Estimate survival at 24 hours. 
+```{r}
+summary(survfit(Surv(time, status) ~ treatment, data = stress_weekly), times = 24)
+```
+
+Use a log rank model to determine statistical differences in curves. 
+```{r}
+survdiff(Surv(time, status) ~ treatment, data = stress_weekly)
+```
+
+Analyze again with a Cox proportional hazards model. 
+```{r}
+coxph(Surv(time, status) ~ treatment, data = stress_weekly)
+
+coxph(Surv(time, status) ~ treatment, data = stress_weekly) %>% 
+  tbl_regression(exp = TRUE) 
+```
+
+## Generate plots 
+
+Control
+```{r}
+plot1<-survfit2(Surv(time, status) ~ treatment, data = control_weekly) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability",
+    title="Weekly Hardening 22°C"
+  )+
+  ylim(0,1)+
+  scale_colour_manual(values=c("darkgray", "orange"))+
+  my_theme+
+  geom_text(x=10, y=0.2, label="Cox PH p=1", color="darkgray")+
+  #geom_text(x=10, y=0.2, label="Cox PH p=0.8")+
+  theme(legend.position="none")
+```
+
+Stress
+```{r}
+plot2<-survfit2(Surv(time, status) ~ treatment, data = stress_weekly) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability",
+    title = "Weekly Hardening 33°C"
+  )+
+  ylim(0,1)+
+  scale_colour_manual(values=c("darkgray", "orange"))+
+  my_theme+
+  geom_text(x=10, y=0.2, label="Cox PH p=0.011")+
+  #geom_text(x=10, y=0.15, label="Temperature vs control p=0.002")+
+  #geom_text(x=10, y=0.10, label="All others vs control p>0.05")+
+  theme(legend.position="right")
+```
+
+Assemble plot
+```{r}
+plots<-plot_grid(plot1, plot2, rel_widths=c(0.75,1), ncol=2)
+
+ggsave(plots, filename="figures/survival/westcott_lab_survival/weekly-hardening.png", width=8, height=4)
+```
+
