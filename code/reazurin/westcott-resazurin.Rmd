@@ -415,6 +415,21 @@ plot4<-auc%>%
   xlab("Temperature");plot4
 
 ggsave(plot4, filename="figures/resazurin/westcott_mean_AUC.png", width=10, height=5, units="in")
+
+plot4a<-auc%>%
+  
+  ggplot(aes(x=temperature, y=AUC, colour=treatment))+
+  facet_wrap(~experiment, scales="free_x")+
+  geom_boxplot(position=position_dodge(0.5))+
+    geom_point(size=3, position=position_dodge(0.5))+
+  #geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0, position=position_dodge(0.2))+
+  ylab("AUC")+
+  #geom_line(aes(group=treatment), position=position_dodge(0.2))+
+  scale_colour_manual(values=c("darkgray", "orange"), name="")+
+  theme_classic()+
+  xlab("Temperature");plot4a
+
+ggsave(plot4a, filename="figures/resazurin/westcott_dots_AUC.png", width=10, height=5, units="in")
 ```
 
 ```{r}
