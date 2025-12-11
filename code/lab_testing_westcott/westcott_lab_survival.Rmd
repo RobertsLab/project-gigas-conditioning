@@ -60,6 +60,9 @@ stress_daily<-daily%>%filter(test_temperature=="33C")
 
 control_weekly<-weekly%>%filter(test_temperature=="22C")
 stress_weekly<-weekly%>%filter(test_temperature=="33C")
+
+control<-data%>%filter(test_temperature=="22C")
+stress<-data%>%filter(test_temperature=="33C")
 ```
 
 
@@ -313,3 +316,42 @@ ggsave(plots, filename="figures/survival/westcott_lab_survival/weekly-hardening.
 
 
 
+
+
+# Daily vs Weekly comparison
+
+### Stress temperature 33C
+
+```{r}
+s7 <- survfit(Surv(time, status) ~ group, data = stress)
+str(s7)
+```
+
+Plot the survival function
+```{r}
+survfit2(Surv(time, status) ~ group, data = stress) %>% 
+  ggsurvfit() +
+  labs(
+    x = "Hours",
+    y = "Survival probability"
+  )
+```
+
+Estimate survival at 24 hours. 
+```{r}
+summary(survfit(Surv(time, status) ~ group, data = stress), times = 27)
+summary(survfit(Surv(time, status) ~ group, data = stress), times = 31)
+```
+
+Use a log rank model to determine statistical differences in curves. 
+```{r}
+survdiff(Surv(time, status) ~ group, data = stress)
+```
+
+Analyze again with a Cox proportional hazards model. 
+```{r}
+coxph(Surv(time, status) ~ group, data = stress)
+
+coxph(Surv(time, status) ~ group, data = stress) %>% 
+  tbl_regression(exp = TRUE) 
+```
