@@ -1,0 +1,11 @@
+{
+  "resize_factor": 0.25,
+  "blur_kernel": 5,
+  "adaptive_block_size": 75,
+  "adaptive_c": 8,
+  "morph_kernel_size": 7,
+  "min_area": 300,
+  "max_area": 40000,
+  "circularity_threshold": 0.25,
+  "aspect_ratio_max": 3.0
+}
