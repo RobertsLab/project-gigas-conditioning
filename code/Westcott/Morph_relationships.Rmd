@@ -774,9 +774,9 @@ growth_model$lower_ci <- growth_model$predicted - z_value * se_pred
 growth_model$upper_ci <- growth_model$predicted + z_value * se_pred
 
 # Graph Length to log volume with model line
-ggplot(growth_model, aes(x = length.mm, y = log(volume), color = date)) +
+ggplot(growth_model, aes(x = length.mm, y = volume, color = date)) +
   geom_point() +  
-  geom_line(aes(y = predicted), color = "red", linewidth = 1) + 
+  geom_line(aes(y = exp(predicted)), color = "red", linewidth = 1) + 
   labs(x = "length",
        y = "volume") +
   theme_classic()

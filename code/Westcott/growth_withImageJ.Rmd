@@ -39,7 +39,7 @@ D_growth_sum <- subset(D_growth_sum, select=-c(bag_tag_num,notes, tag_num, dupli
 
 Dec_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
 May_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250513_images/sizes_05132025.xlsx")
-June_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250625_images/sizes_06252025.xlsx")
+June_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250625_images/sizes_06252025_1.xlsx")
 July_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250724_images/sizes_20250724.xlsx")
 Aug_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250820_images/sizes_20250820.xlsx")
 
@@ -118,6 +118,7 @@ growth$conditioning <- gsub("daily", "treated", growth$conditioning)
 
 growth$predicted <- predict(model, newdata = growth)
 
+
 ```
 
 
@@ -133,6 +134,8 @@ means_sizes <- growth %>%
 
 ```
 
+
+### raw size data
 ```{r}
 DL <- ggplot(means_sizes, aes(x = date, y = mean_length, color = effort)) +
    geom_point() +
@@ -162,19 +165,29 @@ DW <- ggplot(means_sizes, aes(x = date, y = mean_width, color = effort)) +
 
 grid.arrange(DL,DW)
 ```
-
+# Length graph
 ```{r}
-
-ggplot(means_sizes, aes(x = date, y = mean_length, color = effort)) +
+means_sizes %>%
+  filter(effort == "D")%>%
+  ggplot(aes(x = date, y = mean_length)) +
    geom_point() +
   geom_line(aes(linetype=conditioning))+
   labs(x = "Date",
-       y = "Mean length (mm)") +
+       y = "Mean length (mm)",
+       title = "Weekly Conditioning",
+       linetype = "Treatment") +
   theme_classic()+
-  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+    theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
-                 position=position_dodge(0.05))
+                 position=position_dodge(0.05))+
+  ylim(15,68)
 ```
 
 ## Run after you've predicted volume with the growth model
@@ -204,14 +217,13 @@ means_vols <- means_vols %>%
 
 ```{r}
   ggplot(means_vols, aes(x = date, y = mean_vol, color = effort)) +
-   geom_point() +
-  geom_line(aes(linetype=conditioning))+
+   geom_point(aes(shape=conditioning)) +
   labs(x = "Date",
        y = "Mean volume ") +
-  labs(color = "Conditioning treatment", linetype = "Treatment")+
+  labs(color = "Conditioning treatment", shape = "Treatment")+
   theme_classic()+
   scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
-  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  #scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_vol-std_error, ymax = mean_vol+std_error), width=.2,
                  position=position_dodge(0.05))+
   theme(
@@ -224,7 +236,7 @@ means_vols <- means_vols %>%
 ```
 ```{r}
 means_vols %>%
-  filter(effort == "D")%>%
+  filter(effort == "B")%>%
   ggplot(aes(x = date, y = mean_vol)) +
    geom_point() +
   geom_line(aes(linetype=conditioning))+
@@ -246,7 +258,7 @@ means_vols %>%
   ylim(0,34000)
 ```
 
-
+## Mean percent vol
 ```{r}
 means_perc_vols <- means_vols %>%
   group_by(effort, conditioning, date) %>%
@@ -256,14 +268,16 @@ means_perc_vols <- means_vols %>%
 
 means_perc_vols$date <- as.POSIXct(means_perc_vols$date)
 
-ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
+means_perc_vols %>%
+  filter(effort == "D") %>%
+  ggplot(aes(x = date, y = mean_perc_vol)) +
    geom_point() +
   geom_line(aes(linetype=conditioning))+
   labs(x = "Date",
        y = "Percent change in volume") +
-  labs(color = "Conditioning Type", linetype = "Treatment")+
+  labs(linetype = "Treatment")+
   theme_classic()+
-  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  #scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_perc_vol-std_error, ymax = mean_perc_vol+std_error), width=.2,
                  position=position_dodge(0.05))+
@@ -273,7 +287,8 @@ ggplot(means_perc_vols, aes(x = date, y = mean_perc_vol, color = effort)) +
     axis.title.y = element_text(size = 20, color = "black"),
     axis.text.y = element_text(size=18, color = "black"),
     legend.text = element_text(size = 18, color = "black"),
-    legend.title = element_text(size = 20, color = "black"))
+    legend.title = element_text(size = 20, color = "black"))+
+  ylim(0,3000)
 
 
 ```
@@ -383,6 +398,9 @@ summary(model)
 plot(means_vols$date, means_vols$perc_change_vol)
 ```
 
+
+
+## perc change vol models
 ```{r}
 means_vols$days <- as.numeric(means_vols$date - min(means_vols$date))
 means_vols$days <- means_vols$days/(60*60*24)
@@ -433,6 +451,7 @@ mean_vols %>%
     legend.text = element_text(size = 18, color = "black"),
     legend.title = element_text(size = 20, color = "black"))
 ```
+## raw length models
 ```{r}
 initial_sizes <- growth %>%
   filter(date == "2024-06-10")
@@ -443,7 +462,25 @@ car::Anova(model.i)
 tst_simres <- simulateResiduals(fittedModel = model.i) #DHARMa
 plot(tst_simres)
 
+library(glmmTMB)
+library(DHARMa)
+library(tidyverse)
 model.l <-glmmTMB(length.mm ~  effort/conditioning + (1|bag_tag_num),data = initial_sizes, family = gaussian())
+summary(model.l)
+car::Anova(model.l)
+tst_simres <- simulateResiduals(fittedModel = model.l) #DHARMa
+plot(tst_simres)
+
+
+growth_b <-growth %>%
+  filter(effort == "B")
+
+growth_d <-growth %>%
+  filter(effort == "D")
+
+hist(growth_d$length.mm)
+
+model.l <-glmmTMB(length.mm ~  conditioning + (1|bag_tag_num),data = growth_b, family = gaussian())
 summary(model.l)
 car::Anova(model.l)
 tst_simres <- simulateResiduals(fittedModel = model.l) #DHARMa

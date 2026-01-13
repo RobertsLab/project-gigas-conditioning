@@ -339,14 +339,15 @@ means_prop <- survival %>%
 ```{r}
 means_prop %>%
   filter(date > "2024-07-17")%>%
-  ggplot(aes(x = date, y = mean_prop, color = effort)) +
+  filter(effort == "B")%>%
+  ggplot(aes(x = date, y = mean_prop)) +
    geom_point(size=3) +
   geom_line(aes(linetype = conditioning))+
   labs(x = "Date",
        y = "Proportion survival (Oysters left / Starting # oysters)") +
-    scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen"))+
+   # scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
-  labs(color = "Conditioning Type", linetype = "Treatment")+
+  labs(title = "Weekly conditioning", linetype = "Treatment")+
   geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
                  position=position_dodge(0.05))+
   theme_classic()+
