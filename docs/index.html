@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improved climate resilience in oysters through optimization of hatchery-based environmental conditioning practices</title>
+    <style>
+        :root {
+            --primary-color: #2c5282;
+            --secondary-color: #4299e1;
+            --accent-color: #ed64a6;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+            --text-muted: #718096;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        .publications {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .publication-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--accent-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .publication-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .publication-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .publication-card .authors {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .publication-card .status {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .publication-card a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .publication-card a:hover {
+            text-decoration: underline;
+        }
+
+        .repo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .repo-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .repo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .repo-card a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .repo-card a:hover {
+            color: var(--secondary-color);
+        }
+
+        .repo-card .repo-icon {
+            font-size: 1.2rem;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .resource-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .resource-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .resource-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .resource-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .resource-card a {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s ease;
+        }
+
+        .resource-card a:hover {
+            opacity: 0.9;
+        }
+
+        footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            header p {
+                font-size: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🦪 Improved Climate Resilience in Oysters</h1>
+        <p>Optimization of hatchery-based environmental conditioning practices in <em>Crassostrea gigas</em></p>
+        <p style="margin-top: 1.5rem;">
+            <a href="2022-70007-38284-REPORT.pdf" target="_blank" style="display: inline-block; background: white; color: #2c5282; padding: 0.75rem 1.5rem; border-radius: 25px; text-decoration: none; font-weight: 600; transition: transform 0.2s ease;">📄 Download Final Report (PDF)</a>
+        </p>
+    </header>
+
+    <div class="container">
+        <section>
+            <h2>📄 Publications & Preprints</h2>
+            <div class="publications">
+                <div class="publication-card">
+                    <span class="status">In Review</span>
+                    <h3>From blue to pink: Resazurin as a high-throughput proxy for metabolic rate in oysters</h3>
+                    <p class="authors">Huffmyer AS, Ozguner N, Baird M, Elvrum C, Kounellas C, Dicksion D, White SJ, Plough L, Gavery MR, Krebs N, Walton W, Small J, Pitsenbarger M, Ealy-Whitfield H, Roberts S.</p>
+                    <p>PeerJ (In Review)</p>
+                    <a href="http://doi.org/10.1101/2025.11.06.686367" target="_blank">📖 Read on bioRxiv →</a>
+                </div>
+
+                <div class="publication-card">
+                    <span class="status">Preprint</span>
+                    <h3>Parental immune priming reshapes offspring growth, metabolism, and thermal tolerance in the Pacific Oyster</h3>
+                    <p class="authors">Baird M, Huffmyer AS, Ozguner N, Roberts S.</p>
+                    <a href="https://doi.org/10.64898/2025.12.10.693539" target="_blank">📖 Read on bioRxiv →</a>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>💻 Open Data & Code Repositories</h2>
+            <div class="repo-grid">
+                <div class="repo-card">
+                    <a href="https://github.com/RobertsLab/polyIC-larvae" target="_blank">
+                        <span class="repo-icon">📁</span> polyIC-larvae
+                    </a>
+                </div>
+                <div class="repo-card">
+                    <a href="https://github.com/RobertsLab/project-gigas-carryover" target="_blank">
+                        <span class="repo-icon">📁</span> project-gigas-carryover
+                    </a>
+                </div>
+                <div class="repo-card">
+                    <a href="https://github.com/RobertsLab/project-gigas-conditioning" target="_blank">
+                        <span class="repo-icon">📁</span> project-gigas-conditioning
+                    </a>
+                </div>
+                <div class="repo-card">
+                    <a href="https://github.com/RobertsLab/10K-seed-Cgigas" target="_blank">
+                        <span class="repo-icon">📁</span> 10K-seed-Cgigas
+                    </a>
+                </div>
+                <div class="repo-card">
+                    <a href="https://github.com/RobertsLab/resazurin-assay-development" target="_blank">
+                        <span class="repo-icon">📁</span> resazurin-assay-development
+                    </a>
+                </div>
+                <div class="repo-card">
+                    <a href="https://github.com/RobertsLab/vims-resazurin" target="_blank">
+                        <span class="repo-icon">📁</span> vims-resazurin
+                    </a>
+                </div>
+                <div class="repo-card">
+                    <a href="https://github.com/RobertsLab/manchester-hardening" target="_blank">
+                        <span class="repo-icon">📁</span> manchester-hardening
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>🔬 Laboratory Notebooks & Community Resources</h2>
+            <div class="resource-grid">
+                <div class="resource-card">
+                    <div class="icon">🩷</div>
+                    <h3>Resazurin Metabolic Assay</h3>
+                    <p>Landing page for the resazurin metabolic assay methodology</p>
+                    <a href="http://oyster.pink/" target="_blank">Visit oyster.pink</a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="icon">📓</div>
+                    <h3>Open Lab Notebooks</h3>
+                    <p>Transparent documentation of ongoing research activities</p>
+                    <a href="https://faculty.washington.edu/sr320/notebooks.html" target="_blank">Browse Notebooks</a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="icon">📋</div>
+                    <h3>Open Lab Protocols</h3>
+                    <p>Detailed protocols including the resazurin assay methodology</p>
+                    <a href="https://robertslab.github.io/resources/protocols/resazurin-assay/" target="_blank">View Protocols</a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="icon">🏠</div>
+                    <h3>Lab Webpage</h3>
+                    <p>Roberts Lab official homepage at University of Washington</p>
+                    <a href="https://faculty.washington.edu/sr320/" target="_blank">Visit Lab</a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="icon">📝</div>
+                    <h3>Lab Notebook Blog</h3>
+                    <p>Regular updates and research notes from the Genefish team</p>
+                    <a href="https://genefish.wordpress.com/" target="_blank">Read Blog</a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="icon">🎙️</div>
+                    <h3>Gene Pooling Podcast</h3>
+                    <p>Lab podcast discussing research and aquaculture topics</p>
+                    <a href="https://podcasts.apple.com/us/podcast/gene-pooling/id1802677296" target="_blank">Listen Now</a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="icon">📸</div>
+                    <h3>Lab Instagram</h3>
+                    <p>Follow the Roberts Lab for visual updates and highlights</p>
+                    <a href="https://www.instagram.com/robertslab.safs/" target="_blank">Follow Us</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>Roberts Lab | School of Aquatic and Fishery Sciences | University of Washington</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
+            <strong>Funding:</strong> This work was supported in part by the U.S. Department of Agriculture's National Institute of Food and Agriculture, project award numbers 2022-70007-38284 (Aquaculture Research)
+        </p>
+        <p style="margin-top: 0.5rem; opacity: 0.8;">
+            <a href="https://github.com/RobertsLab/project-gigas-conditioning">View this project on GitHub</a>
+        </p>
+    </footer>
+</body>
+</html>
