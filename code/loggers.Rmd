@@ -30,6 +30,7 @@ library(ggplot2)
 library(seacarb)
 library(broom)
 library(cowplot)
+library(slider)
 ```
 
 # Point Whitney 
@@ -173,24 +174,97 @@ levels(as.factor(westcott$group))
 
 Group information is now added.  
 
+Make percentile rolling windows for graph (centered)
+```{r}
+#90th
+westcott <- westcott %>%
+  arrange(DateTime) %>%
+  mutate(
+    p90_30d_centered = slide_index_dbl(
+      .x = temp.C,
+      .i = DateTime,
+      .f = ~ quantile(.x, probs = 0.9, na.rm = TRUE),
+      .before = lubridate::days(15),
+      .after  = lubridate::days(15),
+      .complete = TRUE
+    )
+  )
+
+#50th
+westcott <- westcott %>%
+  arrange(DateTime) %>%
+  mutate(
+    p50_30d_centered = slide_index_dbl(
+      .x = temp.C,
+      .i = DateTime,
+      .f = ~ quantile(.x, probs = 0.5, na.rm = TRUE),
+      .before = lubridate::days(15),
+      .after  = lubridate::days(15),
+      .complete = TRUE
+    )
+  )
+
+#10th
+westcott <- westcott %>%
+  arrange(DateTime) %>%
+  mutate(
+    p10_30d_centered = slide_index_dbl(
+      .x = temp.C,
+      .i = DateTime,
+      .f = ~ quantile(.x, probs = 0.1, na.rm = TRUE),
+      .before = lubridate::days(15),
+      .after  = lubridate::days(15),
+      .complete = TRUE
+    )
+  )
+```
+
+
+
 ## Plot data 
 
 All loggers 
 ```{r}
 westcott_plot<-westcott%>%
+  filter(DateTime > "2024-07-17 00:00:00")%>%
   
   ggplot(aes(x=DateTime, y=temp.C))+
-  geom_point(alpha=0.7, colour="darkgray", fill="darkgray")+
-  geom_smooth(colour="black", se=FALSE)+
+  geom_point(alpha=0.7, colour ="gray")+
+  geom_line(
+    aes(y = p90_30d_centered),
+    color = "red",
+    linewidth = 1.2,
+    linetype = "dashed",
+    na.rm = TRUE
+  ) +
+  geom_line(
+    aes(y = p50_30d_centered),
+    color = "green",
+    linewidth = 1.2,
+    linetype = "dashed",
+    na.rm = TRUE
+  ) +
+  geom_line(
+    aes(y = p10_30d_centered),
+    color = "blue",
+    linewidth = 1.2,
+    linetype = "dashed",
+    na.rm = TRUE
+  ) +
   ylab("Temperature (°C)")+
-  xlab("Date Time")+
+  xlab("Date")+
   scale_x_datetime(
-    date_breaks = "2 months",
-    date_labels = "%b-%Y"
+    date_breaks = "1 months",
+    date_labels = "%b %Y"
   ) +
   ylim(-5,50)+
-  theme_classic(); westcott_plot
+  theme_classic()+
+  theme(axis.text.y = element_text(size = 14, color= "black"),
+        axis.title.y = element_text(size = 14, color= "black"),
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank());westcott_plot
 
+westcott$logger
 ggsave(westcott_plot, filename="figures/environmental/westcott-loggers.png", width=10, height=6)
 ```
 

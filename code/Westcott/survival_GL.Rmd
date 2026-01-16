@@ -12,17 +12,18 @@ library(ggplot2)
 library(DHARMa)
 library(glmmTMB)
 library(emmeans)
+library(gridExtra)
 
 ```
 
 ### Load Data
 ```{r}
 # B survival
-B_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_08202025.xlsx")
+B_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/B_survival_12022025.xlsx")
 B_survival$conditioning <- gsub("daily", "treated", B_survival$conditioning)
 
 # D survival
-D_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_08202025.xlsx")
+D_survival <- read_excel("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/survival/Westcott/D_survival_12022025.xlsx")
 D_survival$conditioning <- gsub("weekly", "treated", D_survival$conditioning)
 
 ```
@@ -337,24 +338,51 @@ means_prop <- survival %>%
 ```
 
 ```{r}
-means_prop %>%
+Bsurv_plot <- means_prop %>%
   filter(date > "2024-07-17")%>%
   filter(effort == "B")%>%
   ggplot(aes(x = date, y = mean_prop)) +
    geom_point(size=3) +
   geom_line(aes(linetype = conditioning))+
   labs(x = "Date",
-       y = "Proportion survival (Oysters left / Starting # oysters)") +
+       y = "Proportion survival") +
    # scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
-  labs(title = "Weekly conditioning", linetype = "Treatment")+
   geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
                  position=position_dodge(0.05))+
+  scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
-  theme(axis.text = element_text(size = 18, color= "black"),
-        axis.title = element_text(size = 20, color= "black"),
-        legend.text = element_text(size = 18, color= "black"),
-        legend.title = element_text(size = 20, color= "black"))
+  theme(axis.text.y = element_text(size = 14, color= "black"),
+        axis.title.y = element_text(size = 14, color= "black"),
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        legend.position = "none")+
+  ylim(0.7,1.02);Bsurv_plot
+```
+
+
+
+```{r}
+Dsurv_plot <- means_prop %>%
+  filter(date > "2024-07-17")%>%
+  filter(effort == "D")%>%
+  ggplot(aes(x = date, y = mean_prop)) +
+   geom_point(size=3) +
+  geom_line(aes(linetype = conditioning))+
+  labs(x = "Date",
+       y = "Proportion survival") +
+   # scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
+  theme_classic()+
+  theme(axis.text.y = element_text(size = 14, color= "black"),
+        axis.title.y = element_text(size = 14, color= "black"),
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        legend.position = "none")+
+  ylim(0.7,1.02);Dsurv_plot
 ```
 
 ```{r}
@@ -420,5 +448,27 @@ contrast(emm_inter, method = "pairwise")
 
 contrast(emm_inter, interaction = "pairwise")
 
+```
+
+# Graph with westcott temp, both survival graphs
+```{r}
+theme_x_invisible <- theme(
+  axis.text.x  = element_text(color = "transparent"),
+  axis.title.x = element_text(color = "transparent")
+)
+
+westcott_plot <- westcott_plot + theme_x_invisible
+Bsurv_plot <- Bsurv_plot + theme_x_invisible
+
+
+library(cowplot)
+grid <- plot_grid(
+  westcott_plot, Bsurv_plot, Dsurv_plot,
+  ncol = 1,
+  align = "v",
+  axis = "lr"
+);grid
+
+ggsave("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/figures/temp_surv_stack.pdf", plot = grid, width = 7, height = 10, units = "in")
 ```
 

@@ -480,7 +480,7 @@ growth_d <-growth %>%
 
 hist(growth_d$length.mm)
 
-model.l <-glmmTMB(length.mm ~  conditioning + (1|bag_tag_num),data = growth_b, family = gaussian())
+model.l <-glmmTMB(length.mm ~  conditioning + (1|bag_tag_num) + (1|date),data = growth_d, family = gaussian())
 summary(model.l)
 car::Anova(model.l)
 tst_simres <- simulateResiduals(fittedModel = model.l) #DHARMa
@@ -734,5 +734,81 @@ ggplot(means_sizes_big, aes(x = date, y = mean_width, color = effort)) +
     legend.title = element_text(size = 20, color = "black"))
 ```
 
+### Density graph
+```{r}
+means_sizes_density <- growth %>%
+  group_by(effort, date) %>%
+  summarise(mean_length = mean(length.mm, na.rm = TRUE),
+            mean_width = mean(width.mm, na.rm = TRUE),
+            stderr_length = sd(length.mm, na.rm = TRUE)/sqrt(length(length.mm)),
+            stderr_width = sd(width.mm, na.rm = TRUE)/sqrt(length(width.mm)),
+            .groups = 'drop')
+
+means_vols_density <- growth %>%
+  group_by(effort, date, bag_tag_num) %>%
+  summarise(mean_vol = mean(vol, na.rm = TRUE),
+            std_error = sd(vol, na.rm = TRUE)/sqrt(length(vol)),
+            .groups = 'drop')
+
+
+means_vols_density  <- means_vols_density %>%
+  group_by(bag_tag_num) %>%
+  mutate(initial_vol = first(mean_vol)) %>%
+  ungroup()
+
+
+means_vols_density  <- means_vols_density  %>%
+  mutate(perc_change_vol = 100*(mean_vol-initial_vol)/initial_vol ) 
+
+means_perc_vols_density <- means_vols_density %>%
+  group_by(effort, date) %>%
+  summarise(mean_perc_vol = mean(perc_change_vol),
+            std_error = sd(perc_change_vol)/sqrt(length(perc_change_vol)),
+            .groups = 'drop')
+
+means_sizes_density$date <- as.POSIXct(means_sizes_density$date)
+
+```
+
+
+```{r}
+ggplot(means_sizes_density, aes(x = date, y = mean_length, color = effort)) +
+   geom_point() +
+  geom_line()+
+  labs(x = "Date",
+       y = "Length (mm)") +
+  labs(color = "Density")+
+  theme_classic()+
+  scale_color_manual(labels = c("50/bag", "100/bag"), values = c("purple","forestgreen"))+
+  scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
+  geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 1),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+```
+
+```{r}
+ggplot(means_perc_vols_density, aes(x = date, y = mean_perc_vol, color = effort)) +
+   geom_point() +
+  geom_line()+
+  labs(x = "Date",
+       y = "Percent change in volume") +
+  labs(color = "Conditioning Type", linetype = "Treatment")+
+  theme_classic()+
+  scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  geom_errorbar(aes(ymin=mean_perc_vol-std_error, ymax = mean_perc_vol+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+    axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    legend.title = element_text(size = 20, color = "black"))
+```
 
 
