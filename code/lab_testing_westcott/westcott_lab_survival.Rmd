@@ -73,14 +73,14 @@ stress<-data%>%filter(test_temperature=="33C")
 ### Control temperature 22C
 
 ```{r}
-s1 <- survfit(Surv(time, status) ~ treatment, data = control_daily)
+s1 <- survival::survfit(Surv(time, status) ~ treatment, data = control_daily)
 str(s1)
 ```
 
 Plot the survival function
 ```{r}
-survfit2(Surv(time, status) ~ treatment+test_temperature, data = control_daily) %>% 
-  ggsurvfit() +
+ggsurvfit::survfit2(Surv(time, status) ~ treatment+test_temperature, data = control_daily) %>% 
+  ggsurvfit::ggsurvfit() +
   labs(
     x = "Hours",
     y = "Survival probability"
@@ -89,19 +89,19 @@ survfit2(Surv(time, status) ~ treatment+test_temperature, data = control_daily) 
 
 Estimate survival at 24 hours. 
 ```{r}
-summary(survfit(Surv(time, status) ~ treatment, data = control_daily), times = 24)
+summary(survival::survfit(Surv(time, status) ~ treatment, data = control_daily), times = 24)
 ```
 
 Use a log rank model to determine statistical differences in curves. 
 ```{r}
-survdiff(Surv(time, status) ~ treatment, data = control_daily)
+survival::survdiff(Surv(time, status) ~ treatment, data = control_daily)
 ```
 
 Analyze again with a Cox proportional hazards model. 
 ```{r}
-coxph(Surv(time, status) ~ treatment, data = control_daily)
+survival::coxph(Surv(time, status) ~ treatment, data = control_daily)
 
-coxph(Surv(time, status) ~ treatment, data = control_daily) %>% 
+survival::coxph(Surv(time, status) ~ treatment, data = control_daily) %>% 
   tbl_regression(exp = TRUE) 
 ```
 
@@ -112,14 +112,14 @@ coxph(Surv(time, status) ~ treatment, data = control_daily) %>%
 ### Stress temperature 33C
 
 ```{r}
-s2 <- survfit(Surv(time, status) ~ treatment, data = stress_daily)
+s2 <- survival::survfit(Surv(time, status) ~ treatment, data = stress_daily)
 str(s2)
 ```
 
 Plot the survival function
 ```{r}
-survfit2(Surv(time, status) ~ treatment+test_temperature, data = stress_daily) %>% 
-  ggsurvfit() +
+ggsurvfit::survfit2(Surv(time, status) ~ treatment+test_temperature, data = stress_daily) %>% 
+  ggsurvfit::ggsurvfit() +
   labs(
     x = "Hours",
     y = "Survival probability"
@@ -128,19 +128,19 @@ survfit2(Surv(time, status) ~ treatment+test_temperature, data = stress_daily) %
 
 Estimate survival at 24 hours. 
 ```{r}
-summary(survfit(Surv(time, status) ~ treatment, data = stress_daily), times = 24)
+summary(survival::survfit(Surv(time, status) ~ treatment, data = stress_daily), times = 24)
 ```
 
 Use a log rank model to determine statistical differences in curves. 
 ```{r}
-survdiff(Surv(time, status) ~ treatment, data = stress_daily)
+survival::survdiff(Surv(time, status) ~ treatment, data = stress_daily)
 ```
 
 Analyze again with a Cox proportional hazards model. 
 ```{r}
-coxph(Surv(time, status) ~ treatment, data = stress_daily)
+survival::coxph(Surv(time, status) ~ treatment, data = stress_daily)
 
-coxph(Surv(time, status) ~ treatment, data = stress_daily) %>% 
+survival::coxph(Surv(time, status) ~ treatment, data = stress_daily) %>% 
   tbl_regression(exp = TRUE) 
 ```
 
@@ -148,49 +148,59 @@ coxph(Surv(time, status) ~ treatment, data = stress_daily) %>%
  
 Set theme. 
 ```{r}
-my_theme<-theme_classic()
+my_theme<-theme_classic()+
+  theme(
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.x =element_text(size = 20, color = "black"),
+    legend.position = "none")
 ```
 
 Control
 ```{r}
-plot1<-survfit2(Surv(time, status) ~ treatment, data = control_daily) %>% 
-  ggsurvfit() +
+options("ggsurvfit.switch-color-linetype" = TRUE)
+plot1<-ggsurvfit::survfit2(Surv(time, status) ~ treatment, data = control_daily) %>% 
+  ggsurvfit::ggsurvfit() +
   labs(
     x = "Hours",
     y = "Survival probability",
     title="Daily Hardening 22°C"
   )+
   ylim(0,1)+
-  scale_colour_manual(values=c("darkgray", "orange"))+
   my_theme+
-  geom_text(x=10, y=0.2, label="Cox PH p=1", color="darkgray")+
+  scale_linetype_manual(values=c("solid", "dashed"))+
+  geom_text(x=10, y=0.2, label="Cox PH p=1", color="black")+
   #geom_text(x=10, y=0.2, label="Cox PH p=0.8")+
   theme(legend.position="none")
+plot1
 ```
 
 Stress
 ```{r}
-plot2<-survfit2(Surv(time, status) ~ treatment, data = stress_daily) %>% 
-  ggsurvfit() +
+options("ggsurvfit.switch-color-linetype" = TRUE)
+plot2<-ggsurvfit::survfit2(Surv(time, status) ~ treatment, data = stress_daily) %>% 
+  ggsurvfit::ggsurvfit() +
   labs(
     x = "Hours",
     y = "Survival probability",
     title = "Daily Hardening 33°C"
   )+
   ylim(0,1)+
-  scale_colour_manual(values=c("darkgray", "orange"))+
+  scale_linetype_manual(values=c("solid", "dashed"))+
   my_theme+
-  geom_text(x=10, y=0.2, label="Cox PH p=0.492", color="darkgray")+
+  geom_text(x=10, y=0.2, label="Cox PH p=0.492", color="black")+
   #geom_text(x=10, y=0.15, label="Temperature vs control p=0.002")+
   #geom_text(x=10, y=0.10, label="All others vs control p>0.05")+
   theme(legend.position="right")
+plot2
 ```
 
 Assemble plot
 ```{r}
 plots<-plot_grid(plot1, plot2, rel_widths=c(0.75,1), ncol=2)
 
-ggsave(plots, filename="figures/survival/westcott_lab_survival/daily-hardening.png", width=8, height=4)
+ggsave(plots, filename="figures/survival/westcott_lab_survival/daily-hardening_updated.png", width=8, height=4)
 ```
 
 # Weekly temperature hardening experiment  
@@ -200,14 +210,14 @@ ggsave(plots, filename="figures/survival/westcott_lab_survival/daily-hardening.p
 ### Control temperature 22C
 
 ```{r}
-s1 <- survfit(Surv(time, status) ~ treatment, data = control_weekly)
+s1 <- survival::survfit(Surv(time, status) ~ treatment, data = control_weekly)
 str(s1)
 ```
 
 Plot the survival function
 ```{r}
-survfit2(Surv(time, status) ~ treatment+test_temperature, data = control_weekly) %>% 
-  ggsurvfit() +
+ggsurvfit::survfit2(Surv(time, status) ~ treatment+test_temperature, data = control_weekly) %>% 
+  ggsurvfit::ggsurvfit() +
   labs(
     x = "Hours",
     y = "Survival probability"
@@ -216,19 +226,19 @@ survfit2(Surv(time, status) ~ treatment+test_temperature, data = control_weekly)
 
 Estimate survival at 24 hours. 
 ```{r}
-summary(survfit(Surv(time, status) ~ treatment, data = control_weekly), times = 24)
+summary(survival::survfit(Surv(time, status) ~ treatment, data = control_weekly), times = 24)
 ```
 
 Use a log rank model to determine statistical differences in curves. 
 ```{r}
-survdiff(Surv(time, status) ~ treatment, data = control_weekly)
+survival::survdiff(Surv(time, status) ~ treatment, data = control_weekly)
 ```
 
 Analyze again with a Cox proportional hazards model. 
 ```{r}
-coxph(Surv(time, status) ~ treatment, data = control_weekly)
+survival::coxph(Surv(time, status) ~ treatment, data = control_weekly)
 
-coxph(Surv(time, status) ~ treatment, data = control_weekly) %>% 
+survival::coxph(Surv(time, status) ~ treatment, data = control_weekly) %>% 
   tbl_regression(exp = TRUE) 
 ```
 
@@ -237,14 +247,14 @@ coxph(Surv(time, status) ~ treatment, data = control_weekly) %>%
 ### Stress temperature 33C
 
 ```{r}
-s2 <- survfit(Surv(time, status) ~ treatment, data = stress_weekly)
+s2 <- survival::survfit(Surv(time, status) ~ treatment, data = stress_weekly)
 str(s2)
 ```
 
 Plot the survival function
 ```{r}
-survfit2(Surv(time, status) ~ treatment+test_temperature, data = stress_weekly) %>% 
-  ggsurvfit() +
+ggsurvfit::survfit2(Surv(time, status) ~ treatment+test_temperature, data = stress_weekly) %>% 
+  ggsurvfit::ggsurvfit() +
   labs(
     x = "Hours",
     y = "Survival probability"
@@ -253,20 +263,20 @@ survfit2(Surv(time, status) ~ treatment+test_temperature, data = stress_weekly) 
 
 Estimate survival at 24 hours. 
 ```{r}
-summary(survfit(Surv(time, status) ~ treatment, data = stress_weekly), times = 27)
-summary(survfit(Surv(time, status) ~ treatment, data = stress_weekly), times = 31)
+summary(survival::survfit(Surv(time, status) ~ treatment, data = stress_weekly), times = 27)
+summary(survival::survfit(Surv(time, status) ~ treatment, data = stress_weekly), times = 31)
 ```
 
 Use a log rank model to determine statistical differences in curves. 
 ```{r}
-survdiff(Surv(time, status) ~ treatment, data = stress_weekly)
+survival::survdiff(Surv(time, status) ~ treatment, data = stress_weekly)
 ```
 
 Analyze again with a Cox proportional hazards model. 
 ```{r}
-coxph(Surv(time, status) ~ treatment, data = stress_weekly)
+survival::coxph(Surv(time, status) ~ treatment, data = stress_weekly)
 
-coxph(Surv(time, status) ~ treatment, data = stress_weekly) %>% 
+survival::coxph(Surv(time, status) ~ treatment, data = stress_weekly) %>% 
   tbl_regression(exp = TRUE) 
 ```
 
@@ -274,44 +284,48 @@ coxph(Surv(time, status) ~ treatment, data = stress_weekly) %>%
 
 Control
 ```{r}
-plot1<-survfit2(Surv(time, status) ~ treatment, data = control_weekly) %>% 
-  ggsurvfit() +
+options("ggsurvfit.switch-color-linetype" = TRUE)
+plot1<-ggsurvfit::survfit2(Surv(time, status) ~ treatment, data = control_weekly) %>% 
+  ggsurvfit::ggsurvfit() +
   labs(
     x = "Hours",
     y = "Survival probability",
     title="Weekly Hardening 22°C"
   )+
   ylim(0,1)+
-  scale_colour_manual(values=c("darkgray", "orange"))+
+  scale_linetype_manual(values=c("solid", "dashed"))+
   my_theme+
-  geom_text(x=10, y=0.2, label="Cox PH p=1", color="darkgray")+
+  geom_text(x=10, y=0.2, label="Cox PH p=1", color="black")+
   #geom_text(x=10, y=0.2, label="Cox PH p=0.8")+
   theme(legend.position="none")
+plot1
 ```
 
 Stress
 ```{r}
-plot2<-survfit2(Surv(time, status) ~ treatment, data = stress_weekly) %>% 
-  ggsurvfit() +
+options("ggsurvfit.switch-color-linetype" = TRUE)
+plot2<-ggsurvfit::survfit2(Surv(time, status) ~ treatment, data = stress_weekly) %>% 
+  ggsurvfit::ggsurvfit() +
   labs(
     x = "Hours",
     y = "Survival probability",
     title = "Weekly Hardening 33°C"
   )+
   ylim(0,1)+
-  scale_colour_manual(values=c("darkgray", "orange"))+
+  scale_linetype_manual(values=c("solid", "dashed"))+
   my_theme+
   geom_text(x=10, y=0.2, label="Cox PH p=0.029")+
   #geom_text(x=10, y=0.15, label="Temperature vs control p=0.002")+
   #geom_text(x=10, y=0.10, label="All others vs control p>0.05")+
   theme(legend.position="right")
+plot2
 ```
 
 Assemble plot
 ```{r}
 plots<-plot_grid(plot1, plot2, rel_widths=c(0.75,1), ncol=2)
 
-ggsave(plots, filename="figures/survival/westcott_lab_survival/weekly-hardening.png", width=8, height=4)
+ggsave(plots, filename="figures/survival/westcott_lab_survival/weekly-hardening-updated.png", width=8, height=4)
 ```
 
 

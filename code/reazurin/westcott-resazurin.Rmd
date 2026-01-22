@@ -43,6 +43,7 @@ library(pracma)
 
 Read in 48 well data. 
 ```{r}
+
 # Set the folder path
 folder_path <- "data/resazurin/westcott/"  
 
@@ -72,7 +73,7 @@ for (file in file_list) {
   colnames(data) <- c("Row", as.character(1:9))
   
   #remove last column
-  data<-data%>%select(-ncol(data))
+  data<-data %>% dplyr::select(-ncol(data))
   
   # Convert to long format
   data_long <- data %>%
@@ -87,7 +88,7 @@ for (file in file_list) {
         str_remove("T") %>% 
         as.numeric()                                # Convert timepoint to numeric
     ) %>%
-    select(FileName, plate, Well_ID, Value, date, timepoint)  # Select relevant columns
+    dplyr::select(FileName, plate, Well_ID, Value, date, timepoint)  # Select relevant columns
   
   # Store the processed data in the list
   data_list[[file_name]] <- data_long
@@ -139,6 +140,19 @@ full_data<-full_data%>%
 ```
 
 ## Prep the data 
+
+Set theme
+```{r}
+my_theme<-theme_classic()+
+  theme(
+    axis.title.y = element_text(size = 20, color = "black"),
+    axis.text.y = element_text(size=18, color = "black"),
+    axis.text.x = element_text(size=18, color = "black"),
+    axis.title.x =element_text(size = 20, color = "black"),
+    legend.text = element_text(size = 18, color = "black"),
+    strip.text = element_text(size = 18, color = "black"))
+```
+
 
 Plot the raw data. 
 
@@ -379,7 +393,7 @@ There are temperature effects, but no hardening treatment effects.
 Calculate AUC for each individual 
 ```{r}
 auc<-full_data%>%
-  select(date, plate, well, individual, temperature, timepoint, group, experiment, treatment, value)%>%
+  dplyr::select(date, plate, well, individual, temperature, timepoint, group, experiment, treatment, value)%>%
   
   mutate(time=as.numeric(timepoint))%>%
   group_by(date, plate, well, individual, group, experiment, treatment, temperature) %>%
@@ -404,17 +418,17 @@ plot4<-auc%>%
   group_by(group, experiment, treatment, temperature)%>%
   summarise(mean=mean(AUC, na.rm=TRUE), se=sd(AUC, na.rm=TRUE)/sqrt(length(AUC)))%>%
   
-  ggplot(aes(x=temperature, y=mean, colour=treatment))+
+  ggplot(aes(x=temperature, y=mean, linetype=treatment))+
   facet_wrap(~experiment, scales="free_x")+
   geom_point(size=4, position=position_dodge(0.2))+
   geom_errorbar(aes(ymin=mean-se, ymax=mean+se), width=0, position=position_dodge(0.2))+
   ylab("AUC")+
   geom_line(aes(group=treatment), position=position_dodge(0.2))+
-  scale_colour_manual(values=c("darkgray", "orange"), name="")+
-  theme_classic()+
+  scale_linetype_manual(values=c("solid", "dashed"), name="")+
+  my_theme+
   xlab("Temperature");plot4
 
-ggsave(plot4, filename="figures/resazurin/westcott_mean_AUC.png", width=10, height=5, units="in")
+ggsave(plot4, filename="figures/resazurin/westcott_mean_AUC_updated.png", width=10, height=5, units="in")
 
 plot4a<-auc%>%
   
