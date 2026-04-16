@@ -96,12 +96,12 @@ plot2<-survival%>%
   select(field_cattle_tag, tag_20250825, corrected_tag, date, treatment, group, experiment, dead)%>%
   pivot_wider(names_from="date", values_from="dead")%>%
   #group_by(field_cattle_tag, tag_20250825, treatment, group, experiment)%>%
-  dplyr::mutate(total_dead=rowSums(across(7:11)))%>%
+  dplyr::mutate(total_dead=rowSums(across(7:12)))%>%
   
   ggplot(aes(x=treatment, y=total_dead, colour=treatment, fill=treatment))+
   facet_wrap(~experiment)+
   geom_boxplot(fill=NA)+
-  geom_point(position=position_jitterdodge(0.6))+
+  geom_point(position=position_jitterdodge(0.1))+
   theme_classic(); plot2
 ```
 
@@ -112,12 +112,38 @@ plot3<-survival%>%
   select(field_cattle_tag, tag_20250825, corrected_tag, date, treatment, group, experiment, dead)%>%
   pivot_wider(names_from="date", values_from="dead")%>%
   #group_by(field_cattle_tag, tag_20250825, treatment, group, experiment)%>%
-  dplyr::mutate(total_dead=rowSums(across(7:11)))%>%
+  dplyr::mutate(total_dead=rowSums(across(7:12)))%>%
   
   ggplot(aes(x=treatment, y=total_dead, colour=treatment, fill=treatment))+
   geom_boxplot(fill=NA)+
-  geom_point(position=position_jitterdodge(0.6))+
+  geom_point(position=position_jitterdodge(0.1))+
   theme_classic(); plot3
+```
+
+Run non parametric test. 
+```{r}
+test_data1<-survival%>%
+  filter(experiment=="weekly temperature")%>%
+  select(field_cattle_tag, tag_20250825, corrected_tag, date, treatment, group, experiment, dead)%>%
+  pivot_wider(names_from="date", values_from="dead")%>%
+  dplyr::mutate(total_dead=rowSums(across(7:12)))
+
+kruskal.test(total_dead ~ treatment, data=test_data1) #no effect 
+
+test_data2<-survival%>%
+  filter(experiment=="weekly fresh water")%>%
+  select(field_cattle_tag, tag_20250825, corrected_tag, date, treatment, group, experiment, dead)%>%
+  pivot_wider(names_from="date", values_from="dead")%>%
+  dplyr::mutate(total_dead=rowSums(across(7:12)))
+
+kruskal.test(total_dead ~ treatment, data=test_data2) #no effect 
+
+test_data3<-survival%>%
+  select(field_cattle_tag, tag_20250825, corrected_tag, date, treatment, group, experiment, dead)%>%
+  pivot_wider(names_from="date", values_from="dead")%>%
+  dplyr::mutate(total_dead=rowSums(across(7:12)))
+
+kruskal.test(total_dead ~ treatment, data=test_data3) #no effect 
 ```
 
 # Plot data 
@@ -184,10 +210,10 @@ plot(data$volume ~ data$width.mm)
 ```
 Relationships may be non linear. 
 
-Obtain training data with known length width and depth from 20240909 and 20250825 dataset. 
+Obtain training data with known length width and depth from 20240909, 20250825, and 20251008 datasets. 
 ```{r}
 training_data<-data%>%
-  filter(date %in% c("20240909", "20250825"))%>%
+  filter(date %in% c("20240909", "20250825", "20251008"))%>%
   filter(!is.na(volume))
 
 hist(training_data$volume)
@@ -205,8 +231,8 @@ gam_model <- gam(volume ~ s(length.mm, bs = "cs") + s(width.mm, bs = "cs"), data
 summary(poly_model)
 summary(gam_model)
 ```
-Poly model adjusted R sq = 0.757
-GAM model adjusted R sq = 0.755 
+Poly model adjusted R sq = 0.961
+GAM model adjusted R sq = 0.96 
 
 Both models have similar fits. Plot the models. 
 ```{r}
@@ -264,7 +290,7 @@ I am going to select the polynomial model, because the GAM is more affected by h
 View the relationship between known volume and predicted volume using Polynomial regression. 
 ```{r}
 # Plot polynomial fit for Length vs. Volume
-ggplot(data%>%filter(date %in% c("20240909", "20250825")), aes(x = volume, y = Predicted_Volume_Poly)) +
+ggplot(data%>%filter(date %in% c("20240909", "20250825", "20251008")), aes(x = volume, y = Predicted_Volume_Poly)) +
   geom_point() +
   stat_smooth(method = "loess", color = "blue", se = TRUE) +
   ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
@@ -287,7 +313,7 @@ data<-data%>%
 hist(data$Predicted_Volume_Poly)
 ```
 
-There are several outliers. Conduct outlier removal and analyze again.  
+Conduct outlier removal and analyze again.  
 
 ```{r}
 # Fit a polynomial regression model (2nd-degree polynomial)
@@ -315,11 +341,11 @@ ggplot(training_data, aes(x = seq_along(std_resid), y = std_resid)) +
   theme_minimal()
 ```
 
-Re run the model after removing outliers. 
+Don't remove outliers as it is identifying the larger timepoint as largely outliers. 
 
 ```{r}
-training_data<-training_data%>%
-  filter(!outlier_flag==TRUE)
+#training_data<-training_data%>%
+#  filter(!outlier_flag==TRUE)
 ```
 
 ```{r}
@@ -334,7 +360,7 @@ poly_model <- lm(volume ~ poly(length.mm, 2) + poly(width.mm, 2) + length.mm:wid
 # Compare model summaries
 summary(poly_model)
 ```
-R sq improved to 0.785
+R sq still 0.961 without removing outliers. 
 
 ```{r}
 plot(poly_model)
@@ -370,7 +396,7 @@ ggplot(training_data, aes(x = width.mm, y = volume)) +
 View the relationship between known volume and predicted volume using Polynomial regression. 
 ```{r}
 # Plot polynomial fit for Length vs. Volume
-ggplot(data%>%filter(date %in% c("20240909", "20250825")), aes(x = volume, y = Predicted_Volume_Poly)) +
+ggplot(data%>%filter(date %in% c("20240909", "20250825", "20251008")), aes(x = volume, y = Predicted_Volume_Poly)) +
   geom_point() +
   stat_smooth(method = "loess", color = "blue", se = TRUE) +
   ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
@@ -384,8 +410,6 @@ hist(data$Predicted_Volume_Poly)
 min(data$Predicted_Volume_Poly)
 ```
 
-There are fewer negative values than the first iteration of the model. 
-
 Proceed with the calculated volume data.  
 
 # Analyze growth (volume) over time 
@@ -394,8 +418,7 @@ Proceed with the calculated volume data.
 
 ```{r}
 data<-data%>%
-  mutate(corrected_tag=as.factor(corrected_tag))%>%
-  filter(!date=="20251009")
+  mutate(corrected_tag=as.factor(corrected_tag))
 ```
 
 
@@ -515,7 +538,7 @@ qqPlot(residuals(model))
 hist(residuals(model))
 ```
 
-Residuals are much better.  
+Residuals are a little better, need to come back and re assess. 
 
 # Plot sizes for each effort 
 
@@ -570,7 +593,7 @@ emm<-emmeans(model, ~treatment)
 pairs(emm)
 ```
 
-Control bigger in august. 
+Control bigger in august, no other differences. 
 
 ## Fresh water experiment 
 
@@ -621,7 +644,7 @@ emm<-emmeans(model, ~treatment)
 pairs(emm)
 ```
 
-Control smaller in August than treated.  
+Control smaller in August than treated, treated smaller than control in October.  
 
 # Analyze growth rates over time 
 
@@ -668,6 +691,20 @@ plot1<-ggplot(temp, aes(x = x, y = predicted, color = group, fill=group)) +
        fill = "Treatment");plot1
 ```
 
+Run model for just temperature. 
+```{r}
+# Fit a mixed-effects model to estimate growth rate
+data2<-data%>%
+  filter(experiment=="weekly temperature")
+
+growth_model2 <- lmer(Predicted_Volume_Poly ~ date * treatment + (1|treatment:corrected_tag), data = data2)
+
+# Summarize the model
+summary(growth_model2)
+anova(growth_model2)
+```
+
+
 ```{r}
 ggsave(filename="figures/growth/goose_point/growth_temp.png", plot1, width=6, height=6)
 ```
@@ -687,13 +724,21 @@ plot1<-ggplot(fw, aes(x = x, y = predicted, color = group, fill=group)) +
        fill = "Treatment");plot1
 ```
 
+Run model for just fresh water 
+```{r}
+# Fit a mixed-effects model to estimate growth rate
+data3<-data%>%
+  filter(experiment=="weekly fresh water")
+
+growth_model3 <- lmer(Predicted_Volume_Poly ~ date * treatment + (1|treatment:corrected_tag), data = data3)
+
+# Summarize the model
+summary(growth_model3)
+anova(growth_model3)
+```
+
 ```{r}
 ggsave(filename="figures/growth/goose_point/growth_fw.png", plot1, width=6, height=6)
 ```
 
-Calculate percent change manually. 
-
-```{r}
-((53929.24-43262.29)/43262.29)
-```
 
