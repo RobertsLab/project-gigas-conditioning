@@ -172,11 +172,11 @@ means_sizes$date <- as.POSIXct.Date(means_sizes$date)
 B_length_graph <- means_sizes %>%
   filter(effort == "B")%>%
   ggplot(aes(x = date, y = mean_length)) +
-   geom_point() +
-  geom_line(aes(linetype=conditioning))+
+   geom_point(color = "purple") +
+  geom_line(aes(linetype=conditioning), color = "purple")+
   labs(x = "Date",
        y = "Height (mm)",
-       linetype = "Treatment") +
+       linetype = "Daily (50/bag)") +
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
     theme(
@@ -188,7 +188,7 @@ B_length_graph <- means_sizes %>%
     legend.title = element_text(size = 20, color = "black"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
-                 position=position_dodge(0.05))+
+                 position=position_dodge(0.05), color = "purple")+
   ylim(15,68)
 
 B_length_graph
@@ -197,11 +197,11 @@ B_length_graph
 D_length_graph<- means_sizes %>%
   filter(effort == "D")%>%
   ggplot(aes(x = date, y = mean_length)) +
-   geom_point() +
-  geom_line(aes(linetype=conditioning))+
+   geom_point(color = "forestgreen") +
+  geom_line(aes(linetype=conditioning), color = "forestgreen")+
   labs(x = "Date",
        y = "Height (mm)",
-       linetype = "Treatment") +
+       linetype = "Weekly (100/bag)") +
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
     theme(
@@ -213,7 +213,7 @@ D_length_graph<- means_sizes %>%
     legend.title = element_text(size = 20, color = "black"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
-                 position=position_dodge(0.05))+
+                 position=position_dodge(0.05), color = "forestgreen")+
   ylim(15,68)
 D_length_graph
 ```
@@ -809,7 +809,7 @@ size_density_plot <- ggplot(means_sizes_density, aes(x = date, y = mean_length, 
        y = "Height (mm)") +
   labs(color = "Density")+
   theme_classic()+
-  scale_color_manual(labels = c("50/bag", "100/bag"), values = c("purple","forestgreen"))+
+  scale_color_manual(labels = c("50/bag (Daily)", "100/bag (Weekly)"), values = c("purple","forestgreen"))+
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
                  position=position_dodge(0.05))+
@@ -849,7 +849,7 @@ ggplot(means_perc_vols_density, aes(x = date, y = mean_perc_vol, color = effort)
 
 
 library(cowplot)
-grid <- plot_grid(
+grid <- cowplot::plot_grid(
   B_length_graph, D_length_graph, size_density_plot,
   ncol = 1,
   align = "v",

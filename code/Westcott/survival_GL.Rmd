@@ -172,6 +172,7 @@ ggplot(means_cumdead, aes(x = date, y = mean_cumdead, color = effort)) +
                  position=position_dodge(0.05))+
   theme_classic()
 ```
+
 ### Calculating proportion survival 
 ```{r}
 initial_counts <- B_survival %>%
@@ -370,7 +371,8 @@ Dsurv_plot <- means_prop %>%
    geom_point(size=3) +
   geom_line(aes(linetype = conditioning))+
   labs(x = "Date",
-       y = "Proportion survival") +
+       y = "Proportion survival",
+       linetype = "Weekly (100/bag)") +
    # scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple", "forestgreen"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_prop-std_error, ymax=mean_prop+std_error), width=.2,
@@ -381,7 +383,8 @@ Dsurv_plot <- means_prop %>%
         axis.title.y = element_text(size = 14, color= "black"),
         axis.text.x = element_blank(),
         axis.title.x = element_blank(),
-        legend.position = "none")+
+        legend.text = element_text(size = 14, color= "black"),
+        legend.title =element_text(size = 14, color= "black"))+
   ylim(0.7,1.02);Dsurv_plot
 ```
 
