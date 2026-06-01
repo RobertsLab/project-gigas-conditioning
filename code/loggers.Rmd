@@ -403,7 +403,7 @@ levels(as.factor(sequim$group))
 
 Group information is now added.  
 
-Remove temperature data from read out days. 
+Remove temperature data from prior to outplant. 
 
 ```{r}
 # Dates to filter out
