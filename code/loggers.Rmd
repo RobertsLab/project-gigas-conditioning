@@ -154,6 +154,10 @@ westcott <- setNames(westcott.files, westcott.files) %>%
     filter(!temp.C=="NA")
 
 westcott$DateTime<-as.POSIXct(westcott$DateTime, format="%m/%d/%Y %H:%M:%S")
+
+#export data 
+westcott%>%
+  write_csv("output/environmental/westcott-temperature-data.csv")
 ```
 
 List the logger serial numbers in this dataframe.  
