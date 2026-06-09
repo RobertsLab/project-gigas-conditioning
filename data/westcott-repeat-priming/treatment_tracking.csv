@@ -3,3 +3,5 @@ date,location,treatment,time_start,time_end,temp_start,temp_end,notes
 20260604,point-whitney,control,1345,1415,17.3,17.1,
 20260605,uw,high,1130,1200,10.8,12.9,
 20260605,uw,control,1130,1200,25.1,25,
+20260608,point-whitney,high,1315,1345,26.1,26.4,added loggers today 
+20260608,point-whitney,control,1315,1345,15.4,15.2,added loggers today 
