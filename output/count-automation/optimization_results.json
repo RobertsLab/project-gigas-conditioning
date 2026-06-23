@@ -1,0 +1,1553 @@
+{
+  "best_params": {
+    "resize_factor": 0.25,
+    "blur_kernel": 5,
+    "adaptive_block_size": 75,
+    "adaptive_c": 8,
+    "morph_kernel_size": 7,
+    "min_area": 300,
+    "max_area": 40000,
+    "circularity_threshold": 0.25,
+    "aspect_ratio_max": 3.0
+  },
+  "best_mae": 40.625,
+  "best_mpe": 38.50604347886759,
+  "all_trials": [
+    {
+      "trial": 1,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 49.375,
+      "mpe": 46.79491986718077
+    },
+    {
+      "trial": 2,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 40.625,
+      "mpe": 38.50604347886759
+    },
+    {
+      "trial": 3,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 61.5,
+      "mpe": 58.25079100049286
+    },
+    {
+      "trial": 4,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 47.375,
+      "mpe": 44.90349146582642
+    },
+    {
+      "trial": 5,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 49.375,
+      "mpe": 46.79491986718077
+    },
+    {
+      "trial": 6,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 40.625,
+      "mpe": 38.50604347886759
+    },
+    {
+      "trial": 7,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 61.5,
+      "mpe": 58.25079100049286
+    },
+    {
+      "trial": 8,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 47.375,
+      "mpe": 44.90349146582642
+    },
+    {
+      "trial": 9,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 60.875,
+      "mpe": 57.734685766966294
+    },
+    {
+      "trial": 10,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 61.0,
+      "mpe": 57.83423454757381
+    },
+    {
+      "trial": 11,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 71.5,
+      "mpe": 67.79196142464284
+    },
+    {
+      "trial": 12,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 67.375,
+      "mpe": 63.8778462571611
+    },
+    {
+      "trial": 13,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 60.875,
+      "mpe": 57.734685766966294
+    },
+    {
+      "trial": 14,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 61.0,
+      "mpe": 57.83423454757381
+    },
+    {
+      "trial": 15,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 71.5,
+      "mpe": 67.79196142464284
+    },
+    {
+      "trial": 16,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 67.375,
+      "mpe": 63.8778462571611
+    },
+    {
+      "trial": 17,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 70.125,
+      "mpe": 66.57599492576162
+    },
+    {
+      "trial": 18,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 74.75,
+      "mpe": 70.86524828998712
+    },
+    {
+      "trial": 19,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 79.375,
+      "mpe": 75.32146860503724
+    },
+    {
+      "trial": 20,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 80.375,
+      "mpe": 76.19017805014789
+    },
+    {
+      "trial": 21,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 70.125,
+      "mpe": 66.57599492576162
+    },
+    {
+      "trial": 22,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 74.75,
+      "mpe": 70.86524828998712
+    },
+    {
+      "trial": 23,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 79.375,
+      "mpe": 75.32146860503724
+    },
+    {
+      "trial": 24,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 80.375,
+      "mpe": 76.19017805014789
+    },
+    {
+      "trial": 25,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 45.75,
+      "mpe": 43.16912404517442
+    },
+    {
+      "trial": 26,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 48.0,
+      "mpe": 45.46203502327126
+    },
+    {
+      "trial": 27,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 59.625,
+      "mpe": 56.30635825574482
+    },
+    {
+      "trial": 28,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 52.25,
+      "mpe": 49.508058953283985
+    },
+    {
+      "trial": 29,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 45.75,
+      "mpe": 43.16912404517442
+    },
+    {
+      "trial": 30,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 48.0,
+      "mpe": 45.46203502327126
+    },
+    {
+      "trial": 31,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 59.625,
+      "mpe": 56.30635825574482
+    },
+    {
+      "trial": 32,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 52.25,
+      "mpe": 49.508058953283985
+    },
+    {
+      "trial": 33,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 61.875,
+      "mpe": 58.61859124281765
+    },
+    {
+      "trial": 34,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 70.875,
+      "mpe": 67.23237061016751
+    },
+    {
+      "trial": 35,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 73.875,
+      "mpe": 69.97878370308618
+    },
+    {
+      "trial": 36,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 74.875,
+      "mpe": 71.04808689988275
+    },
+    {
+      "trial": 37,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 61.875,
+      "mpe": 58.61859124281765
+    },
+    {
+      "trial": 38,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 70.875,
+      "mpe": 67.23237061016751
+    },
+    {
+      "trial": 39,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 73.875,
+      "mpe": 69.97878370308618
+    },
+    {
+      "trial": 40,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 74.875,
+      "mpe": 71.04808689988275
+    },
+    {
+      "trial": 41,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 74.0,
+      "mpe": 70.14387754627052
+    },
+    {
+      "trial": 42,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 83.875,
+      "mpe": 79.49838271693058
+    },
+    {
+      "trial": 43,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 84.0,
+      "mpe": 79.58058130112491
+    },
+    {
+      "trial": 44,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 87.5,
+      "mpe": 82.93902473451271
+    },
+    {
+      "trial": 45,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 74.0,
+      "mpe": 70.14387754627052
+    },
+    {
+      "trial": 46,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 83.875,
+      "mpe": 79.49838271693058
+    },
+    {
+      "trial": 47,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 84.0,
+      "mpe": 79.58058130112491
+    },
+    {
+      "trial": 48,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 75,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 87.5,
+      "mpe": 82.93902473451271
+    },
+    {
+      "trial": 49,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 59.0,
+      "mpe": 55.81695704960529
+    },
+    {
+      "trial": 50,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 47.625,
+      "mpe": 44.99056949591444
+    },
+    {
+      "trial": 51,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 68.5,
+      "mpe": 64.84214439417552
+    },
+    {
+      "trial": 52,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 54.25,
+      "mpe": 51.26751924421088
+    },
+    {
+      "trial": 53,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 59.0,
+      "mpe": 55.81695704960529
+    },
+    {
+      "trial": 54,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 47.625,
+      "mpe": 44.99056949591444
+    },
+    {
+      "trial": 55,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 68.5,
+      "mpe": 64.84214439417552
+    },
+    {
+      "trial": 56,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 54.25,
+      "mpe": 51.26751924421088
+    },
+    {
+      "trial": 57,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 65.5,
+      "mpe": 62.0260565979622
+    },
+    {
+      "trial": 58,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 59.875,
+      "mpe": 56.56508806602034
+    },
+    {
+      "trial": 59,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 74.375,
+      "mpe": 70.44824162271559
+    },
+    {
+      "trial": 60,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 66.375,
+      "mpe": 62.734279193627124
+    },
+    {
+      "trial": 61,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 65.5,
+      "mpe": 62.0260565979622
+    },
+    {
+      "trial": 62,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 59.875,
+      "mpe": 56.56508806602034
+    },
+    {
+      "trial": 63,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 74.375,
+      "mpe": 70.44824162271559
+    },
+    {
+      "trial": 64,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 66.375,
+      "mpe": 62.734279193627124
+    },
+    {
+      "trial": 65,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 70.625,
+      "mpe": 66.91141639101622
+    },
+    {
+      "trial": 66,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 67.125,
+      "mpe": 63.59681536363782
+    },
+    {
+      "trial": 67,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 79.125,
+      "mpe": 74.97142704043732
+    },
+    {
+      "trial": 68,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 73.375,
+      "mpe": 69.51348123871935
+    },
+    {
+      "trial": 69,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 70.625,
+      "mpe": 66.91141639101622
+    },
+    {
+      "trial": 70,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 67.125,
+      "mpe": 63.59681536363782
+    },
+    {
+      "trial": 71,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 79.125,
+      "mpe": 74.97142704043732
+    },
+    {
+      "trial": 72,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 8,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 73.375,
+      "mpe": 69.51348123871935
+    },
+    {
+      "trial": 73,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 49.5,
+      "mpe": 46.87308693222469
+    },
+    {
+      "trial": 74,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 43.125,
+      "mpe": 40.656584636904455
+    },
+    {
+      "trial": 75,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 59.75,
+      "mpe": 56.51070090182374
+    },
+    {
+      "trial": 76,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 48.875,
+      "mpe": 46.086426436087834
+    },
+    {
+      "trial": 77,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 49.5,
+      "mpe": 46.87308693222469
+    },
+    {
+      "trial": 78,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 43.125,
+      "mpe": 40.656584636904455
+    },
+    {
+      "trial": 79,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 59.75,
+      "mpe": 56.51070090182374
+    },
+    {
+      "trial": 80,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 300,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 48.875,
+      "mpe": 46.086426436087834
+    },
+    {
+      "trial": 81,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 59.5,
+      "mpe": 56.30652523667518
+    },
+    {
+      "trial": 82,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 57.25,
+      "mpe": 54.130831404894366
+    },
+    {
+      "trial": 83,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 68.625,
+      "mpe": 64.90148068896825
+    },
+    {
+      "trial": 84,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 62.875,
+      "mpe": 59.44274867577586
+    },
+    {
+      "trial": 85,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 59.5,
+      "mpe": 56.30652523667518
+    },
+    {
+      "trial": 86,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 57.25,
+      "mpe": 54.130831404894366
+    },
+    {
+      "trial": 87,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 68.625,
+      "mpe": 64.90148068896825
+    },
+    {
+      "trial": 88,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 500,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 62.875,
+      "mpe": 59.44274867577586
+    },
+    {
+      "trial": 89,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 66.875,
+      "mpe": 63.36391250970725
+    },
+    {
+      "trial": 90,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 69.625,
+      "mpe": 65.90737163929732
+    },
+    {
+      "trial": 91,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 75.625,
+      "mpe": 71.59584539448275
+    },
+    {
+      "trial": 92,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 40000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 74.875,
+      "mpe": 70.86201793780819
+    },
+    {
+      "trial": 93,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 66.875,
+      "mpe": 63.36391250970725
+    },
+    {
+      "trial": 94,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.25,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 69.625,
+      "mpe": 65.90737163929732
+    },
+    {
+      "trial": 95,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 5,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 75.625,
+      "mpe": 71.59584539448275
+    },
+    {
+      "trial": 96,
+      "params": {
+        "resize_factor": 0.25,
+        "blur_kernel": 5,
+        "adaptive_block_size": 101,
+        "adaptive_c": 12,
+        "morph_kernel_size": 7,
+        "min_area": 700,
+        "max_area": 60000,
+        "circularity_threshold": 0.35,
+        "aspect_ratio_max": 3.0
+      },
+      "mae": 74.875,
+      "mpe": 70.86201793780819
+    }
+  ]
+}
