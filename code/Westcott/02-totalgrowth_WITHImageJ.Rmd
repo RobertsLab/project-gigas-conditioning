@@ -2,6 +2,8 @@
 title: "growth_withImageJ"
 output: html_document
 date: "2025-07-03"
+editor_options: 
+  chunk_output_type: console
 ---
 ### Load libraries
 ```{r}
@@ -11,13 +13,13 @@ library(ggplot2)
 library(gridExtra)
 library(lmtest)
 library(car)
-install.packages("lmerTest")
+#install.packages("lmerTest")
 library(lmerTest)
-install.packages("modelr")
+#install.packages("modelr")
 library(modelr)
-install.packages("glmmTMB")
+#install.packages("glmmTMB")
 library(glmmTMB)#follows lme4 syntax
-install.packages("DHARMa")
+#install.packages("DHARMa")
 library(DHARMa)
 ```
 
@@ -25,25 +27,23 @@ library(DHARMa)
 ### Load data
 
 ```{r}
-B_growth_sum <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/B_2023POGS_small_seed_daily/B_sizes_12172024.xlsx")
+B_growth_sum <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_12172024.xlsx")
 B_growth_sum$date <- as.Date(B_growth_sum$date)
 B_growth_sum <- B_growth_sum[which(B_growth_sum$date < as.Date("2024-12-17")),]
 B_growth_sum$length.mm <- as.numeric(B_growth_sum$length.mm)
 B_growth_sum$width.mm <- as.numeric(B_growth_sum$width.mm)
 B_growth_sum <- subset(B_growth_sum, select=-c(bag_tag_num,notes, tag_num, duplicate,height.mm ))
 
-D_growth_sum <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx", guess_max = 2000)
+D_growth_sum <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12172024.xlsx", guess_max = 2000)
 D_growth_sum$date <- as.Date(D_growth_sum$date)
 D_growth_sum <- D_growth_sum[which(D_growth_sum$date < as.Date("2024-12-17")),]
 D_growth_sum <- subset(D_growth_sum, select=-c(bag_tag_num,notes, tag_num, duplicate,height.mm ))
 
-Dec_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
-May_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250513_images/sizes_05132025.xlsx")
-June_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250625_images/sizes_06252025_1.xlsx")
-July_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250724_images/sizes_20250724.xlsx")
-Aug_sizes <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/20250820_images/sizes_20250820.xlsx")
-
-
+Dec_sizes <- read_xlsx("data/outplanting/Westcott/20241217_images/sizes_12172024.xlsx")
+May_sizes <- read_xlsx("data/outplanting/Westcott/20250513_images/sizes_05132025.xlsx")
+June_sizes <- read_xlsx("data/outplanting/Westcott/20250625_images/sizes_06252025_1.xlsx")
+July_sizes <- read_xlsx("data/outplanting/Westcott/20250724_images/sizes_20250724.xlsx")
+Aug_sizes <- read_xlsx("data/outplanting/Westcott/20250820_images/sizes_20250820.xlsx")
 ```
 
 ### Make ImageJ data compatible with early data
@@ -97,7 +97,7 @@ names(Aug_sizes)[names(Aug_sizes) == "length"] <- "length.mm"
 names(Aug_sizes)[names(Aug_sizes) == "width"] <- "width.mm"
 Aug_sizes <- subset(Aug_sizes, select=-c(oyster))
 
-bag_tag_key <- read_xlsx("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/data/outplanting/Westcott/bag_tag_key.xlsx")
+bag_tag_key <- read_xlsx("data/outplanting/Westcott/bag_tag_key.xlsx")
 
 B_growth_sum <- left_join(B_growth_sum, bag_tag_key, by = "bag_num")
 D_growth_sum  <- left_join(D_growth_sum, bag_tag_key, by = "bag_num")
