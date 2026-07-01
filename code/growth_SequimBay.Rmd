@@ -275,3 +275,13 @@ hist(residuals(model))
 ```
 
 No effect of treatment. 
+
+# Output growth data 
+
+```{r}
+data%>%
+  dplyr::select(date, bag, oyster, treatment, Predicted_Volume_Poly)%>%
+  mutate(treatment=if_else(treatment=="Treated", "Temperature", "Control"))%>%
+  write_csv("output/sequim_growth.csv")
+```
+

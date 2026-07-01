@@ -1,0 +1,17 @@
+date,location,treatment,time_start,time_end,temp_start,temp_end,notes
+20260604,point-whitney,high,1345,1415,25.9,26.1,
+20260604,point-whitney,control,1345,1415,17.3,17.1,
+20260605,uw,high,1130,1200,10.8,12.9,
+20260605,uw,control,1130,1200,25.1,25,
+20260608,point-whitney,high,1315,1345,26.1,26.4,added loggers today 
+20260608,point-whitney,control,1315,1345,15.4,15.2,added loggers today 
+20260611,uw,high,1300,1330,24.8,24.6,
+20260611,uw,control,1300,1330,15.9,16.6,
+20260617,uw,high,1300,1330,24.5,24.8,
+20260617,uw,control,1300,1330,12.5,13,
+20260619,point-whitney,high,1300,1330,25,36,
+20260619,point-whitney,control,1300,1330,18,18,
+20260623,point-whitney,high,1000,1030,35.5,36.6,
+20260623,point-whitney,control,1000,1030,21.2,21.1,
+20260624,uw,high,1330,1400,26.6,25.8,
+20260624,uw,control,1330,1400,11.5,11.3,

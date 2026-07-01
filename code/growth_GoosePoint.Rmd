@@ -210,10 +210,10 @@ plot(data$volume ~ data$width.mm)
 ```
 Relationships may be non linear. 
 
-Obtain training data with known length width and depth from 20240909, 20250825, and 20251008 datasets. 
+Obtain training data with known length width and depth from 20240909, 20250825, 20251008, and 20250522 datasets. 
 ```{r}
 training_data<-data%>%
-  filter(date %in% c("20240909", "20250825", "20251008"))%>%
+  filter(date %in% c("20240909", "20250825", "20251008", "20250522"))%>%
   filter(!is.na(volume))
 
 hist(training_data$volume)
@@ -290,7 +290,7 @@ I am going to select the polynomial model, because the GAM is more affected by h
 View the relationship between known volume and predicted volume using Polynomial regression. 
 ```{r}
 # Plot polynomial fit for Length vs. Volume
-ggplot(data%>%filter(date %in% c("20240909", "20250825", "20251008")), aes(x = volume, y = Predicted_Volume_Poly)) +
+ggplot(data%>%filter(date %in% c("20240909", "20250825", "20251008", "20260522")), aes(x = volume, y = Predicted_Volume_Poly)) +
   geom_point() +
   stat_smooth(method = "loess", color = "blue", se = TRUE) +
   ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
@@ -396,7 +396,7 @@ ggplot(training_data, aes(x = width.mm, y = volume)) +
 View the relationship between known volume and predicted volume using Polynomial regression. 
 ```{r}
 # Plot polynomial fit for Length vs. Volume
-ggplot(data%>%filter(date %in% c("20240909", "20250825", "20251008")), aes(x = volume, y = Predicted_Volume_Poly)) +
+ggplot(data%>%filter(date %in% c("20240909", "20250825", "20251008", "20260522")), aes(x = volume, y = Predicted_Volume_Poly)) +
   geom_point() +
   stat_smooth(method = "loess", color = "blue", se = TRUE) +
   ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
@@ -741,4 +741,15 @@ anova(growth_model3)
 ggsave(filename="figures/growth/goose_point/growth_fw.png", plot1, width=6, height=6)
 ```
 
+
+# Output growth data 
+
+```{r}
+data%>%
+  dplyr::select(date, field_cattle_tag, oyster, treatment, Predicted_Volume_Poly, treatment, experiment)%>%
+  mutate(treatment=if_else(treatment=="control", "Control", 
+                           if_else(experiment=="weekly temperature" & treatment=="treated", "Temperature", 
+                                   if_else(experiment=="weekly fresh water" & treatment=="treated", "Salinity", NA))))%>%
+  write_csv("output/goosepoint_growth.csv")
+```
 

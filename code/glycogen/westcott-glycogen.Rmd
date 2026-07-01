@@ -1,0 +1,116 @@
+---
+title: Gill tissue glycogen analysis
+author: "AS Huffmyer"
+date: '2026'
+output:
+  github_document: null
+  md_document: default
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_depth: 6
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+# Set up 
+
+Set up workspace, set options, and load required packages.    
+```{r}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+Load libraries. 
+```{r}
+library(MASS) 
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(cowplot)
+library(lme4)
+library(lmerTest)
+library(car)
+library(effects)
+library(emmeans)
+library(tools)
+library(pracma)
+```
+
+# Prep data
+
+Read in file
+```{r}
+data<-read_csv("data/glycogen/20260508_westcott_glycogen.csv")%>%rename(sample=Sample, glycogen.mg=`(Glycogen-Glucose)*df/weight (ug/uL/mg)`)%>%select(sample, glycogen.mg)
+```
+
+Add in metadata
+```{r}
+metadata<-read_xlsx("data/resazurin/westcott/westcott_resazurin_metadata.xlsx")%>%filter(temperature=="22")%>%rename(sample=well)%>%select(sample, individual, temperature, experiment, treatment, group)
+```
+
+Merge
+```{r}
+data<-left_join(metadata, data)%>%filter(!group=="NA")
+
+head(data)
+```
+
+# Plot data 
+
+```{r}
+data%>%
+  ggplot(aes(x=group, y=glycogen.mg))+
+  geom_point()
+```
+
+Remove outliers
+```{r}
+data<-data%>%
+  filter(glycogen.mg<40)%>%
+  filter(glycogen.mg>0)
+```
+
+```{r}
+plot1<-data%>%
+  ggplot(aes(x=treatment, y=glycogen.mg, colour=group))+
+  facet_grid(~experiment, scales="free_x")+
+  geom_boxplot()+
+  geom_point()+
+  ylim(0,25)+
+  scale_colour_manual(values=c("darkgrey", "orange", "darkgrey", "darkred"))+
+  theme_classic();plot1
+
+ggsave(plot1, filename="figures/glycogen/glycogen_westcott.png", width=5, height=5)
+```
+
+# Models
+
+No difference in daily experiment. 
+```{r}
+model<-data%>%
+  filter(experiment=="Daily")%>%
+  
+  aov(glycogen.mg~treatment, data=.)
+
+summary(model)
+```
+
+No difference in weekly, but there is a trend. 
+```{r}
+model2<-data%>%
+  filter(experiment=="Weekly")%>%
+  
+  aov(glycogen.mg~treatment, data=.)
+
+summary(model2)
+```
+
+No difference by group. 
+```{r}
+model3<-data%>%
+  
+  aov(glycogen.mg~group, data=.)
+
+summary(model3)
+```

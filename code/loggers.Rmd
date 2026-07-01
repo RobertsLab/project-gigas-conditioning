@@ -154,6 +154,10 @@ westcott <- setNames(westcott.files, westcott.files) %>%
     filter(!temp.C=="NA")
 
 westcott$DateTime<-as.POSIXct(westcott$DateTime, format="%m/%d/%Y %H:%M:%S")
+
+#export data 
+westcott%>%
+  write_csv("output/environmental/westcott-temperature-data.csv")
 ```
 
 List the logger serial numbers in this dataframe.  
@@ -314,7 +318,7 @@ Remove temperature data from read out days (6/24, 9/9, 12/11, 08/25)
 
 ```{r}
 # Dates to filter out
-dates_to_filter <- as.Date(c("2024-06-19", "2024-06-20", "2024-06-21", "2024-06-22", "2024-06-23", "2024-06-24", "2024-06-25", "2024-09-09", "2024-09-10", "2024-12-11", "2025-05-20", "2025-08-25"))
+dates_to_filter <- as.Date(c("2024-06-19", "2024-06-20", "2024-06-21", "2024-06-22", "2024-06-23", "2024-06-24", "2024-06-25", "2024-09-09", "2024-09-10", "2024-12-11", "2025-05-20", "2025-08-25", "2025-10-08", "2025-05-22"))
 
 # Filter out rows with specified dates
 goose <- goose %>%
@@ -403,7 +407,7 @@ levels(as.factor(sequim$group))
 
 Group information is now added.  
 
-Remove temperature data from read out days. 
+Remove temperature data from prior to outplant. 
 
 ```{r}
 # Dates to filter out
