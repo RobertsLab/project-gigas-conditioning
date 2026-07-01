@@ -47,6 +47,14 @@ D_growth$width.mm <- as.numeric(D_growth$width.mm)
 D_growth$height.mm <- as.numeric(D_growth$height.mm)
 D_growth$date <- as.Date(D_growth$date)
 ```
+
+
+
+
+
+
+
+
 ## Histograms
 
 ### B
@@ -190,8 +198,7 @@ ggplot(D_growth, aes(x=width.mm, y= height.mm))+
         axis.text = element_text(size = 20))
 ```
 
-## D size correlations
-### LM for correlation
+## Calculate volume
 ```{r}
 library(nlme)
 library(lme4)
@@ -214,6 +221,16 @@ growth_model$conditioning <- gsub("weekly", "treated", growth_model$conditioning
 # lme model with nested random effects structure
 model <- lmer(length.mm ~ width.mm + height.mm + effort/conditioning + date_numeric + (1 | bag_num/tag_num), data = growth_noNT)
 
+
+```
+
+
+# Calculate volume
+```{r}
+growth_model$volume <- (4/3) * pi * (growth_model$length.mm/2) * (growth_model$width.mm/2) * (growth_model$height.mm) * (1/2)
+
+growth_model$conditioning <- gsub("weekly", "treated", growth_model$conditioning)
+growth_model$conditioning <- gsub("daily", "treated", growth_model$conditioning)
 
 ```
 
@@ -377,14 +394,6 @@ bptest(model5)
 
 ```
 
-
-```{r}
-growth_model$volume <- (4/3) * pi * (growth_model$length.mm/2) * (growth_model$width.mm/2) * (growth_model$height.mm) * (1/2)
-
-growth_model$conditioning <- gsub("weekly", "treated", growth_model$conditioning)
-growth_model$conditioning <- gsub("daily", "treated", growth_model$conditioning)
-
-```
 
 
 ### Modeling looking for effect of effort and conditioning on volume (measurement date and bag number as random effects)
