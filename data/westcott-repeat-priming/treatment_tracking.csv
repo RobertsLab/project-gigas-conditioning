@@ -15,3 +15,5 @@ date,location,treatment,time_start,time_end,temp_start,temp_end,notes
 20260623,point-whitney,control,1000,1030,21.2,21.1,
 20260624,uw,high,1330,1400,26.6,25.8,
 20260624,uw,control,1330,1400,11.5,11.3,
+20260701,point-whitney,high,1130,1200,32.1,35.4,
+20260701,point-whitney,control,1130,1200,16.8,17,
