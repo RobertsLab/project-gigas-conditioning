@@ -306,8 +306,6 @@ D_length_graph<- means_sizes %>%
 D_length_graph
 ```
 
-
-
 ## Run after you've predicted volume with the growth model
 
 ### Looking at percent change in volume 
@@ -315,6 +313,16 @@ D_length_graph
 
 growth <- growth %>%
   mutate(vol = exp(1)^predicted)
+
+#output growth data frame
+growth%>%
+  select(effort, conditioning, date, bag_tag_num, vol)%>%
+  mutate(experiment=if_else(effort=="B", "Daily Temperature", 
+                            if_else(effort=="D", "Weekly Temperature", NA)))%>%
+  mutate(treatment=if_else(conditioning=="treated", "Treated", 
+                           if_else(conditioning=="control", "Control", NA)))%>%
+  select(experiment, treatment, date, bag_tag_num, vol)%>%
+  write_csv("output/westcott_growth.csv")
 
 means_vols <- growth %>%
   group_by(effort, conditioning, date, bag_tag_num) %>%
@@ -327,7 +335,6 @@ means_vols <- means_vols %>%
   group_by(bag_tag_num) %>%
   mutate(initial_vol = first(mean_vol)) %>%
   ungroup()
-
 
 means_vols <- means_vols %>%
   mutate(perc_change_vol = 100*(mean_vol-initial_vol)/initial_vol ) 
@@ -352,6 +359,7 @@ means_vols <- means_vols %>%
     legend.text = element_text(size = 18, color = "black"),
     legend.title = element_text(size = 20, color = "black"))
 ```
+
 ```{r}
 means_vols %>%
   filter(effort == "B")%>%
@@ -450,6 +458,7 @@ means_vols %>%
         axis.title.y = element_text(size = 20),
         axis.text = element_text(size = 20))
 ```
+
 ```{r}
 means_vols %>%
   filter(effort == "B") %>%
@@ -569,6 +578,7 @@ mean_vols %>%
     legend.text = element_text(size = 18, color = "black"),
     legend.title = element_text(size = 20, color = "black"))
 ```
+
 ## raw length models
 ```{r}
 initial_sizes <- growth %>%
@@ -652,7 +662,7 @@ hist(sqrt(means_vols$perc_change_vol))
 
 #### Pairwise comparisons for percent change volume model
 ```{r}
-install.packages("emmeans")
+#install.packages("emmeans")
 library(emmeans)
 emm_interaction <- emmeans(model.m, ~ effort * conditioning | days)
 emm_interaction
@@ -944,7 +954,7 @@ grid <- cowplot::plot_grid(
   axis = "lr"
 );grid
 
-ggsave("/Users/graceleuchtenberger/Library/Mobile Documents/com~apple~CloudDocs/Documents/project-gigas-conditioning-GL/figures/height_stack.pdf", plot = grid, width = 7, height = 10, units = "in")
+ggsave("figures/growth/westcott/height_stack.pdf", plot = grid, width = 7, height = 10, units = "in")
 
 
 

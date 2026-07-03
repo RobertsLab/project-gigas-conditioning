@@ -748,8 +748,8 @@ ggsave(filename="figures/growth/goose_point/growth_fw.png", plot1, width=6, heig
 data%>%
   dplyr::select(date, field_cattle_tag, oyster, treatment, Predicted_Volume_Poly, treatment, experiment)%>%
   mutate(treatment=if_else(treatment=="control", "Control", 
-                           if_else(experiment=="weekly temperature" & treatment=="treated", "Temperature", 
-                                   if_else(experiment=="weekly fresh water" & treatment=="treated", "Salinity", NA))))%>%
+                           if_else(experiment=="weekly temperature" & treatment=="treated", "Treated", 
+                                   if_else(experiment=="weekly fresh water" & treatment=="treated", "Treated", NA))))%>%
   write_csv("output/goosepoint_growth.csv")
 ```
 
