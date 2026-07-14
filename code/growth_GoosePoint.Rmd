@@ -105,6 +105,21 @@ plot2<-survival%>%
   theme_classic(); plot2
 ```
 
+Export survival data. 
+```{r}
+survival%>%
+  select(field_cattle_tag, tag_20250825, corrected_tag, date, treatment, group, experiment, dead)%>%
+  pivot_wider(names_from="date", values_from="dead")%>%
+  dplyr::mutate(total_dead=rowSums(across(7:12)))%>%
+  select(corrected_tag, treatment, group, experiment, total_dead)%>%
+  mutate(starting_oysters=c(100))%>%
+  mutate(percent_survival=(starting_oysters-total_dead)/starting_oysters)%>%
+  mutate(treatment=if_else(treatment=="control", "Control", 
+                           if_else(experiment=="weekly temperature" & treatment=="treated", "Treated", 
+                                   if_else(experiment=="weekly fresh water" & treatment=="treated", "Treated", NA))))%>%
+  write_csv("output/goosepoint_survival.csv")
+```
+
 Group all experiments together to look at treated vs control for all. 
 
 ```{r}

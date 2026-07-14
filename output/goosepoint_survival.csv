@@ -1,0 +1,15 @@
+corrected_tag,treatment,group,experiment,total_dead,starting_oysters,percent_survival
+80,Control,Weekly Temperature Control,weekly temperature,14,100,0.86
+81,Control,Weekly Fresh Water Control,weekly fresh water,7,100,0.93
+82,Control,Weekly Fresh Water Control,weekly fresh water,15,100,0.85
+83,Treated,Weekly Temperature Treated,weekly temperature,20,100,0.8
+84,Treated,Weekly Fresh Water Treated,weekly fresh water,20,100,0.8
+85,Treated,Weekly Temperature Treated,weekly temperature,29,100,0.71
+86,Control,Weekly Fresh Water Control,weekly fresh water,20,100,0.8
+87,Control,Weekly Fresh Water Control,weekly fresh water,25,100,0.75
+88,Control,Weekly Temperature Control,weekly temperature,22,100,0.78
+91,Treated,Weekly Temperature Treated,weekly temperature,28,100,0.72
+94,Treated,Weekly Fresh Water Treated,weekly fresh water,38,100,0.62
+95,Control,Weekly Fresh Water Control,weekly fresh water,17,100,0.83
+96,Treated,Weekly Fresh Water Treated,weekly fresh water,26,100,0.74
+97,Control,Weekly Temperature Control,weekly temperature,27,100,0.73
