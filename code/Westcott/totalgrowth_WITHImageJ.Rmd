@@ -203,6 +203,7 @@ growth <- bind_rows(B_growth_sum, D_growth_sum, Dec_sizes, May_sizes, June_sizes
 growth$date <- as.Date(growth$date)
 growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
 growth$conditioning <- gsub("daily", "treated", growth$conditioning)
+growth$conditioning <- as.factor(growth$conditioning)
 
 growth$predicted <- predict(model, newdata = growth)
 
