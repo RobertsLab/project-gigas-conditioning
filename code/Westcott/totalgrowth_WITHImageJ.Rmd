@@ -21,6 +21,7 @@ library(modelr)
 library(glmmTMB)#follows lme4 syntax
 #install.packages("DHARMa")
 library(DHARMa)
+library(here)
 ```
 
 # Generate growth calculation model 
@@ -28,7 +29,7 @@ library(DHARMa)
 ## Load manual measurement data
 ```{r}
 # B survival
-B_growth <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_08202025.xlsx")
+B_growth <- read_xlsx("data/sizes/B_2023POGS_small_seed_daily/B_sizes_12022025.xlsx")
 
 # Heights from bag 2 for 07/05/2024 showing up as NAs for some reason when data imported
 B_growth$length.mm <- as.numeric(B_growth$length.mm)
@@ -39,7 +40,7 @@ B_growth$date <- as.Date(B_growth$date)
 B_growth <- B_growth %>% drop_na(length.mm, width.mm, height.mm)
 
 # D survival
-D_growth <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_08202025.xlsx", guess_max = 2000)
+D_growth <- read_xlsx("data/sizes/D_2023POGS_small_seed_weekly/D_sizes_12022025.xlsx", guess_max = 2000)
 D_growth <- D_growth %>% drop_na(length.mm, width.mm, height.mm)
 D_growth$length.mm <- as.numeric(D_growth$length.mm)
 D_growth$width.mm <- as.numeric(D_growth$width.mm)
@@ -133,10 +134,12 @@ May_sizes <- read_xlsx("data/outplanting/Westcott/20250513_images/sizes_05132025
 June_sizes <- read_xlsx("data/outplanting/Westcott/20250625_images/sizes_06252025_1.xlsx")
 July_sizes <- read_xlsx("data/outplanting/Westcott/20250724_images/sizes_20250724.xlsx")
 Aug_sizes <- read_xlsx("data/outplanting/Westcott/20250820_images/sizes_20250820.xlsx")
+Dec2_sizes <- read_xlsx("data/outplanting/Westcott/20251202_images/sizes_20251202.xlsx")
 ```
 
 ### Make ImageJ data compatible with early data
 ```{r}
+# Dec 2024
 Dec_sizes <- Dec_sizes %>%
   pivot_wider(names_from = metric,
               values_from = c(measure.mm))
@@ -146,6 +149,7 @@ names(Dec_sizes)[names(Dec_sizes) == "length"] <- "length.mm"
 names(Dec_sizes)[names(Dec_sizes) == "width"] <- "width.mm"
 Dec_sizes <- subset(Dec_sizes, select=-c(oyster))
 
+# May
 May_sizes <- May_sizes %>%
   pivot_wider(names_from = metric,
               values_from = c(measure.mm))
@@ -156,6 +160,7 @@ names(May_sizes)[names(May_sizes) == "length"] <- "length.mm"
 names(May_sizes)[names(May_sizes) == "width"] <- "width.mm"
 May_sizes <- subset(May_sizes, select=-c(oyster))
 
+# June
 June_sizes <- June_sizes %>%
   pivot_wider(names_from = metric,
               values_from = c(measure.mm))
@@ -166,6 +171,7 @@ names(June_sizes)[names(June_sizes) == "length"] <- "length.mm"
 names(June_sizes)[names(June_sizes) == "width"] <- "width.mm"
 June_sizes <- subset(June_sizes, select=-c(oyster))
 
+# July
 July_sizes <- July_sizes %>%
   pivot_wider(names_from = metric,
               values_from = c(measure.mm))
@@ -176,6 +182,7 @@ names(July_sizes)[names(July_sizes) == "length"] <- "length.mm"
 names(July_sizes)[names(July_sizes) == "width"] <- "width.mm"
 July_sizes <- subset(July_sizes, select=-c(oyster))
 
+# August
 Aug_sizes <- Aug_sizes %>%
   pivot_wider(names_from = metric,
               values_from = c(measure.mm))
@@ -185,6 +192,16 @@ Aug_sizes$width[Aug_sizes$width < 2] <- NA
 names(Aug_sizes)[names(Aug_sizes) == "length"] <- "length.mm"
 names(Aug_sizes)[names(Aug_sizes) == "width"] <- "width.mm"
 Aug_sizes <- subset(Aug_sizes, select=-c(oyster))
+
+# Dec sizes 2025
+Dec2_sizes <- Dec2_sizes %>%
+  pivot_wider(names_from = metric,
+              values_from = c(measure.mm))
+
+names(Dec2_sizes)[names(Dec2_sizes) == "length"] <- "length.mm"
+Dec2_sizes <- subset(Dec2_sizes, select=-c(oyster))
+
+# bag tag key 
 
 bag_tag_key <- read_xlsx("data/outplanting/Westcott/bag_tag_key.xlsx")
 
@@ -199,7 +216,7 @@ D_growth_sum <- subset(D_growth_sum, select=-c(bag_num))
 ### Combine ImageJ and early data
 ```{r}
 
-growth <- bind_rows(B_growth_sum, D_growth_sum, Dec_sizes, May_sizes, June_sizes, July_sizes, Aug_sizes)
+growth <- bind_rows(B_growth_sum, D_growth_sum, Dec_sizes, May_sizes, June_sizes, July_sizes, Aug_sizes, Dec2_sizes)
 growth$date <- as.Date(growth$date)
 growth$conditioning <- gsub("weekly", "treated", growth$conditioning)
 growth$conditioning <- gsub("daily", "treated", growth$conditioning)
@@ -256,7 +273,6 @@ grid.arrange(DL,DW)
 ```
 # Length graphs
 ```{r}
-means_sizes$date <- as.POSIXct.Date(means_sizes$date)
 
 B_length_graph <- means_sizes %>%
   filter(effort == "B")%>%
@@ -269,19 +285,18 @@ B_length_graph <- means_sizes %>%
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
     theme(
-    axis.title.x = element_blank(),       
-    axis.text.x = element_blank(),
     axis.title.y = element_text(size = 20, color = "black"),
     axis.text.y = element_text(size=18, color = "black"),
     legend.text = element_text(size = 18, color = "black"),
     legend.title = element_text(size = 20, color = "black"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
-                 position=position_dodge(0.05), color = "purple")+
-  ylim(15,68)
+                 position=position_dodge(0.05), color = "purple")
 
 B_length_graph
 ```
+
+
 ```{r}
 D_length_graph<- means_sizes %>%
   filter(effort == "D")%>%
@@ -294,8 +309,6 @@ D_length_graph<- means_sizes %>%
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
     theme(
-    axis.title.x = element_blank(),       
-    axis.text.x = element_blank(),
     axis.title.y = element_text(size = 20, color = "black"),
     axis.text.y = element_text(size=18, color = "black"),
     legend.text = element_text(size = 18, color = "black"),
@@ -304,6 +317,7 @@ D_length_graph<- means_sizes %>%
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
                  position=position_dodge(0.05), color = "forestgreen")+
   ylim(15,68)
+
 D_length_graph
 ```
 
@@ -396,7 +410,7 @@ means_perc_vols <- means_vols %>%
 means_perc_vols$date <- as.POSIXct(means_perc_vols$date)
 
 means_perc_vols %>%
-  filter(effort == "D") %>%
+  filter(effort == "B") %>%
   ggplot(aes(x = date, y = mean_perc_vol)) +
    geom_point() +
   geom_line(aes(linetype=conditioning))+
@@ -636,7 +650,7 @@ tst_simres <- simulateResiduals(fittedModel = model.a) #DHARMa
 plot(tst_simres)
 
 
-model.w<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_w, family = gaussian()) #glmmTMB
+model.w<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_w, family = tweedie()) #glmmTMB
 summary(model.w)
 car::Anova(model.w,type = "III")
 qqPlot(residuals(model.w))
@@ -645,7 +659,7 @@ testDispersion(model.w)
 tst_simres <- simulateResiduals(fittedModel = model.w) #DHARMa
 plot(tst_simres)
 
-model.d<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_d, family = gaussian()) #glmmTMB
+model.d<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_d, family = tweedie()) #glmmTMB
 summary(model.d)
 car::Anova(model.d,type = "III")
 qqPlot(residuals(model.d))
