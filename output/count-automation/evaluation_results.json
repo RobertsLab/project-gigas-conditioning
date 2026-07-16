@@ -1,0 +1,71 @@
+{
+  "num_images": 8,
+  "mean_absolute_error": 40.625,
+  "mean_percentage_error": 38.50604347886759,
+  "results": [
+    {
+      "filename": "juvenile-102.jpeg",
+      "ground_truth": 102,
+      "predicted": 72,
+      "error": -30,
+      "abs_error": 30,
+      "pct_error": 29.411764705882355
+    },
+    {
+      "filename": "juvenile-103.jpeg",
+      "ground_truth": 103,
+      "predicted": 53,
+      "error": -50,
+      "abs_error": 50,
+      "pct_error": 48.54368932038835
+    },
+    {
+      "filename": "juvenile-106.jpeg",
+      "ground_truth": 106,
+      "predicted": 60,
+      "error": -46,
+      "abs_error": 46,
+      "pct_error": 43.39622641509434
+    },
+    {
+      "filename": "juvenile-114.jpeg",
+      "ground_truth": 114,
+      "predicted": 76,
+      "error": -38,
+      "abs_error": 38,
+      "pct_error": 33.33333333333333
+    },
+    {
+      "filename": "juvenile-116.jpeg",
+      "ground_truth": 116,
+      "predicted": 71,
+      "error": -45,
+      "abs_error": 45,
+      "pct_error": 38.793103448275865
+    },
+    {
+      "filename": "juvenile-99.jpeg",
+      "ground_truth": 99,
+      "predicted": 66,
+      "error": -33,
+      "abs_error": 33,
+      "pct_error": 33.33333333333333
+    },
+    {
+      "filename": "juvenile19-106.jpeg",
+      "ground_truth": 106,
+      "predicted": 67,
+      "error": -39,
+      "abs_error": 39,
+      "pct_error": 36.79245283018868
+    },
+    {
+      "filename": "juvenile20-99.jpeg",
+      "ground_truth": 99,
+      "predicted": 55,
+      "error": -44,
+      "abs_error": 44,
+      "pct_error": 44.44444444444444
+    }
+  ]
+}
