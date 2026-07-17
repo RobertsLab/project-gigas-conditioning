@@ -285,6 +285,8 @@ B_length_graph <- means_sizes %>%
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
     theme(
+      axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 1),  # angled for readability
     axis.title.y = element_text(size = 20, color = "black"),
     axis.text.y = element_text(size=18, color = "black"),
     legend.text = element_text(size = 18, color = "black"),
@@ -309,16 +311,19 @@ D_length_graph<- means_sizes %>%
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
     theme(
+      axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 1),  # angled for readability
     axis.title.y = element_text(size = 20, color = "black"),
     axis.text.y = element_text(size=18, color = "black"),
     legend.text = element_text(size = 18, color = "black"),
     legend.title = element_text(size = 20, color = "black"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
-                 position=position_dodge(0.05), color = "forestgreen")+
-  ylim(15,68)
+                 position=position_dodge(0.05), color = "forestgreen")
 
 D_length_graph
+
+grid.arrange(B_length_graph,D_length_graph)
 ```
 
 ## Run after you've predicted volume with the growth model
@@ -345,6 +350,12 @@ means_vols <- growth %>%
             std_error = sd(vol, na.rm = TRUE)/sqrt(length(vol)),
             .groups = 'drop')
 
+mean_vols <- growth %>%
+  group_by(effort, conditioning, date) %>%
+  summarise(mean_vol = mean(vol, na.rm = TRUE),
+            std_error = sd(vol, na.rm = TRUE)/sqrt(length(vol)),
+            .groups = 'drop')
+
 
 means_vols <- means_vols %>%
   group_by(bag_tag_num) %>%
@@ -356,19 +367,21 @@ means_vols <- means_vols %>%
 ```
 
 ```{r}
-  ggplot(means_vols, aes(x = date, y = mean_vol, color = effort)) +
-   geom_point(aes(shape=conditioning)) +
+  ggplot(mean_vols, aes(x = date, y = mean_vol, color = effort)) +
+  geom_point()+
+  geom_line(aes(linetype=conditioning))+
   labs(x = "Date",
        y = "Mean volume ") +
   labs(color = "Conditioning treatment", shape = "Treatment")+
   theme_classic()+
   scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
-  #scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   geom_errorbar(aes(ymin=mean_vol-std_error, ymax = mean_vol+std_error), width=.2,
                  position=position_dodge(0.05))+
   theme(
-    axis.title.x = element_text(size = 20, color = "black"),       
-    axis.text.x = element_text(size=18, color = "black"),
+   axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 1),  # angled for readability
     axis.title.y = element_text(size = 20, color = "black"),
     axis.text.y = element_text(size=18, color = "black"),
     legend.text = element_text(size = 18, color = "black"),
@@ -423,13 +436,12 @@ means_perc_vols %>%
   geom_errorbar(aes(ymin=mean_perc_vol-std_error, ymax = mean_perc_vol+std_error), width=.2,
                  position=position_dodge(0.05))+
   theme(
-    axis.title.x = element_text(size = 20, color = "black"),       
-    axis.text.x = element_text(size=18, color = "black"),
+axis.title.x = element_text(size = 20, color = "black"),       
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 1),  # angled for readability
     axis.title.y = element_text(size = 20, color = "black"),
     axis.text.y = element_text(size=18, color = "black"),
     legend.text = element_text(size = 18, color = "black"),
-    legend.title = element_text(size = 20, color = "black"))+
-  ylim(0,3000)
+    legend.title = element_text(size = 20, color = "black"))
 
 
 ```
@@ -594,7 +606,7 @@ mean_vols %>%
     legend.title = element_text(size = 20, color = "black"))
 ```
 
-## raw length models
+## raw length and volume models
 ```{r}
 initial_sizes <- growth %>%
   filter(date == "2024-06-10")
@@ -605,9 +617,6 @@ car::Anova(model.i)
 tst_simres <- simulateResiduals(fittedModel = model.i) #DHARMa
 plot(tst_simres)
 
-library(glmmTMB)
-library(DHARMa)
-library(tidyverse)
 model.l <-glmmTMB(length.mm ~  effort/conditioning + (1|bag_tag_num),data = initial_sizes, family = gaussian())
 summary(model.l)
 car::Anova(model.l)
@@ -621,14 +630,23 @@ growth_b <-growth %>%
 growth_d <-growth %>%
   filter(effort == "D")
 
-hist(growth_d$length.mm)
+hist(growth$length.mm)
 
-model.l <-glmmTMB(length.mm ~  conditioning + (1|bag_tag_num) + (1|date),data = growth_d, family = gaussian())
+model.l <-glmmTMB(length.mm ~  effort/conditioning*date + (1|bag_tag_num) ,data = growth, family = gaussian())
 summary(model.l)
-car::Anova(model.l)
+car::Anova(model.l, type = "III")
 tst_simres <- simulateResiduals(fittedModel = model.l) #DHARMa
-plot(tst_simres)
+plot(tst_simres, quantreg = T)
+testDispersion(model.l)
 
+plot(growth$date, growth$vol)
+
+model.v <-glmmTMB(vol ~  effort/conditioning*date + (1|bag_tag_num) ,data = growth, dispformula = ~date , family = tweedie())
+summary(model.v)
+car::Anova(model.v)
+tst_simres <- simulateResiduals(fittedModel = model.v) #DHARMa
+plot(tst_simres, quantreg = T)
+testDispersion(model.v)
 
 ```
 
@@ -636,11 +654,9 @@ plot(tst_simres)
 ```{r}
 vols_w <- means_vols %>% filter(effort == "D")
 vols_d <- means_vols %>% filter(effort == "B")
-meas_vols_model <- means_vols %>%
-  filter(days > 0)
 
 
-model.a <-glmmTMB(perc_change_vol ~  effort/conditioning *days+ (1|bag_tag_num),data = meas_vols_model, family = gaussian()) #glmmTMB
+model.a <-glmmTMB(perc_change_vol ~  effort/conditioning *days+ (1|bag_tag_num),data = means_vols, ziformula = ~days, family = lognormal()) #glmmTMB
 summary(model.a)
 car::Anova(model.a,type = "III")
 qqPlot(residuals(model.a))
@@ -650,7 +666,7 @@ tst_simres <- simulateResiduals(fittedModel = model.a) #DHARMa
 plot(tst_simres)
 
 
-model.w<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_w, family = tweedie()) #glmmTMB
+model.w<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_w, family =gaussian()) #glmmTMB
 summary(model.w)
 car::Anova(model.w,type = "III")
 qqPlot(residuals(model.w))
@@ -659,15 +675,54 @@ testDispersion(model.w)
 tst_simres <- simulateResiduals(fittedModel = model.w) #DHARMa
 plot(tst_simres)
 
-model.d<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_d, family = tweedie()) #glmmTMB
+model.d<-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_d, ziformula = ~days, family = lognormal()) #glmmTMB
 summary(model.d)
 car::Anova(model.d,type = "III")
 qqPlot(residuals(model.d))
+
+hist(vols_d$perc_change_vol)
+
+
 
 testDispersion(model.d)
 tst_simres <- simulateResiduals(fittedModel = model.d) #DHARMa
 plot(tst_simres)
 ```
+
+
+# volume model no zeros
+```{r}
+vols_d_no0 <- vols_d %>%
+  filter(days >0)
+
+vols_w_no0 <- vols_w %>%
+  filter(days >0)
+
+hist(vols_w_no0$perc_change_vol)
+
+model.w.0 <-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_w_no0, family =lognormal()) #glmmTMB
+summary(model.w.0)
+car::Anova(model.w.0,type = "III")
+qqPlot(residuals(model.w.0))
+
+testDispersion(model.w.0)
+tst_simres <- simulateResiduals(fittedModel = model.w.0) #DHARMa
+plot(tst_simres)
+
+
+model.d.0 <-glmmTMB(perc_change_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_d_no0, family =lognormal()) #glmmTMB
+summary(model.d.0)
+car::Anova(model.d.0,type = "III")
+qqPlot(residuals(model.d.0))
+
+testDispersion(model.d.0)
+tst_simres <- simulateResiduals(fittedModel = model.d.0) #DHARMa
+plot(tst_simres)
+
+
+```
+
+
 
 ```{r}
 hist(means_vols$perc_change_vol)
@@ -679,7 +734,7 @@ hist(sqrt(means_vols$perc_change_vol))
 ```{r}
 #install.packages("emmeans")
 library(emmeans)
-emm_interaction <- emmeans(model.m, ~ effort * conditioning | days)
+emm_interaction <- emmeans(model.a, ~ effort * conditioning | days)
 emm_interaction
 
 # Pairwise comparisons for interaction
@@ -932,8 +987,7 @@ size_density_plot <- ggplot(means_sizes_density, aes(x = date, y = mean_length, 
     axis.text.x = element_blank(),
     axis.title.x =element_blank(),
     legend.text = element_text(size = 18, color = "black"),
-    legend.title = element_text(size = 20, color = "black"))+
-  ylim(15,68)
+    legend.title = element_text(size = 20, color = "black"))
 
 size_density_plot
 ```
