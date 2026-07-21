@@ -1,0 +1,101 @@
+---
+title: "Viewing logger files"
+author: "Ariana S Huffmyer"
+date: "2026"
+output: 
+  html_document:
+    code_folding: hide
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+This script reads and plots environmental data from Hobo loggers. 
+
+# Set Up    
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(readxl)
+library(purrr)
+library(lubridate)
+library(ggplot2)
+library(seacarb)
+library(broom)
+library(cowplot)
+library(slider)
+```
+
+# Westcott Repeat Priming experiment
+
+Read in Hobo Tidbit files  
+```{r}
+westcott.files <- list.files(path="data/westcott-repeat-priming/loggers", pattern="*.xlsx", full.names=TRUE)
+
+#will need to change to HST time 
+westcott <- setNames(westcott.files, westcott.files) %>%
+    map_dfr(read_xlsx, .id = "logger") %>%
+    rename(DateTime=`Date-Time (PDT)`, temp.C=`Temperature , °C`)%>%
+    select(!`#`)%>%
+    select(logger, DateTime, temp.C)%>%
+    mutate(logger=sub(".*/", "", logger))%>% #remove the path name
+    mutate(logger=sub("_.*", "", logger))%>% #keep only the serial number 
+    filter(!temp.C=="NA")
+
+westcott$DateTime<-as.POSIXct(westcott$DateTime, format="%m/%d/%Y %H:%M:%S")
+
+#export data 
+westcott%>%
+  write_csv("output/westcott-repeat-priming/westcott-temperature-data.csv")
+```
+
+List the logger serial numbers in this dataframe.  
+```{r}
+levels(as.factor(westcott$logger))
+```
+
+There are 2 loggers as expected. These loggers were with the point whitney oysters during priming and are with all oysters at westcott. 
+
+Add in group information. 
+
+```{r}
+westcott <- westcott %>%
+  mutate(group = c("Westcott"))
+
+levels(as.factor(westcott$group))
+```
+
+Group information is now added.  
+
+## Plot data 
+
+All loggers 
+```{r}
+westcott_plot<-westcott%>%
+  #filter(DateTime > "2026-07-17 00:00:00")%>%
+  
+  ggplot(aes(x=DateTime, y=temp.C))+
+  geom_point(alpha=0.7, colour ="gray")+
+  ylab("Temperature (°C)")+
+  xlab("Date")+
+  scale_x_datetime(
+    date_breaks = "1 months",
+    date_labels = "%b %Y"
+  ) +
+  ylim(-5,50)+
+  theme_classic()+
+  theme(axis.text.y = element_text(size = 14, color= "black"),
+        axis.title.y = element_text(size = 14, color= "black"),
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank());westcott_plot
+
+#ggsave(westcott_plot, filename="figures/environmental/westcott-loggers.png", width=10, height=6)
+```
+
