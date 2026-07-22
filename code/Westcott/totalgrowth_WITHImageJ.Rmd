@@ -638,6 +638,7 @@ car::Anova(model.l, type = "III")
 tst_simres <- simulateResiduals(fittedModel = model.l) #DHARMa
 plot(tst_simres, quantreg = T)
 testDispersion(model.l)
+qqPlot(residuals(model.l))
 
 plot(growth$date, growth$vol)
 
@@ -657,7 +658,7 @@ vols_w <- means_vols %>% filter(effort == "D")
 vols_d <- means_vols %>% filter(effort == "B")
 
 
-model.a <-glmmTMB(perc_change_vol ~  effort/conditioning *days+ (1|bag_tag_num),data = means_vols, ziformula = ~days, family = lognormal()) #glmmTMB
+model.a <-glmmTMB(mean_vol ~  effort/conditioning *days+ (1|bag_tag_num),data = means_vols, family = gaussian()) #glmmTMB
 summary(model.a)
 car::Anova(model.a,type = "III")
 qqPlot(residuals(model.a))
@@ -666,7 +667,7 @@ testDispersion(model.a)
 tst_simres <- simulateResiduals(fittedModel = model.a) #DHARMa
 plot(tst_simres)
 
-
+# volume
 model.w<-glmmTMB(mean_vol ~  conditioning *days+ (1|bag_tag_num),data = vols_w, family =gaussian()) #glmmTMB
 summary(model.w)
 car::Anova(model.w,type = "III")
@@ -684,6 +685,29 @@ qqPlot(residuals(model.d))
 testDispersion(model.d)
 tst_simres <- simulateResiduals(fittedModel = model.d) #DHARMa
 plot(tst_simres)
+
+# length
+l_w <- growth %>% filter(effort == "D")
+l_d <- growth %>% filter(effort == "B")
+
+model.wl<-glmmTMB(length.mm ~  conditioning *date+ (1|bag_tag_num),data = l_w, family =gaussian()) #glmmTMB
+summary(model.wl)
+car::Anova(model.wl,type = "II")
+qqPlot(residuals(model.wl))
+
+testDispersion(model.wl)
+tst_simres <- simulateResiduals(fittedModel = model.wl) #DHARMa
+plot(tst_simres, quantreg = T)
+
+model.dl <-glmmTMB(length.mm  ~  conditioning*date+ (1|bag_tag_num),data = l_d, family = gaussian()) #glmmTMB
+summary(model.dl)
+car::Anova(model.dl,type = "II")
+qqPlot(residuals(model.dl))
+
+testDispersion(model.dl)
+tst_simres <- simulateResiduals(fittedModel = model.dl) #DHARMa
+plot(tst_simres)
+
 ```
 
 
