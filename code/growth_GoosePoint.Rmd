@@ -225,10 +225,10 @@ plot(data$volume ~ data$width.mm)
 ```
 Relationships may be non linear. 
 
-Obtain training data with known length width and depth from 20240909, 20250825, 20251008, and 20250522 datasets. 
+Obtain training data with known length width and depth from 20240909, 20251008, and 20250522 datasets. 
 ```{r}
 training_data<-data%>%
-  filter(date %in% c("20240909", "20250825", "20251008", "20250522"))%>%
+  filter(date %in% c("20240909", "20251008", "20260522"))%>%
   filter(!is.na(volume))
 
 hist(training_data$volume)
@@ -262,14 +262,12 @@ data$Predicted_Volume_GAM <- predict(gam_model, data)
 data$Predicted_Volume_Poly <- predict(poly_model, data)
 ```
 
-Plot predicted vs actual volume for each model. 
-
+Filter out NAs
 ```{r}
-plot(data$Predicted_Volume_GAM ~ data$volume)
-plot(data$Predicted_Volume_Poly ~ data$volume)
+data<-data%>%
+  filter(!is.na(Predicted_Volume_Poly))%>%
+  filter(Predicted_Volume_Poly>0)
 ```
-
-Relationships look similar for both models. 
 
 Plot GAM relationships
 ```{r}
@@ -305,7 +303,7 @@ I am going to select the polynomial model, because the GAM is more affected by h
 View the relationship between known volume and predicted volume using Polynomial regression. 
 ```{r}
 # Plot polynomial fit for Length vs. Volume
-ggplot(data%>%filter(date %in% c("20240909", "20250825", "20251008", "20260522")), aes(x = volume, y = Predicted_Volume_Poly)) +
+ggplot(data%>%filter(date %in% c("20240909","20251008", "20260522")), aes(x = volume, y = Predicted_Volume_Poly)) +
   geom_point() +
   stat_smooth(method = "loess", color = "blue", se = TRUE) +
   ggtitle("Polynomial Regression (2nd Degree) Fit for Known vs Predicted Volume")
@@ -385,12 +383,6 @@ Predict volume using poly model and evaluate fits.
 ```{r}
 # Predict Volume using the trained model
 data$Predicted_Volume_Poly <- predict(poly_model, data)
-```
-
-Plot predicted vs actual volume for each model. 
-
-```{r}
-plot(data$Predicted_Volume_Poly ~ data$volume)
 ```
 
 Plot Poly model relationships
