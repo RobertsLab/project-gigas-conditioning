@@ -96,7 +96,7 @@ Obtain training data with known length width and depth from 20240909 dataset.
 ```{r}
 training_data<-read_csv(file="data/outplanting/GoosePoint/growth_GoosePoint.csv")%>%
   mutate(date=as.factor(date))%>%
-  filter(date %in% c("20240909", "20250825"))
+  filter(date %in% c("20240909", "20250825", "20260522"))
 
 training_data$volume <- (4/3) * pi * (training_data$length.mm/2) * (training_data$width.mm/2) * (training_data$depth.mm/2)
 
@@ -219,7 +219,7 @@ Treated oysters are similar to untreated siblings.
 ## Run linear mixed models models 
 
 ```{r}
-model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment + (1|bag:treatment) + (1|date), data=data)
+model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment*date + (1|bag:treatment), data=data)
 
 summary(model)
 anova(model)
@@ -265,7 +265,7 @@ data<-data%>%
 Analyze again. 
 
 ```{r}
-model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment + (1|bag:treatment), data=data)
+model<-lmer(sqrt(Predicted_Volume_Poly) ~ treatment*date + (1|bag:treatment), data=data)
 
 summary(model)
 anova(model)
