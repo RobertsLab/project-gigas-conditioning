@@ -269,7 +269,7 @@ DW <- ggplot(means_sizes, aes(x = date, y = mean_width, color = effort)) +
   geom_errorbar(aes(ymin=mean_width-stderr_width, ymax = mean_width+stderr_width), width=.2,
                  position=position_dodge(0.05))
 
-grid.arrange(DL,DW)
+DL
 ```
 # Length graphs
 ```{r}
@@ -277,11 +277,11 @@ grid.arrange(DL,DW)
 B_length_graph <- means_sizes %>%
   filter(effort == "B")%>%
   ggplot(aes(x = date, y = mean_length)) +
-   geom_point(color = "purple") +
-  geom_line(aes(linetype=conditioning), color = "purple")+
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
   labs(x = "Date",
        y = "Height (mm)",
-       linetype = "Daily (50/bag)") +
+       linetype = "Treatment") +
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
     theme(
@@ -293,7 +293,7 @@ B_length_graph <- means_sizes %>%
     legend.title = element_text(size = 20, color = "black"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
-                 position=position_dodge(0.05), color = "purple")
+                 position=position_dodge(0.05))
 
 B_length_graph
 ```
@@ -303,11 +303,11 @@ B_length_graph
 D_length_graph<- means_sizes %>%
   filter(effort == "D")%>%
   ggplot(aes(x = date, y = mean_length)) +
-   geom_point(color = "forestgreen") +
-  geom_line(aes(linetype=conditioning), color = "forestgreen")+
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
   labs(x = "Date",
        y = "Height (mm)",
-       linetype = "Weekly (100/bag)") +
+       linetype = "Treatment") +
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
     theme(
@@ -319,7 +319,7 @@ D_length_graph<- means_sizes %>%
     legend.title = element_text(size = 20, color = "black"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
-                 position=position_dodge(0.05), color = "forestgreen")
+                 position=position_dodge(0.05))
 
 D_length_graph
 
