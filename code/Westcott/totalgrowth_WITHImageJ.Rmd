@@ -285,15 +285,15 @@ B_length_graph <- means_sizes %>%
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
     theme(
-      axis.title.x = element_text(size = 20, color = "black"),       
-    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 1),  # angled for readability
-    axis.title.y = element_text(size = 20, color = "black"),
-    axis.text.y = element_text(size=18, color = "black"),
-    legend.text = element_text(size = 18, color = "black"),
-    legend.title = element_text(size = 20, color = "black"))+
+      axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),  # angled for readability
+    axis.title.y =element_blank(),
+    axis.text.y = element_blank(),
+    legend.position = "none")+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
-                 position=position_dodge(0.05))
+                 position=position_dodge(0.05))+
+  ylim(15,75)
 
 B_length_graph
 ```
@@ -311,15 +311,15 @@ D_length_graph<- means_sizes %>%
   scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   theme_classic()+
     theme(
-      axis.title.x = element_text(size = 20, color = "black"),       
-    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 1),  # angled for readability
+       axis.title.x = element_blank(),       
+    axis.text.x = element_blank(), # angled for readability
     axis.title.y = element_text(size = 20, color = "black"),
     axis.text.y = element_text(size=18, color = "black"),
-    legend.text = element_text(size = 18, color = "black"),
-    legend.title = element_text(size = 20, color = "black"))+
+    legend.position = "none")+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
   geom_errorbar(aes(ymin=mean_length-stderr_length, ymax = mean_length+stderr_length), width=.2,
-                 position=position_dodge(0.05))
+                 position=position_dodge(0.05))+
+  ylim(15,75)
 
 D_length_graph
 
@@ -366,6 +366,7 @@ means_vols <- means_vols %>%
   mutate(perc_change_vol = 100*(mean_vol-initial_vol)/initial_vol ) 
 ```
 
+# Mean vol
 ```{r}
   ggplot(mean_vols, aes(x = date, y = mean_vol, color = effort)) +
   geom_point()+
@@ -388,29 +389,64 @@ means_vols <- means_vols %>%
     legend.title = element_text(size = 20, color = "black"))
 ```
 
+
 ```{r}
-means_vols %>%
+B_vol_graph <- mean_vols %>%
   filter(effort == "B")%>%
   ggplot(aes(x = date, y = mean_vol)) +
    geom_point() +
   geom_line(aes(linetype=conditioning))+
   labs(x = "Date",
-       y = "Mean volume ") +
-  labs(title = "Weekly conditioning", linetype = "Treatment")+
+       y = expression(Volume~(mm^3))) +
+  labs(linetype = "Treatment")+
   theme_classic()+
   #scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
   scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
   geom_errorbar(aes(ymin=mean_vol-std_error, ymax = mean_vol+std_error), width=.2,
                  position=position_dodge(0.05))+
   theme(
-    axis.title.x = element_text(size = 20, color = "black"),       
-    axis.text.x = element_text(size=18, color = "black"),
-    axis.title.y = element_text(size = 20, color = "black"),
-    axis.text.y = element_text(size=18, color = "black"),
-    legend.text = element_text(size = 18, color = "black"),
-    legend.title = element_text(size = 20, color = "black"))+
-  ylim(0,34000)
+axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+    legend.position = "none")+
+  ylim(0, 50000)
+
+B_vol_graph
 ```
+
+
+
+```{r}
+D_vol_graph <- mean_vols %>%
+  filter(effort == "D")%>%
+  ggplot(aes(x = date, y = mean_vol)) +
+   geom_point() +
+  geom_line(aes(linetype=conditioning))+
+  labs(x = "Date",
+       y = expression(Volume~(mm^3))) +
+  labs( linetype = "Treatment")+
+  theme_classic()+
+  #scale_color_manual(labels = c("Daily", "Weekly"), values = c("purple","forestgreen"))+
+  scale_linetype_manual(labels = c("Control", "Primed"), values = c("solid", "dashed"))+
+  scale_x_datetime(date_labels = "%b %Y", date_breaks = "1 month") +
+  geom_errorbar(aes(ymin=mean_vol-std_error, ymax = mean_vol+std_error), width=.2,
+                 position=position_dodge(0.05))+
+  theme(
+axis.title.x = element_blank(),       
+    axis.text.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y = element_blank(),
+legend.position = "none")+
+  ylim(0, 50000)
+
+D_vol_graph
+
+grid.arrange(B_length_graph, D_length_graph, B_vol_graph,D_vol_graph, ncol = 2, nrow = 2)
+
+```
+
 
 ## Mean percent vol
 ```{r}
