@@ -193,7 +193,7 @@ B_survival <- B_survival %>%
 
 # Calculate the proportion of organisms remaining alive at each timepoint
 B_survival <- B_survival %>%
-  mutate(proportion_remaining = alive_num / initial_count)
+  mutate(proportion_remaining = alive_num / initial_count.y)
 ```
 
 ```{r}
@@ -210,7 +210,7 @@ D_survival <- D_survival %>%
 
 # Calculate the proportion of organisms remaining alive at each timepoint
 D_survival <- D_survival %>%
-  mutate(proportion_remaining = alive_num / initial_count)
+  mutate(proportion_remaining = alive_num / initial_count.y)
 ```
 
 ### Mean proportion survival
