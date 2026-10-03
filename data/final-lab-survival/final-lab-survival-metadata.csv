@@ -1,3 +1,7 @@
 tag,experiment,location,treatment,notes
 49,Effort A,Sequim,Treated,white cattle tags on mesh bags
 50,Effort A,Sequim,Control,
+87,Effort E,Goose Point,FW Control,
+88,Effort E,Goose Point,FW Treated,
+89,Effort E,Goose Point,Temp Control,
+90,Effort E,Goose Point,Temp Treated,
