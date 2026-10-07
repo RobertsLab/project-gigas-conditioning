@@ -89,7 +89,7 @@ plot<-temps%>%
   my_theme+
   theme(legend.position="right");plot
 
-ggsave(filename="figures/final-lab-survival/effortA/temperature_rounds.png", width=10, height=5)
+ggsave(filename="figures/final-lab-survival/effortA/temperature_rounds.png", width=6, height=5)
 ```
 
 # Generate survival curves
