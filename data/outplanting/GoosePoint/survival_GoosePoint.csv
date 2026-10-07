@@ -6,6 +6,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 80,358,Effort E,Weekly Temperature Control,1,20250825,98,86,12
 80,358,Effort E,Weekly Temperature Control,1,20251008,86,86,0
 80,358,Effort E,Weekly Temperature Control,1,20260522,86,85,1
+80,358,Effort E,Weekly Temperature Control,1,20261002,,,9
 81,340,Effort E,Weekly Fresh Water Control,24,20240624,100,100,0
 81,340,Effort E,Weekly Fresh Water Control,24,20240909,103,103,0
 81,340,Effort E,Weekly Fresh Water Control,24,20241211,102,102,0
@@ -13,6 +14,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 81,340,Effort E,Weekly Fresh Water Control,24,20250825,101,98,3
 81,340,Effort E,Weekly Fresh Water Control,24,20251008,101,97,4
 81,340,Effort E,Weekly Fresh Water Control,24,20260522,99,98,1
+81,340,Effort E,Weekly Fresh Water Control,24,20261002,,,4
 82,357,Effort E,Weekly Fresh Water Control,24,20240624,100,100,0
 82,357,Effort E,Weekly Fresh Water Control,24,20240909,99,97,2
 82,357,Effort E,Weekly Fresh Water Control,24,20241211,94,94,0
@@ -20,6 +22,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 82,357,Effort E,Weekly Fresh Water Control,24,20250825,93,85,8
 82,357,Effort E,Weekly Fresh Water Control,24,20251008,88,83,5
 82,357,Effort E,Weekly Fresh Water Control,24,20260522,79,76,3
+82,357,Effort E,Weekly Fresh Water Control,24,20261002,,,5
 83,339,Effort E,Weekly Temperature Treated,20,20240624,100,100,0
 83,339,Effort E,Weekly Temperature Treated,20,20240909,104,99,5
 83,339,Effort E,Weekly Temperature Treated,20,20241211,96,96,0
@@ -27,6 +30,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 83,339,Effort E,Weekly Temperature Treated,20,20250825,98,85,13
 83,339,Effort E,Weekly Temperature Treated,20,20251008,85,84,1
 83,339,Effort E,Weekly Temperature Treated,20,20260522,83,82,1
+83,339,Effort E,Weekly Temperature Treated,20,20261002,,,4
 84,342,Effort E,Weekly Fresh Water Treated,23,20240624,100,100,0
 84,342,Effort E,Weekly Fresh Water Treated,23,20240909,102,102,0
 84,342,Effort E,Weekly Fresh Water Treated,23,20241211,98,98,0
@@ -34,6 +38,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 84,342,Effort E,Weekly Fresh Water Treated,23,20250825,102,86,16
 84,342,Effort E,Weekly Fresh Water Treated,23,20251008,88,84,4
 84,342,Effort E,Weekly Fresh Water Treated,23,20260522,84,82,2
+84,342,Effort E,Weekly Fresh Water Treated,23,20261002,NA,NA,NA
 85,321,Effort E,Weekly Temperature Treated,20,20240624,100,100,0
 85,321,Effort E,Weekly Temperature Treated,20,20240909,101,101,0
 85,321,Effort E,Weekly Temperature Treated,20,20241211,96,96,0
@@ -41,6 +46,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 85,321,Effort E,Weekly Temperature Treated,20,20250825,101,77,24
 85,321,Effort E,Weekly Temperature Treated,20,20251008,77,72,5
 85,321,Effort E,Weekly Temperature Treated,20,20260522,72,71,1
+85,321,Effort E,Weekly Temperature Treated,20,20261002,,,2
 86,322,Effort E,Weekly Fresh Water Control,24,20240624,100,100,0
 86,322,Effort E,Weekly Fresh Water Control,24,20240909,100,99,1
 86,322,Effort E,Weekly Fresh Water Control,24,20241211,97,97,0
@@ -48,6 +54,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 86,322,Effort E,Weekly Fresh Water Control,24,20250825,102,88,14
 86,322,Effort E,Weekly Fresh Water Control,24,20251008,85,80,5
 86,322,Effort E,Weekly Fresh Water Control,24,20260522,80,79,1
+86,322,Effort E,Weekly Fresh Water Control,24,20261002,,,3
 87,337,Effort E,Weekly Fresh Water Control,24,20240624,100,100,0
 87,337,Effort E,Weekly Fresh Water Control,24,20240909,101,101,0
 87,337,Effort E,Weekly Fresh Water Control,24,20241211,95,95,0
@@ -55,6 +62,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 87,337,Effort E,Weekly Fresh Water Control,24,20250825,100,76,24
 87,337,Effort E,Weekly Fresh Water Control,24,20251008,76,75,1
 87,337,Effort E,Weekly Fresh Water Control,24,20260522,76,74,2
+87,337,Effort E,Weekly Fresh Water Control,24,20261002,,,9
 88,341,Effort E,Weekly Temperature Control,1,20240624,100,100,0
 88,341,Effort E,Weekly Temperature Control,1,20240909,100,100,0
 88,341,Effort E,Weekly Temperature Control,1,20241211,94,94,0
@@ -62,6 +70,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 88,341,Effort E,Weekly Temperature Control,1,20250825,103,84,19
 88,341,Effort E,Weekly Temperature Control,1,20251008,81,78,3
 88,341,Effort E,Weekly Temperature Control,1,20260522,78,77,1
+88,341,Effort E,Weekly Temperature Control,1,20261002,,,1
 91,343,Effort E,Weekly Temperature Treated,20,20240624,100,100,0
 91,343,Effort E,Weekly Temperature Treated,20,20240909,102,102,0
 91,343,Effort E,Weekly Temperature Treated,20,20241211,98,98,0
@@ -69,6 +78,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 91,343,Effort E,Weekly Temperature Treated,20,20250825,103,79,24
 91,343,Effort E,Weekly Temperature Treated,20,20251008,78,74,4
 91,343,Effort E,Weekly Temperature Treated,20,20260522,74,73,1
+91,343,Effort E,Weekly Temperature Treated,20,20261002,NA,NA,NA
 94,361,Effort E,Weekly Fresh Water Treated,23,20240624,100,100,0
 94,361,Effort E,Weekly Fresh Water Treated,23,20240909,102,101,1
 94,361,Effort E,Weekly Fresh Water Treated,23,20241211,97,97,0
@@ -76,6 +86,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 94,361,Effort E,Weekly Fresh Water Treated,23,20250825,101,73,28
 94,361,Effort E,Weekly Fresh Water Treated,23,20251008,74,66,8
 94,361,Effort E,Weekly Fresh Water Treated,23,20260522,64,61,3
+94,361,Effort E,Weekly Fresh Water Treated,23,20261002,,,3
 95,380,Effort E,Weekly Fresh Water Control,24,20240624,100,100,0
 95,380,Effort E,Weekly Fresh Water Control,24,20240909,102,100,2
 95,380,Effort E,Weekly Fresh Water Control,24,20241211,98,97,1
@@ -83,6 +94,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 95,380,Effort E,Weekly Fresh Water Control,24,20250825,100,87,13
 95,380,Effort E,Weekly Fresh Water Control,24,20251008,88,87,1
 95,380,Effort E,Weekly Fresh Water Control,24,20260522,85,84,1
+95,380,Effort E,Weekly Fresh Water Control,24,20261002,,,2
 96,359,Effort E,Weekly Fresh Water Treated,23,20240624,100,100,0
 96,359,Effort E,Weekly Fresh Water Treated,23,20240909,101,101,0
 96,359,Effort E,Weekly Fresh Water Treated,23,20241211,102,102,0
@@ -90,6 +102,7 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 96,359,Effort E,Weekly Fresh Water Treated,23,20250825,99,79,20
 96,359,Effort E,Weekly Fresh Water Treated,23,20251008,79,74,5
 96,359,Effort E,Weekly Fresh Water Treated,23,20260522,75,72,3
+96,359,Effort E,Weekly Fresh Water Treated,23,20261002,,,16
 97,360,Effort E,Weekly Temperature Control,1,20240624,100,100,0
 97,360,Effort E,Weekly Temperature Control,1,20240909,101,99,2
 97,360,Effort E,Weekly Temperature Control,1,20241211,96,96,0
@@ -97,3 +110,4 @@ field_cattle_tag,tag_20250825,effort,treatment,source_cattle_tag,date,total,live
 97,360,Effort E,Weekly Temperature Control,1,20250825,95,72,23
 97,360,Effort E,Weekly Temperature Control,1,20251008,73,73,0
 97,360,Effort E,Weekly Temperature Control,1,20260522,73,72,1
+97,360,Effort E,Weekly Temperature Control,1,20261002,,,4
