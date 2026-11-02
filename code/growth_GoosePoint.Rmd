@@ -225,7 +225,7 @@ plot(data$volume ~ data$width.mm)
 ```
 Relationships may be non linear. 
 
-Obtain training data with known length width and depth from 20240909, 20251008, and 20250522 datasets. 
+Obtain training data with known length width and depth from 20240909, 20251008, and 20260522 datasets. 
 ```{r}
 training_data<-data%>%
   filter(date %in% c("20240909", "20251008", "20260522"))%>%
